@@ -24,7 +24,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Iterator;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -95,7 +94,7 @@ public class CompileMojo
 
         try
         {
-            main = compiler.getMethod( "main", new Class[] { String[].class }  );
+            main = compiler.getMethod( "main", new Class[] { String[].class } );
         }
         catch ( SecurityException e )
         {
@@ -127,7 +126,7 @@ public class CompileMojo
             {
                 try
                 {
-                    main.invoke( null, new Object[]{args.toArray( new String[args.size()] )} );
+                    main.invoke( null, new Object[] { args.toArray( new String[args.size()] ) } );
                 }
                 catch ( IllegalArgumentException e )
                 {
