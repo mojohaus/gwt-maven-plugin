@@ -21,7 +21,7 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>1.0.21</version>
+      <version>1.1.0</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -42,7 +42,7 @@
         <dependency>
           <groupId>com.google.gwt</groupId>
           <artifactId>gwt-dev-linux</artifactId>
-          <version>1.0.21</version>
+          <version>1.1.0</version>
         </dependency>
       </dependencies>
     </profile>
@@ -57,7 +57,7 @@
         <dependency>
           <groupId>com.google.gwt</groupId>
           <artifactId>gwt-dev-windows</artifactId>
-          <version>1.0.21</version>
+          <version>1.1.0</version>
         </dependency>
       </dependencies>
     </profile>
