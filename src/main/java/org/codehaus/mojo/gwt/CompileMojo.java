@@ -71,19 +71,29 @@ public class CompileMojo
             getLog().debug( "CompileMojo#execute()" );
         }
 
-        ClassLoader loader = getClassLoader();
-
         // TODO : getting and invoking the main should be a more common component
         final String GWTCOMPILER_CLASS_NAME = "com.google.gwt.dev.GWTCompiler";
 
+        getLog().debug( "  COMPILER: " + GWTCOMPILER_CLASS_NAME );
+
+        ClassLoader loader = null;
         Class compiler = null;
         try
         {
+            loader = getClassLoader();
             compiler = loader.loadClass( GWTCOMPILER_CLASS_NAME );
         }
         catch ( ClassNotFoundException e )
         {
-            throw new MojoExecutionException( "Could not find GWTCompiler.", e );
+            try
+            {
+                loader = getAlternateClassLoader();
+                compiler = loader.loadClass( GWTCOMPILER_CLASS_NAME );
+            }
+            catch( ClassNotFoundException ee )
+            {
+                throw new MojoExecutionException( "Could not find GWTCompiler.", ee );
+            }
         }
         if ( getLog().isDebugEnabled() )
         {
@@ -157,18 +167,52 @@ public class CompileMojo
         }
     }
 
+    /**
+     * Need this to run both pre- and post- PLX-220 fix.
+     */
     private ClassLoader getClassLoader()
+        throws MojoExecutionException
+    {
+        URLClassLoader myClassLoader = (URLClassLoader)getClass().getClassLoader();
+
+        URL[] originalUrls = myClassLoader.getURLs();
+        URL[] urls = new URL[originalUrls.length + 1];
+        System.arraycopy( originalUrls, 0, urls, 0, originalUrls.length );
+
+        try
+        {
+            urls[originalUrls.length] = sourceDirectory.toURL();
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new MojoExecutionException( "Failed to convert source root to URL.", e );
+        }
+
+        if ( getLog().isDebugEnabled() )
+        {
+            for ( int i = 0; i < urls.length; i++ )
+            {
+                getLog().debug( "  URL:" + urls[i] );
+            }
+        }
+    
+        return new URLClassLoader( urls, myClassLoader.getParent() );
+    }
+
+    /**
+     * TODO : Due to PLX-220, we must convert the classpath URLs to escaped URI form.
+     * cf. http://jira.codehaus.org/browse/PLX-220
+     */ 
+    private ClassLoader getAlternateClassLoader()
         throws MojoExecutionException
     {
         if ( getLog().isDebugEnabled() )
         {
-            getLog().debug( "CompileMojo#getClassLoader()" );
+            getLog().debug( "CompileMojo#getAlternateClassLoader()" );
         }
 
         URLClassLoader myClassLoader = (URLClassLoader) getClass().getClassLoader();
 
-        // TODO : Due to PLX-220, we must convert the classpath URLs to escaped URI form.
-        // cf. http://jira.codehaus.org/browse/PLX-220
         URL[] originalUrls = myClassLoader.getURLs();
         URL[] urls = new URL[originalUrls.length + 1];
         for ( int index = 0; index < originalUrls.length; ++index )
