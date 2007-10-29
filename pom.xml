@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>mojo-sandbox</artifactId>
-    <version>3-SNAPSHOT</version>
+    <version>4</version>
   </parent>
   <groupId>org.codehaus.mojo</groupId>
   <artifactId>gwt-maven-plugin</artifactId>
