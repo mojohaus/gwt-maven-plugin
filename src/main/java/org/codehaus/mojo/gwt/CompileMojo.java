@@ -42,7 +42,7 @@ public class CompileMojo
     /**
      * Location of the source files.
      *
-     * @parameter expression="${basedir}/src/main/java"
+     * @parameter expression="${project.build.sourceDirectory}"
      * @required
      */
     private File sourceDirectory;
@@ -50,120 +50,80 @@ public class CompileMojo
     /**
      * Location of the file.
      *
-     * @parameter expression="${project.build.directory}/gwt/www"
+     * @parameter expression="${project.build.directory}/${project.build.finalName}"
      * @required
      */
     private File outputDirectory;
 
     /**
-     * The java class to compile.
+     * The GWT module to compile.
      *
      * @parameter
      * @required
      */
+    private String module;
+
+    /**
+     * @parameter
+     * @deprecated use 'module' parameter
+     */
     private String className;
+
+    /**
+     * The level of logging detail: ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or
+     * ALL
+     *
+     * @parameter default-value="WARN"
+     */
+    private String logLevel;
+
+    /**
+     * Script output style: OBF[USCATED], PRETTY, or DETAILED
+     *
+     * @parameter default-value="OBF"
+     */
+    private String style;
 
     public void execute()
         throws MojoExecutionException
     {
-        if ( getLog().isDebugEnabled() )
-        {
-            getLog().debug( "CompileMojo#execute()" );
-        }
+        getLog().debug( "CompileMojo#execute()" );
 
-        // TODO : getting and invoking the main should be a more common component
-        final String GWTCOMPILER_CLASS_NAME = "com.google.gwt.dev.GWTCompiler";
+        final List args = getGwtCompilerArguments();
+        Object compiler = getGwtCompilerInstance();
 
-        getLog().debug( "  COMPILER: " + GWTCOMPILER_CLASS_NAME );
+        // Replace ContextClassLoader with the classloader used to build the GWTCompiler instance
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader( compiler.getClass().getClassLoader() );
 
-        ClassLoader loader = null;
-        Class compiler = null;
+        // Replace the SecurityManager to intercept System.exit()
+        SecurityManager sm = System.getSecurityManager();
+        System.setSecurityManager( new NoSystemExitSecurityManager( sm ) );
         try
         {
-            loader = getClassLoader();
-            compiler = loader.loadClass( GWTCOMPILER_CLASS_NAME );
+            getLog().debug( "invoke GWTCompiler#main(String[])" );
+            Method processArgs = compiler.getClass().getMethod( "main", new Class[] { String[].class } );
+            processArgs.invoke( null, new Object[] { args.toArray( new String[args.size()] ) } );
         }
-        catch ( ClassNotFoundException e )
+        catch ( InvocationTargetException e )
         {
-            try
+            if ( e.getTargetException() instanceof SystemExitSecurityException )
             {
-                loader = getAlternateClassLoader();
-                compiler = loader.loadClass( GWTCOMPILER_CLASS_NAME );
+                // System.exit has been intercepted --> ignored
             }
-            catch( ClassNotFoundException ee )
+            else
             {
-                throw new MojoExecutionException( "Could not find GWTCompiler.", ee );
+                throw new MojoExecutionException( "GWTCompiler#main(String[]) failed.", e );
             }
         }
-        if ( getLog().isDebugEnabled() )
+        catch ( Exception e )
         {
-            getLog().debug( "  Found class:" + compiler );
+            throw new MojoExecutionException( "GWTCompiler#main(String[]) failed.", e );
         }
-
-        final Method main;
-
-        try
+        finally
         {
-            main = compiler.getMethod( "main", new Class[] { String[].class } );
-        }
-        catch ( SecurityException e )
-        {
-            throw new MojoExecutionException( "Permission not granted for reflection.", e );
-        }
-        catch ( NoSuchMethodException e )
-        {
-            throw new MojoExecutionException( "Could not find GWTCompiler#main(String[]).", e );
-        }
-        if ( getLog().isDebugEnabled() )
-        {
-            getLog().debug( "  Found method:" + main );
-        }
-
-        // TODO : what other options are there?
-        final List args = new LinkedList();
-        args.add( "-out" );
-        args.add( outputDirectory.getAbsolutePath() );
-        args.add( className );
-        if ( getLog().isDebugEnabled() )
-        {
-            getLog().debug( "  Invoking main with" + args );
-        }
-
-        // TODO : can we have the gwt source directory already in the classpath?
-        Runnable compile = new Runnable()
-        {
-            public void run()
-            {
-                try
-                {
-                    main.invoke( null, new Object[] { args.toArray( new String[args.size()] ) } );
-                }
-                catch ( IllegalArgumentException e )
-                {
-                    throw new RuntimeException( "This shouldn't happen.", e );
-                }
-                catch ( IllegalAccessException e )
-                {
-                    throw new RuntimeException( "Permission not granted for reflection.", e );
-                }
-                catch ( InvocationTargetException e )
-                {
-                    throw new RuntimeException( "GWTCompiler#main(String[]) failed.", e );
-                }
-            }
-        };
-
-        // TODO : we can just swap ContextClassLoader in this block
-        Thread compileThread = new Thread( compile );
-        compileThread.setContextClassLoader( loader );
-        compileThread.start();
-        try
-        {
-            compileThread.join();
-        }
-        catch ( InterruptedException e )
-        {
-            throw new MojoExecutionException( "Compiler thread stopped.", e );
+            Thread.currentThread().setContextClassLoader( cl );
+            System.setSecurityManager( sm );
         }
     }
 
@@ -173,7 +133,7 @@ public class CompileMojo
     private ClassLoader getClassLoader()
         throws MojoExecutionException
     {
-        URLClassLoader myClassLoader = (URLClassLoader)getClass().getClassLoader();
+        URLClassLoader myClassLoader = (URLClassLoader) getClass().getClassLoader();
 
         URL[] originalUrls = myClassLoader.getURLs();
         URL[] urls = new URL[originalUrls.length + 1];
@@ -195,14 +155,14 @@ public class CompileMojo
                 getLog().debug( "  URL:" + urls[i] );
             }
         }
-    
+
         return new URLClassLoader( urls, myClassLoader.getParent() );
     }
 
     /**
-     * TODO : Due to PLX-220, we must convert the classpath URLs to escaped URI form.
-     * cf. http://jira.codehaus.org/browse/PLX-220
-     */ 
+     * TODO : Due to PLX-220, we must convert the classpath URLs to escaped URI
+     * form. cf. http://jira.codehaus.org/browse/PLX-220
+     */
     private ClassLoader getAlternateClassLoader()
         throws MojoExecutionException
     {
@@ -247,5 +207,62 @@ public class CompileMojo
         }
 
         return new URLClassLoader( urls, myClassLoader.getParent() );
+    }
+
+    /**
+     * Retrieve a GWTCompiler instance and configure the Thread
+     * contextClassLoader
+     *
+     * @return
+     * @throws MojoExecutionException
+     */
+    protected Object getGwtCompilerInstance()
+        throws MojoExecutionException
+    {
+        // TODO : getting and invoking the main should be a more common
+        // component
+        final String GWTCOMPILER_CLASS_NAME = "com.google.gwt.dev.GWTCompiler";
+
+        Object compiler = null;
+        ClassLoader loader = null;
+        try
+        {
+            loader = getClassLoader();
+            compiler = loader.loadClass( GWTCOMPILER_CLASS_NAME ).newInstance();
+        }
+        catch ( Exception e )
+        {
+            try
+            {
+                loader = getAlternateClassLoader();
+                compiler = loader.loadClass( GWTCOMPILER_CLASS_NAME );
+            }
+            catch ( Exception ee )
+            {
+                throw new MojoExecutionException( "Could not find GWTCompiler.", ee );
+            }
+        }
+        if ( getLog().isDebugEnabled() )
+        {
+            getLog().debug( "  Found class:" + compiler.getClass() );
+        }
+        return compiler;
+    }
+
+    protected List getGwtCompilerArguments()
+    {
+        List args = new LinkedList();
+        args.add( "-out" );
+        args.add( outputDirectory.getAbsolutePath() );
+        args.add( "-logLevel" );
+        args.add( logLevel );
+        args.add( "-style" );
+        args.add( style );
+        args.add( module );
+        if ( getLog().isDebugEnabled() )
+        {
+            getLog().debug( "  Invoking main with" + args );
+        }
+        return args;
     }
 }

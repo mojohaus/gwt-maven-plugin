@@ -1,0 +1,84 @@
+ ------
+GWT Maven Plugin Usage 
+ ------
+ ------
+ ------
+
+Configuring Google Web Toolkit support for maven
+
+* Minimal configuration 
+
+  You can use the following configuration in your pom.xml to run the GWT compiler 
+  whene the project is built.  By default, the plugin is configured
+  to be executed during the ''compile'' phase.
+
++---+
+<project>
+  [...]
+  <build>
+    <plugins>
+      [...]
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+		<executions>
+			<execution>
+				<configuration>
+			      <module>com.mycompany.gwt.Module</module>
+				</configuration>		
+				<goals>
+					<goal>compile</goal>
+				</goals>
+			</execution>
+		</executions>
+      </plugin>
+      [...]
+    </plugins>
+  </build>
+  [...]
+</project>
++---+
+
+* Full configuration 
+
+  The following configuration in your pom.xml allow to fully customise the Fit Maven 
+  Plugin everytime the project is built.
+
++---+
+<project>
+  [...]
+  <build>
+    <plugins>
+      [...]
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>fit-maven-plugin</artifactId>
+		<executions>
+			<execution>
+				<id>wiki-fixture</id>
+				<phase>integration-test</phase>
+				<configuration>
+					<sourceDirectory>src/main/fit</sourceDirectory>
+					<caseSensitive>true</caseSensitive>
+					<sourceIncludes>**/WikiFixture.html</sourceIncludes>
+			        <parseTags>
+			        	<parseTag>wiki</parseTag>
+			        	<parseTag>table</parseTag>
+			        	<parseTag>tr</parseTag>
+			        	<parseTag>td</parseTag>
+			        </parseTags>
+					<outputDirectory>target/fit</outputDirectory>
+					<ignoreFailures>true</ignoreFailures>
+				</configuration>		
+				<goals>
+					<goal>run</goal>
+				</goals>
+			</execution>
+		</executions>
+      </plugin>
+      [...]
+    </plugins>
+  </build>
+  [...]
+</project>
++---+
