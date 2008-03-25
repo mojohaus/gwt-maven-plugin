@@ -15,29 +15,43 @@ package org.codehaus.mojo.gwt;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 import java.io.FileDescriptor;
 import java.net.InetAddress;
 
 /**
  * A custom SecurityManager that delegates to it's parent BUT checkExit.
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 class NoSystemExitSecurityManager
     extends SecurityManager
 {
+    /** The parent securityManager to delegate security checks (if not null) */
     protected SecurityManager parent;
 
+    /**
+     * {@inheritDoc}
+     */
     public NoSystemExitSecurityManager( SecurityManager parent )
     {
         super();
         this.parent = parent;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    /**
+     * {@inheritDoc}
+     */
     public void checkExit( int status )
     {
         throw new SystemExitSecurityException( "Intercepted System.exit" );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkAccept( String host, int port )
     {
         if ( parent != null )
@@ -46,6 +60,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkAccess( Thread t )
     {
         if ( parent != null )
@@ -54,6 +71,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkAccess( ThreadGroup g )
     {
         if ( parent != null )
@@ -62,6 +82,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkAwtEventQueueAccess()
     {
         if ( parent != null )
@@ -70,6 +93,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkConnect( String host, int port, Object context )
     {
         if ( parent != null )
@@ -78,6 +104,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkConnect( String host, int port )
     {
         if ( parent != null )
@@ -86,6 +115,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkCreateClassLoader()
     {
         if ( parent != null )
@@ -94,6 +126,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkDelete( String file )
     {
         if ( parent != null )
@@ -102,6 +137,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkExec( String cmd )
     {
         if ( parent != null )
@@ -110,6 +148,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkLink( String lib )
     {
         if ( parent != null )
@@ -118,6 +159,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkListen( int port )
     {
         if ( parent != null )
@@ -126,6 +170,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkMemberAccess( Class arg0, int arg1 )
     {
         if ( parent != null )
@@ -134,6 +181,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkMulticast( InetAddress maddr, byte ttl )
     {
         if ( parent != null )
@@ -142,6 +192,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkMulticast( InetAddress maddr )
     {
         if ( parent != null )
@@ -150,6 +203,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkPackageAccess( String pkg )
     {
         if ( parent != null )
@@ -158,6 +214,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkPackageDefinition( String pkg )
     {
         if ( parent != null )
@@ -166,6 +225,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkPermission( java.security.Permission perm, Object context )
     {
         if ( parent != null )
@@ -174,6 +236,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkPermission( java.security.Permission perm )
     {
         if ( parent != null )
@@ -182,6 +247,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkPrintJobAccess()
     {
         if ( parent != null )
@@ -190,6 +258,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkPropertiesAccess()
     {
         if ( parent != null )
@@ -198,6 +269,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkPropertyAccess( String key )
     {
         if ( parent != null )
@@ -206,6 +280,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkRead( FileDescriptor fd )
     {
         if ( parent != null )
@@ -214,6 +291,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkRead( String file, Object context )
     {
         if ( parent != null )
@@ -222,6 +302,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkRead( String file )
     {
         if ( parent != null )
@@ -230,6 +313,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkSecurityAccess( String target )
     {
         if ( parent != null )
@@ -238,6 +324,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkSetFactory()
     {
         if ( parent != null )
@@ -246,6 +335,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkSystemClipboardAccess()
     {
         if ( parent != null )
@@ -254,6 +346,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean checkTopLevelWindow( Object window )
     {
         if ( parent != null )
@@ -263,6 +358,9 @@ class NoSystemExitSecurityManager
         return super.checkTopLevelWindow( window );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkWrite( FileDescriptor fd )
     {
         if ( parent != null )
@@ -271,6 +369,9 @@ class NoSystemExitSecurityManager
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void checkWrite( String file )
     {
         if ( parent != null )

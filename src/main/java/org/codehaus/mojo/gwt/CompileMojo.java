@@ -15,7 +15,7 @@ package org.codehaus.mojo.gwt;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+ 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -84,6 +84,9 @@ public class CompileMojo
      */
     private String style;
 
+        /**
+         * {@inheritDoc}
+         */
     public void execute()
         throws MojoExecutionException
     {
@@ -129,6 +132,8 @@ public class CompileMojo
 
     /**
      * Need this to run both pre- and post- PLX-220 fix.
+         * @return a ClassLoader including plugin dependencies and project source foler
+     * @throws MojoExecutionException failed to configure ClassLoader
      */
     private ClassLoader getClassLoader()
         throws MojoExecutionException
@@ -162,6 +167,8 @@ public class CompileMojo
     /**
      * TODO : Due to PLX-220, we must convert the classpath URLs to escaped URI
      * form. cf. http://jira.codehaus.org/browse/PLX-220
+         * @return an alternate ClassLoader including plugin dependencies and project source foler
+     * @throws MojoExecutionException failed to configure ClassLoader         
      */
     private ClassLoader getAlternateClassLoader()
         throws MojoExecutionException
@@ -213,29 +220,28 @@ public class CompileMojo
      * Retrieve a GWTCompiler instance and configure the Thread
      * contextClassLoader
      *
-     * @return
-     * @throws MojoExecutionException
+     * @return a GWTCompiler instante
+     * @throws MojoExecutionException failed to retrieve an instante
      */
     protected Object getGwtCompilerInstance()
         throws MojoExecutionException
     {
-        // TODO : getting and invoking the main should be a more common
-        // component
-        final String GWTCOMPILER_CLASS_NAME = "com.google.gwt.dev.GWTCompiler";
+        // TODO : getting and invoking the main should be a more common component
+        final String compilerClassName = "com.google.gwt.dev.GWTCompiler";
 
         Object compiler = null;
         ClassLoader loader = null;
         try
         {
             loader = getClassLoader();
-            compiler = loader.loadClass( GWTCOMPILER_CLASS_NAME ).newInstance();
+            compiler = loader.loadClass( compilerClassName ).newInstance();
         }
         catch ( Exception e )
         {
             try
             {
                 loader = getAlternateClassLoader();
-                compiler = loader.loadClass( GWTCOMPILER_CLASS_NAME );
+                compiler = loader.loadClass( compilerClassName );
             }
             catch ( Exception ee )
             {
@@ -249,6 +255,9 @@ public class CompileMojo
         return compiler;
     }
 
+        /**
+         * @return the GWTCompiler command line arguments
+         */
     protected List getGwtCompilerArguments()
     {
         List args = new LinkedList();
