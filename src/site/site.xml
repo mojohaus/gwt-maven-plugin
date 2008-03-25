@@ -19,9 +19,7 @@
     </menu>
     <menu name="Overview">
       <item name="Plugin Goals" href="index.html"/>
-      <item name="Introduction" href="introduction.html"/>
-      <item name="How to Use" href="howto.html"/>
-      <item name="Javadoc" href="apidocs/index.html"/>
+      <item name="Introduction" href="usage.html"/>
     </menu>
     ${reports}
   </body>

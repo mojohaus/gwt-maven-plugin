@@ -21,16 +21,16 @@ Configuring Google Web Toolkit support for maven
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-		<executions>
-			<execution>
-				<configuration>
-			      <module>com.mycompany.gwt.Module</module>
-				</configuration>		
-				<goals>
-					<goal>compile</goal>
-				</goals>
-			</execution>
-		</executions>
+        <executions>
+          <execution>
+			<configuration>
+			  <module>com.mycompany.gwt.Module</module>
+			</configuration>        
+			<goals>
+			  <goal>compile</goal>
+			</goals>
+          </execution>
+        </executions>
       </plugin>
       [...]
     </plugins>
@@ -53,28 +53,28 @@ Configuring Google Web Toolkit support for maven
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>fit-maven-plugin</artifactId>
-		<executions>
-			<execution>
-				<id>wiki-fixture</id>
-				<phase>integration-test</phase>
-				<configuration>
-					<sourceDirectory>src/main/fit</sourceDirectory>
-					<caseSensitive>true</caseSensitive>
-					<sourceIncludes>**/WikiFixture.html</sourceIncludes>
-			        <parseTags>
-			        	<parseTag>wiki</parseTag>
-			        	<parseTag>table</parseTag>
-			        	<parseTag>tr</parseTag>
-			        	<parseTag>td</parseTag>
-			        </parseTags>
-					<outputDirectory>target/fit</outputDirectory>
-					<ignoreFailures>true</ignoreFailures>
-				</configuration>		
-				<goals>
-					<goal>run</goal>
-				</goals>
-			</execution>
-		</executions>
+        <executions>
+            <execution>
+                <id>wiki-fixture</id>
+                <phase>integration-test</phase>
+                <configuration>
+                    <sourceDirectory>src/main/fit</sourceDirectory>
+                    <caseSensitive>true</caseSensitive>
+                    <sourceIncludes>**/WikiFixture.html</sourceIncludes>
+                    <parseTags>
+                        <parseTag>wiki</parseTag>
+                        <parseTag>table</parseTag>
+                        <parseTag>tr</parseTag>
+                        <parseTag>td</parseTag>
+                    </parseTags>
+                    <outputDirectory>target/fit</outputDirectory>
+                    <ignoreFailures>true</ignoreFailures>
+                </configuration>        
+                <goals>
+                    <goal>run</goal>
+                </goals>
+            </execution>
+        </executions>
       </plugin>
       [...]
     </plugins>
