@@ -11,12 +11,11 @@
   <packaging>maven-plugin</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>Maven GWT Plugin</name>
-  <url>http://code.google.com/webtoolkit/</url>
+  <url>http://mojo.codehaus.org/sandbow/gwt-maven-plugin</url>
   
   <properties>
 	<gwt.version>1.4.62</gwt.version>
-  </properties>
-  
+  </properties>  
   
   <dependencies>
     <dependency>
