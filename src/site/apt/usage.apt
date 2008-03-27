@@ -1,15 +1,15 @@
  ------
-GWT Maven Plugin Usage 
+GWT Maven Plugin Usage
  ------
  ------
  ------
 
 Configuring Google Web Toolkit support for maven
 
-* Minimal configuration 
+* Translate GWT application to JavaScript
 
-  You can use the following configuration in your pom.xml to run the GWT compiler 
-  whene the project is built.  By default, the plugin is configured
+  You can use the following configuration in your pom.xml to run the GWT compiler
+  when the project is built.  By default, the plugin is configured
   to be executed during the ''compile'' phase.
 
 +---+
@@ -25,7 +25,7 @@ Configuring Google Web Toolkit support for maven
           <execution>
 			<configuration>
 			  <module>com.mycompany.gwt.Module</module>
-			</configuration>        
+			</configuration>
 			<goals>
 			  <goal>compile</goal>
 			</goals>
@@ -39,10 +39,14 @@ Configuring Google Web Toolkit support for maven
 </project>
 +---+
 
-* Full configuration 
+* Generate DTO from JPA-annotated entities
 
-  The following configuration in your pom.xml allow to fully customise the Fit Maven 
-  Plugin everytime the project is built.
+  The plugin can generate Data Transfert Objects from JPA-annotated entities. Such beans are
+  not compatible with GWT 1.4, but hibernate4gwt can be used to bypass this limitation and
+  clone/merge on the fly entities to be exposed to the GWT application as DTOs.
+  By default, the plugin is configured to be executed during the ''generate-source'' phase.
+  The entities must be available as classes during this phase, so they need to be provided
+  in an external jar, and not live in the same project as java sources.
 
 +---+
 <project>
@@ -52,28 +56,17 @@ Configuring Google Web Toolkit support for maven
       [...]
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>fit-maven-plugin</artifactId>
+        <artifactId>gwt-maven-plugin</artifactId>
         <executions>
-            <execution>
-                <id>wiki-fixture</id>
-                <phase>integration-test</phase>
-                <configuration>
-                    <sourceDirectory>src/main/fit</sourceDirectory>
-                    <caseSensitive>true</caseSensitive>
-                    <sourceIncludes>**/WikiFixture.html</sourceIncludes>
-                    <parseTags>
-                        <parseTag>wiki</parseTag>
-                        <parseTag>table</parseTag>
-                        <parseTag>tr</parseTag>
-                        <parseTag>td</parseTag>
-                    </parseTags>
-                    <outputDirectory>target/fit</outputDirectory>
-                    <ignoreFailures>true</ignoreFailures>
-                </configuration>        
-                <goals>
-                    <goal>run</goal>
-                </goals>
-            </execution>
+          <execution>
+            <configuration>
+              <packageScan>com.mycompany.domain</packageScan>
+              <dtoPackage>com.mycompany.gwt.dto</dtoPackage>
+            </configuration>
+            <goals>
+              <goal>generateDto</goal>
+            </goals>
+          </execution>
         </executions>
       </plugin>
       [...]

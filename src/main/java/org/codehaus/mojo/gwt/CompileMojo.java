@@ -15,18 +15,22 @@ package org.codehaus.mojo.gwt;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
 
 /**
  * Goal which compiles a GWT file.
@@ -34,10 +38,16 @@ import org.apache.maven.plugin.MojoExecutionException;
  * @goal compile
  * @phase compile
  * @author Shinobu Kawai
+ * @requiresDependencyResolution compile
  */
 public class CompileMojo
     extends AbstractMojo
 {
+    /**
+     * @parameter expression="${project}"
+     * @required
+     */
+    private MavenProject project;
 
     /**
      * Location of the source files.
@@ -84,9 +94,9 @@ public class CompileMojo
      */
     private String style;
 
-        /**
-         * {@inheritDoc}
-         */
+    /**
+     * {@inheritDoc}
+     */
     public void execute()
         throws MojoExecutionException
     {
@@ -95,7 +105,8 @@ public class CompileMojo
         final List args = getGwtCompilerArguments();
         Object compiler = getGwtCompilerInstance();
 
-        // Replace ContextClassLoader with the classloader used to build the GWTCompiler instance
+        // Replace ContextClassLoader with the classloader used to build the
+        // GWTCompiler instance
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader( compiler.getClass().getClassLoader() );
 
@@ -132,7 +143,9 @@ public class CompileMojo
 
     /**
      * Need this to run both pre- and post- PLX-220 fix.
-         * @return a ClassLoader including plugin dependencies and project source foler
+     *
+     * @return a ClassLoader including plugin dependencies and project source
+     * foler
      * @throws MojoExecutionException failed to configure ClassLoader
      */
     private ClassLoader getClassLoader()
@@ -141,17 +154,8 @@ public class CompileMojo
         URLClassLoader myClassLoader = (URLClassLoader) getClass().getClassLoader();
 
         URL[] originalUrls = myClassLoader.getURLs();
-        URL[] urls = new URL[originalUrls.length + 1];
+        URL[] urls = addProjectClasspathElements( originalUrls );
         System.arraycopy( originalUrls, 0, urls, 0, originalUrls.length );
-
-        try
-        {
-            urls[originalUrls.length] = sourceDirectory.toURL();
-        }
-        catch ( MalformedURLException e )
-        {
-            throw new MojoExecutionException( "Failed to convert source root to URL.", e );
-        }
 
         if ( getLog().isDebugEnabled() )
         {
@@ -164,11 +168,54 @@ public class CompileMojo
         return new URLClassLoader( urls, myClassLoader.getParent() );
     }
 
+    private URL[] addProjectClasspathElements( URL[] originalUrls )
+        throws MojoExecutionException
+    {
+        Collection sources = project.getCompileSourceRoots();
+        Collection dependencies = project.getArtifacts();
+        URL[] urls = new URL[originalUrls.length + sources.size() + dependencies.size()];
+
+        int i = originalUrls.length;
+        getLog().debug( "add compile source roots to GWTCompiler classpath " + sources.size() );
+        i = addClasspathElements( sources, urls, i );
+        getLog().debug( "add project dependencies to GWTCompiler  classpath " + dependencies.size() );
+        addClasspathElements( dependencies, urls, i );
+        return urls;
+    }
+
+    private int addClasspathElements( Collection elements, URL[] urls, int startPosition )
+        throws MojoExecutionException
+    {
+        for ( Iterator iterator = elements.iterator(); iterator.hasNext(); )
+        {
+            Object object = (Object) iterator.next();
+            try
+            {
+                if ( object instanceof Artifact )
+                {
+                    urls[startPosition] = ( (Artifact) object ).getFile().toURL();
+                }
+                else
+                {
+                    urls[startPosition] = new File( (String) object ).toURL();
+                }
+            }
+            catch ( MalformedURLException e )
+            {
+                throw new MojoExecutionException( "Failed to convert original classpath element " + object + " to URL.", e );
+            }
+            startPosition++;
+        }
+        return startPosition;
+    }
+
     /**
      * TODO : Due to PLX-220, we must convert the classpath URLs to escaped URI
      * form. cf. http://jira.codehaus.org/browse/PLX-220
-         * @return an alternate ClassLoader including plugin dependencies and project source foler
-     * @throws MojoExecutionException failed to configure ClassLoader         
+     *
+     * @return an alternate ClassLoader including plugin dependencies and
+     * project source foler
+     * @throws MojoExecutionException failed to configure ClassLoader
      */
     private ClassLoader getAlternateClassLoader()
         throws MojoExecutionException
@@ -181,7 +228,7 @@ public class CompileMojo
         URLClassLoader myClassLoader = (URLClassLoader) getClass().getClassLoader();
 
         URL[] originalUrls = myClassLoader.getURLs();
-        URL[] urls = new URL[originalUrls.length + 1];
+        URL[] urls = addProjectClasspathElements( originalUrls );
         for ( int index = 0; index < originalUrls.length; ++index )
         {
             try
@@ -193,16 +240,6 @@ public class CompileMojo
             {
                 throw new MojoExecutionException( "Failed to convert original classpath to URL.", e );
             }
-        }
-
-        // TODO : can we have the gwt source directory already in the classpath?
-        try
-        {
-            urls[originalUrls.length] = sourceDirectory.toURL();
-        }
-        catch ( MalformedURLException e )
-        {
-            throw new MojoExecutionException( "Failed to convert source root to URL.", e );
         }
 
         if ( getLog().isDebugEnabled() )
@@ -226,7 +263,8 @@ public class CompileMojo
     protected Object getGwtCompilerInstance()
         throws MojoExecutionException
     {
-        // TODO : getting and invoking the main should be a more common component
+        // TODO : getting and invoking the main should be a more common
+        // component
         final String compilerClassName = "com.google.gwt.dev.GWTCompiler";
 
         Object compiler = null;
@@ -255,9 +293,9 @@ public class CompileMojo
         return compiler;
     }
 
-        /**
-         * @return the GWTCompiler command line arguments
-         */
+    /**
+     * @return the GWTCompiler command line arguments
+     */
     protected List getGwtCompilerArguments()
     {
         List args = new LinkedList();
