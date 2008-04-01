@@ -38,6 +38,7 @@ import org.apache.maven.project.MavenProject;
  * @goal compile
  * @phase compile
  * @author Shinobu Kawai
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @requiresDependencyResolution compile
  */
 public class CompileMojo

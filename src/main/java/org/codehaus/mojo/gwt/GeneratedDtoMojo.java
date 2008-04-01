@@ -55,11 +55,11 @@ public class GeneratedDtoMojo
     private MavenProject project;
 
     /**
-     * The outputDirectory for generated code.
+     * The output directory for generated code.
      *
      * @parameter default-value="${project.build.directory}/generated-sources/dto"
      */
-    private File outputDirectory;
+    private File generateDirectory;
 
     /**
      * The package to scan for JPA annotated classes.
@@ -85,6 +85,14 @@ public class GeneratedDtoMojo
     private String parentClass;
 
     /**
+     * Optional comma separated list of (FQN) interfaces to be implemented, for example
+     * "com.google.gwt.user.client.rpc.IsSerializable".
+     *
+     * @parameter
+     */
+    private String implementsClasses;
+
+    /**
      * The suffix to append to generated DTO classes.
      *
      * @parameter default-value="Dto"
@@ -108,59 +116,20 @@ public class GeneratedDtoMojo
             URL[] urls = ClasspathUrlFinder.findResourceBases( packageScan.replace( '.', '/' ), cl );
             AnnotationDB db = new AnnotationDB();
             db.scanArchives( urls );
-            Set entityClasses = db.getAnnotationIndex().get( "javax.persistence.Entity" );
+            Set entityClasses = (Set) db.getAnnotationIndex().get( "javax.persistence.Entity" );
 
             getLog().debug( entityClasses.size() + "JPA entities found" );
             for ( Iterator iterator = entityClasses.iterator(); iterator.hasNext(); )
             {
                 String className = (String) iterator.next();
-                String generated = dtoPackage.replace( '.', '/' ) + "/" + className + dtoSuffix + ".java";
-                PrintWriter out = new PrintWriter( new FileWriter( new File( outputDirectory, generated )) );
+                String simpleName = className.substring( className.lastIndexOf( '.' ) + 1 );
+                String generatedName = dtoPackage.replace( '.', '/' ) + "/" + simpleName + dtoSuffix + ".java";
+                File generated = new File( generateDirectory, generatedName );
+                generated.getParentFile().mkdirs();
+                PrintWriter out = new PrintWriter( new FileWriter( generated ) );
 
                 Class entity = cl.loadClass( className );
-                out.println( "package " + dtoPackage + ";" );
-                out.println( "" );
-                out.println( "/*" );
-                out.println( " * Data Transfert Object for persistent entity " + className );
-                out.println( " * @generated" );
-                out.println( " */" );
-                out.println( "public class " + className + dtoSuffix );
-                out.println( "    extends " + parentClass );
-                out.println( "{" );
-
-                Field[] declaredFields = entity.getDeclaredFields();
-                for ( int i = 0; i < declaredFields.length; i++ )
-                {
-                    Field field = declaredFields[i];
-                    Type t = field.getGenericType();
-                    if (t instanceof ParameterizedType)
-                    {
-                        out.println( "    /* " );
-                        ParameterizedType pt = (ParameterizedType) t;
-                        out.println( "     * @gwt.typeArgs " + pt.getActualTypeArguments()[0] );
-                        out.println( "     */ " );
-                    }
-                    out.println( "    public " + field.getType().getName() + " " + field.getName() + ";" );
-                    out.println();
-                }
-
-                for ( int i = 0; i < declaredFields.length; i++ )
-                {
-                    Field field = declaredFields[i];
-                    String capitalized = StringUtils.capitalize( field.getName() );
-                    out.println( "    public " + field.getType().getName() + " get" + capitalized + "()" );
-                    out.println( "    {");
-                    out.println( "        return this." + field.getName() );
-                    out.println( "    }");
-                    out.println();
-                    out.println( "    public void set" + capitalized + "( " + field.getType().getName() + " " + field.getName() + " )" );
-                    out.println( "    {");
-                    out.println( "        this." + field.getName() + " = " + field.getName() );
-                    out.println( "    }");
-                    out.println();
-                }
-
-                out.println( "}" );
+                generateDtoForEntity( simpleName, out, entity );
                 out.close();
             }
         }
@@ -169,6 +138,58 @@ public class GeneratedDtoMojo
             throw new MojoExecutionException( "Failed to generate DTO from persistent classes", e );
         }
 
+        project.addCompileSourceRoot( generateDirectory.getAbsolutePath() );
+    }
+
+    private void generateDtoForEntity( String className, PrintWriter out, Class entity )
+    {
+        out.println( "package " + dtoPackage + ";" );
+        out.println( "" );
+        out.println( "/*" );
+        out.println( " * Data Transfert Object for persistent entity " + className );
+        out.println( " * @generated" );
+        out.println( " */" );
+        out.println( "public class " + className + dtoSuffix );
+        out.println( "    extends " + parentClass );
+        if (implementsClasses != null)
+        {
+            out.println( "    implements " + implementsClasses );
+        }
+        out.println( "{" );
+
+        Field[] declaredFields = entity.getDeclaredFields();
+        for ( int i = 0; i < declaredFields.length; i++ )
+        {
+            Field field = declaredFields[i];
+            Type t = field.getGenericType();
+            if (t instanceof ParameterizedType)
+            {
+                out.println( "    /* " );
+                ParameterizedType pt = (ParameterizedType) t;
+                out.println( "     * @gwt.typeArgs " + pt.getActualTypeArguments()[0] );
+                out.println( "     */ " );
+            }
+            out.println( "    public " + field.getType().getName() + " " + field.getName() + ";" );
+            out.println();
+        }
+
+        for ( int i = 0; i < declaredFields.length; i++ )
+        {
+            Field field = declaredFields[i];
+            String capitalized = StringUtils.capitalize( field.getName() );
+            out.println( "    public " + field.getType().getName() + " get" + capitalized + "()" );
+            out.println( "    {");
+            out.println( "        return this." + field.getName() + ";");
+            out.println( "    }");
+            out.println();
+            out.println( "    public void set" + capitalized + "( " + field.getType().getName() + " " + field.getName() + " )" );
+            out.println( "    {");
+            out.println( "        this." + field.getName() + " = " + field.getName() + ";" );
+            out.println( "    }");
+            out.println();
+        }
+
+        out.println( "}" );
     }
 
     /**
