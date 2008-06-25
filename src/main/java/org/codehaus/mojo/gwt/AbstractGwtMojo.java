@@ -74,4 +74,12 @@ public abstract class AbstractGwtMojo
         project.addCompileSourceRoot( path );
     }
 
+    /**
+     * @return the project
+     */
+    public MavenProject getProject()
+    {
+        return project;
+    }
+
 }

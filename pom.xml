@@ -29,12 +29,33 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
+      <!-- User can override this version by setting a <dependencies> block in <plugin> -->
       <version>${gwt.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.3</version>
+    </dependency>
+    <dependency>
+      <groupId>freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>2.3.6</version>
+    </dependency>
+      <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-archiver</artifactId>
+      <version>1.0-alpha-9</version>
+      <exclusions>
+          <exclusion>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-container-default</artifactId>
+          </exclusion>
+          <exclusion>
+              <groupId>org.codehaus.plexus</groupId>
+              <artifactId>plexus-component-api</artifactId>
+          </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -58,6 +79,13 @@
           <version>${gwt.version}</version>
           <classifier>mac</classifier>
         </dependency>
+        <dependency>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-dev</artifactId>
+          <version>${gwt.version}</version>
+          <classifier>mac-libs</classifier>
+          <type>zip</type>
+        </dependency>
       </dependencies>
     </profile>
     <profile>
@@ -74,6 +102,14 @@
           <version>${gwt.version}</version>
           <classifier>linux</classifier>
         </dependency>
+        <dependency>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-dev</artifactId>
+          <version>${gwt.version}</version>
+          <classifier>linux-libs</classifier>
+          <type>zip</type>
+        </dependency>
+
       </dependencies>
     </profile>
     <profile>
@@ -90,6 +126,14 @@
           <version>${gwt.version}</version>
           <classifier>windows</classifier>
         </dependency>
+        <dependency>
+          <groupId>com.google.gwt</groupId>
+          <artifactId>gwt-dev</artifactId>
+          <version>${gwt.version}</version>
+          <classifier>windows-libs</classifier>
+          <type>zip</type>
+        </dependency>
+
       </dependencies>
     </profile>
   </profiles>

@@ -39,14 +39,11 @@ Configuring Google Web Toolkit support for maven
 </project>
 +---+
 
-* Generate DTO from JPA-annotated entities
+* Setup hosted mode browser
 
-  The plugin can generate Data Transfert Objects from JPA-annotated entities. Such beans are
-  not compatible with GWT 1.4, but hibernate4gwt can be used to bypass this limitation and
-  clone/merge on the fly entities to be exposed to the GWT application as DTOs.
-  By default, the plugin is configured to be executed during the ''generate-source'' phase.
-  The entities must be available as classes during this phase, so they need to be provided
-  in an external jar, and not live in the same project as java sources.
+  The ''eclipse'' goal can be used to create an eclipse launch configuration for executing the GWT
+  module in hosted browser mode. The required native libraries are also downloaded and installed in
+  the user local repository.
 
 +---+
 <project>
@@ -60,11 +57,11 @@ Configuring Google Web Toolkit support for maven
         <executions>
           <execution>
             <configuration>
-              <packageScan>com.mycompany.domain</packageScan>
-              <dtoPackage>com.mycompany.gwt.dto</dtoPackage>
+              <module>com.mycompany.gwt.Module</module>
             </configuration>
             <goals>
-              <goal>generate</goal>
+              <goal>compile</goal>
+              <goal>eclipse</goal>
             </goals>
           </execution>
         </executions>
