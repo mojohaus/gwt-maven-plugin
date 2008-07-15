@@ -131,6 +131,28 @@ public class EclipseMojo
         context.put( "page", module.substring( idx + 1 ) );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", outputDirectory.getAbsolutePath().substring( basedir + 1 ) );
+        context.put( "project", getProject().getArtifactId() );
+        // Retrieve GWT 
+        File gwtDevJarPath = null;
+        URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
+        URL[] urls = cl.getURLs();
+        for ( int i = 0; i < urls.length; i++ )
+        {
+            if ( urls[i].getFile().indexOf( "gwt-dev" ) >= 0 && urls[i].getFile().endsWith( ".jar" ) )
+            {
+                gwtDevJarPath = new File( urls[i].getFile() );
+                break;
+            }
+        }
+        if ( gwtDevJarPath == null )
+        {
+            getLog().error( "Failed to retrieve the path of gwt-dev-XX.jar" );
+        }
+        else
+        {
+            getLog().info( "gwt-dev-XX.jar found at " + gwtDevJarPath.getAbsolutePath() );
+        }
+        context.put( "gwtDevJarPath", gwtDevJarPath.getAbsolutePath() );
 
         try
         {
