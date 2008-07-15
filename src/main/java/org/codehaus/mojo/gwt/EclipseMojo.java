@@ -17,6 +17,7 @@ package org.codehaus.mojo.gwt;
  */
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -29,6 +30,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -121,7 +124,7 @@ public class EclipseMojo
             return;
         }
 
-        Configuration cfg = new Configuration();
+                Configuration cfg = new Configuration();
         cfg.setClassForTemplateLoading( EclipseMojo.class, "" );
 
         Map context = new HashMap();
@@ -131,27 +134,8 @@ public class EclipseMojo
         context.put( "page", module.substring( idx + 1 ) );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", outputDirectory.getAbsolutePath().substring( basedir + 1 ) );
-        context.put( "project", getProject().getArtifactId() );
-        // Retrieve GWT 
-        File gwtDevJarPath = null;
-        URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
-        URL[] urls = cl.getURLs();
-        for ( int i = 0; i < urls.length; i++ )
-        {
-            if ( urls[i].getFile().indexOf( "gwt-dev" ) >= 0 && urls[i].getFile().endsWith( ".jar" ) )
-            {
-                gwtDevJarPath = new File( urls[i].getFile() );
-                break;
-            }
-        }
-        if ( gwtDevJarPath == null )
-        {
-            getLog().error( "Failed to retrieve the path of gwt-dev-XX.jar" );
-        }
-        else
-        {
-            getLog().info( "gwt-dev-XX.jar found at " + gwtDevJarPath.getAbsolutePath() );
-        }
+        context.put( "project", getProjectName() );
+        File gwtDevJarPath = getPlatformDependentGWTDevJar();
         context.put( "gwtDevJarPath", gwtDevJarPath.getAbsolutePath() );
 
         try
@@ -171,5 +155,52 @@ public class EclipseMojo
         {
             throw new MojoExecutionException( "Unable to merge freemarker template", te );
         }
+    }
+
+    /**
+     * Read the Eclipse project name for .project file.
+     * Fall back to artifactId on error
+     */
+    private String getProjectName()
+    {
+        File dotProject = new File( getProject().getBasedir(), ".project" );
+        try
+        {
+            Xpp3Dom dom = Xpp3DomBuilder.build( new FileReader( dotProject ) );
+            return dom.getChild( "name" ).getValue();
+        }
+        catch ( Exception e )
+        {
+            getLog().warn( "Failed to read the .project file" );
+            return getProject().getArtifactId();
+        }
+    }
+
+    /**
+     * @return
+     */
+    private File getPlatformDependentGWTDevJar()
+    {
+        // Retrieve GWT
+        File gwtDevJarPath = null;
+        URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
+        URL[] urls = cl.getURLs();
+        for ( int i = 0; i < urls.length; i++ )
+        {
+            if ( urls[i].getFile().indexOf( "gwt-dev" ) >= 0 && urls[i].getFile().endsWith( ".jar" ) )
+            {
+                gwtDevJarPath = new File( urls[i].getFile() );
+                break;
+            }
+        }
+        if ( gwtDevJarPath == null )
+        {
+            getLog().error( "Failed to retrieve the path of gwt-dev-XX.jar" );
+        }
+        else
+        {
+            getLog().info( "gwt-dev-XX.jar found at " + gwtDevJarPath.getAbsolutePath() );
+        }
+        return gwtDevJarPath;
     }
 }
