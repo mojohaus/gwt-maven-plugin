@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -51,14 +52,6 @@ public class CompileMojo
     private MavenProject project;
 
     /**
-     * Location of the source files.
-     *
-     * @parameter expression="${project.build.sourceDirectory}"
-     * @required
-     */
-    private File sourceDirectory;
-
-    /**
      * Location of the file.
      *
      * @parameter expression="${project.build.directory}/${project.build.finalName}"
@@ -73,12 +66,6 @@ public class CompileMojo
      * @required
      */
     private String module;
-
-    /**
-     * @parameter
-     * @deprecated use 'module' parameter
-     */
-    private String className;
 
     /**
      * The level of logging detail: ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or
@@ -173,12 +160,15 @@ public class CompileMojo
         throws MojoExecutionException
     {
         Collection sources = project.getCompileSourceRoots();
+        Collection resources = project.getResources();
         Collection dependencies = project.getArtifacts();
-        URL[] urls = new URL[originalUrls.length + sources.size() + dependencies.size()];
+        URL[] urls = new URL[originalUrls.length + sources.size() + resources.size() + dependencies.size()];
 
         int i = originalUrls.length;
         getLog().debug( "add compile source roots to GWTCompiler classpath " + sources.size() );
         i = addClasspathElements( sources, urls, i );
+        getLog().debug( "add resources to GWTCompiler classpath " + resources.size() );
+        i = addClasspathElements( resources, urls, i );
         getLog().debug( "add project dependencies to GWTCompiler  classpath " + dependencies.size() );
         addClasspathElements( dependencies, urls, i );
         return urls;
@@ -195,6 +185,10 @@ public class CompileMojo
                 if ( object instanceof Artifact )
                 {
                     urls[startPosition] = ( (Artifact) object ).getFile().toURL();
+                }
+                else if ( object instanceof Resource )
+                {
+                    urls[startPosition] = new File( ( (Resource) object ).getDirectory() ).toURL();
                 }
                 else
                 {
