@@ -168,11 +168,11 @@ public class GenerateAsyncMojo
             }
             if ( method.getReturns().isVoid() )
             {
-                writer.println( "AsyncCallback );" );
+                writer.println( "AsyncCallback callback );" );
             }
             else
             {
-                writer.println( "AsyncCallback<" + method.getReturns().getJavaClass().getName() + "> );" );
+                writer.println( "AsyncCallback<" + method.getReturns().getJavaClass().getName() + "> callback );" );
             }
             writer.println();
         }
