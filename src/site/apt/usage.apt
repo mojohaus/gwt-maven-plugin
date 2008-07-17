@@ -39,6 +39,41 @@ Configuring Google Web Toolkit support for maven
 </project>
 +---+
 
+* Generate Async interface for GWT-RPC services
+
+  The ''generateAsync'' goal will create a generate-sources folder an create Async interface for all
+  RemoteInterface found in the project. To avoid a full scan, only Java source files that matches a
+  pattern (defaults to ''**/*Service.java'') are checked.
+
++---+
+<project>
+  [...]
+  <build>
+    <plugins>
+      [...]
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+              <servicePattern>**/gwt/**/*Service.java</servicePattern>
+            </configuration>
+            <goals>
+              <goal>compile</goal>
+              <goal>generateAsync</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      [...]
+    </plugins>
+  </build>
+  [...]
+</project>
++---+
+
+
 * Setup hosted mode browser
 
   The ''eclipse'' goal can be used to create an eclipse launch configuration for executing the GWT
