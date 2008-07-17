@@ -19,7 +19,6 @@ package org.codehaus.mojo.gwt;
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -33,7 +32,7 @@ import com.thoughtworks.qdox.model.JavaSource;
 
 /**
  * Goal which generate Asyn interface.
- * 
+ *
  * @goal generateAsync
  * @phase generate-sources
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -51,7 +50,7 @@ public class GenerateAsyncMojo
 
     /**
      * Pattern for GWT service interface
-     * 
+     *
      * @parameter default-value="**\/*Service.java"
      */
     private String servicePattern;
@@ -59,15 +58,15 @@ public class GenerateAsyncMojo
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings( "unchecked" )
     public void execute()
         throws MojoExecutionException
     {
         getLog().debug( "GenerateAsyncMojo#execute()" );
 
-        List sourceRoots = getProject().getCompileSourceRoots();
-        for ( Iterator iterator = sourceRoots.iterator(); iterator.hasNext(); )
+        List<String> sourceRoots = getProject().getCompileSourceRoots();
+        for ( String sourceRoot : sourceRoots )
         {
-            String sourceRoot = (String) iterator.next();
             try
             {
                 scanAndGenerateAsync( new File( sourceRoot ) );
@@ -77,7 +76,7 @@ public class GenerateAsyncMojo
                 getLog().error( "Failed to generate Async interface", e );
             }
         }
-        getProject().addCompileSourceRoot( generateDirectory.getAbsolutePath() );
+        addCompileSourceRoot( generateDirectory );
     }
 
     /**
@@ -91,10 +90,9 @@ public class GenerateAsyncMojo
         scanner.setIncludes( new String[] { servicePattern } );
         scanner.scan();
         String[] sources = scanner.getIncludedFiles();
-        for ( int i = 0; i < sources.length; i++ )
+        for ( String source : sources )
         {
-            File source = new File( file, sources[i] );
-            generateAsync( source, sources[i] );
+            generateAsync( new File( file, source ), source );
         }
     }
 
@@ -112,9 +110,9 @@ public class GenerateAsyncMojo
         JavaClass clazz = builder.getClasses()[0];
         JavaClass[] implemented = clazz.getImplementedInterfaces();
         boolean isRemoteService = false;
-        for ( int i = 0; i < implemented.length; i++ )
+        for ( JavaClass implement : implemented )
         {
-            if ( "com.google.gwt.user.client.rpc.RemoteService".equals( implemented[i].getFullyQualifiedName() ) )
+            if ( "com.google.gwt.user.client.rpc.RemoteService".equals( implement.getFullyQualifiedName() ) )
             {
                 isRemoteService = true;
                 break;
@@ -133,9 +131,12 @@ public class GenerateAsyncMojo
         writer.println( "package " + javaSource.getPackage() + ";" );
         writer.println();
         String[] imports = javaSource.getImports();
-        for ( int i = 0; i < imports.length; i++ )
+        for ( String string : imports )
         {
-            writer.println( "import " + imports[i] + ";" );
+            if ( !"com.google.gwt.user.client.rpc.RemoteService".equals( string ) )
+            {
+                writer.println( "import " + string + ";" );
+            }
         }
         writer.println( "import com.google.gwt.user.client.rpc.AsyncCallback;" );
         writer.println();
@@ -143,9 +144,8 @@ public class GenerateAsyncMojo
         writer.println( "{" );
 
         JavaMethod[] methods = clazz.getMethods();
-        for ( int i = 0; i < methods.length; i++ )
+        for ( JavaMethod method : methods )
         {
-            JavaMethod method = methods[i];
             writer.println( "" );
             writer.println( "    /**" );
             writer.println( "     * GWT-RPC service  asynchronous (client-side) interface" );

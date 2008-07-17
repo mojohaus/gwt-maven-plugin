@@ -15,7 +15,7 @@ package org.codehaus.mojo.gwt;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 /**
  * A custom SecurityException to track unexpected call to System.exit()
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -23,6 +23,8 @@ package org.codehaus.mojo.gwt;
 public class SystemExitSecurityException
     extends SecurityException
 {
+    private static final long serialVersionUID = 1L;
+
     /**
      * @param s message
      */

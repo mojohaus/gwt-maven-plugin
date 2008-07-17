@@ -23,7 +23,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,9 +34,9 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * Goal which compiles a GWT file.
- *
+ * 
  * @goal compile
- * @phase compile
+ * @phase process-class
  * @author Shinobu Kawai
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @requiresDependencyResolution compile
@@ -90,7 +89,7 @@ public class CompileMojo
     {
         getLog().debug( "CompileMojo#execute()" );
 
-        final List args = getGwtCompilerArguments();
+        final List<String> args = getGwtCompilerArguments();
         Object compiler = getGwtCompilerInstance();
 
         // Replace ContextClassLoader with the classloader used to build the
@@ -159,9 +158,9 @@ public class CompileMojo
     private URL[] addProjectClasspathElements( URL[] originalUrls )
         throws MojoExecutionException
     {
-        Collection sources = project.getCompileSourceRoots();
-        Collection resources = project.getResources();
-        Collection dependencies = project.getArtifacts();
+        Collection<?> sources = project.getCompileSourceRoots();
+        Collection<?> resources = project.getResources();
+        Collection<?> dependencies = project.getArtifacts();
         URL[] urls = new URL[originalUrls.length + sources.size() + resources.size() + dependencies.size()];
 
         int i = originalUrls.length;
@@ -174,25 +173,24 @@ public class CompileMojo
         return urls;
     }
 
-    private int addClasspathElements( Collection elements, URL[] urls, int startPosition )
+    private int addClasspathElements( Collection<?> elements, URL[] urls, int startPosition )
         throws MojoExecutionException
     {
-        for ( Iterator iterator = elements.iterator(); iterator.hasNext(); )
+        for ( Object object : elements )
         {
-            Object object = (Object) iterator.next();
             try
             {
                 if ( object instanceof Artifact )
                 {
-                    urls[startPosition] = ( (Artifact) object ).getFile().toURL();
+                    urls[startPosition] = ( (Artifact) object ).getFile().toURI().toURL();
                 }
                 else if ( object instanceof Resource )
                 {
-                    urls[startPosition] = new File( ( (Resource) object ).getDirectory() ).toURL();
+                    urls[startPosition] = new File( ( (Resource) object ).getDirectory() ).toURI().toURL();
                 }
                 else
                 {
-                    urls[startPosition] = new File( (String) object ).toURL();
+                    urls[startPosition] = new File( (String) object ).toURI().toURL();
                 }
             }
             catch ( MalformedURLException e )
@@ -291,9 +289,9 @@ public class CompileMojo
     /**
      * @return the GWTCompiler command line arguments
      */
-    protected List getGwtCompilerArguments()
+    protected List<String> getGwtCompilerArguments()
     {
-        List args = new LinkedList();
+        List<String> args = new LinkedList<String>();
         args.add( "-out" );
         args.add( outputDirectory.getAbsolutePath() );
         args.add( "-logLevel" );

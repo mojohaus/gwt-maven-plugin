@@ -15,7 +15,7 @@ package org.codehaus.mojo.gwt;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 import java.io.FileDescriptor;
 import java.net.InetAddress;
 
@@ -173,7 +173,7 @@ class NoSystemExitSecurityManager
     /**
      * {@inheritDoc}
      */
-    public void checkMemberAccess( Class arg0, int arg1 )
+    public void checkMemberAccess( Class<?> arg0, int arg1 )
     {
         if ( parent != null )
         {

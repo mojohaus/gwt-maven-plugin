@@ -13,13 +13,14 @@
     <links>
       <item name="Mojo" href="http://mojo.codehaus.org"/>
       <item name="Maven" href="http://maven.apache.org/"/>
+      <item name="Google Web Toolkit" href="http://code.google.com/webtoolkit/"/>
     </links>
     <menu name="Mojo">
       <item name="Back to Mojo" href="http://mojo.codehaus.org"/>
     </menu>
     <menu name="Overview">
-      <item name="Plugin Goals" href="index.html"/>
-      <item name="Introduction" href="usage.html"/>
+      <item name="Plugin Goals" href="plugin-info.html"/>
+      <item name="Introduction" href="introduction.html"/>
     </menu>
     ${reports}
   </body>

@@ -20,7 +20,6 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
@@ -49,29 +48,28 @@ public abstract class AbstractGwtMojo
     {
         getLog().debug( "GeneratedDtoMojo#getProjectClassLoader()" );
 
-        List compile = project.getCompileClasspathElements();
+        List<?> compile = project.getCompileClasspathElements();
         URL[] urls = new URL[compile.size()];
         int i = 0;
-        for ( Iterator iterator = compile.iterator(); iterator.hasNext(); )
+        for ( Object object : compile )
         {
-            Object object = (Object) iterator.next();
             if ( object instanceof Artifact )
             {
-                urls[i] = ( (Artifact) object ).getFile().toURL();
+                urls[i] = ( (Artifact) object ).getFile().toURI().toURL();
             }
             else
             {
-                urls[i] = new File( (String) object ).toURL();
+                urls[i] = new File( (String) object ).toURI().toURL();
             }
             i++;
         }
         return
-            new URLClassLoader( urls, getClass().getClassLoader().getSystemClassLoader() );
+            new URLClassLoader( urls, ClassLoader.getSystemClassLoader() );
     }
 
-    protected void addCompileSourceRoot( String path )
+    protected void addCompileSourceRoot( File path )
     {
-        project.addCompileSourceRoot( path );
+        project.addCompileSourceRoot( path.getAbsolutePath() );
     }
 
     /**

@@ -9,8 +9,8 @@ Configuring Google Web Toolkit support for maven
 * Translate GWT application to JavaScript
 
   You can use the following configuration in your pom.xml to run the GWT compiler
-  when the project is built.  By default, the plugin is configured
-  to be executed during the ''compile'' phase.
+  when the project is built. By default, the {{{compile-mojo.html}compile}} goal is configured
+  to be executed during the ''process-class'' phase.
 
 +---+
 <project>
@@ -41,7 +41,7 @@ Configuring Google Web Toolkit support for maven
 
 * Generate Async interface for GWT-RPC services
 
-  The ''generateAsync'' goal will create a generate-sources folder an create Async interface for all
+  The {{{generateAsync-mojo.html}generateAsync}} goal will create a generate-sources folder an create Async interface for all
   RemoteInterface found in the project. To avoid a full scan, only Java source files that matches a
   pattern (defaults to ''**/*Service.java'') are checked.
 
@@ -76,7 +76,7 @@ Configuring Google Web Toolkit support for maven
 
 * Setup hosted mode browser
 
-  The ''eclipse'' goal can be used to create an eclipse launch configuration for executing the GWT
+  The {{{eclipse-mojo.html}eclipse}} goal can be used to create an eclipse launch configuration for executing the GWT
   module in hosted browser mode. The required native libraries are also downloaded and installed in
   the user local repository.
 
