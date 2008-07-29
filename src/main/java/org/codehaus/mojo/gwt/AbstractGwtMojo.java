@@ -38,7 +38,14 @@ public abstract class AbstractGwtMojo
      * @parameter expression="${project}"
      * @required
      */
-    private MavenProject project;
+    protected MavenProject project;
+    /**
+     * Location of the file.
+     *
+     * @parameter expression="${project.build.directory}/generated-sources/gwt
+     * @required
+     */
+    protected File generateDirectory;
 
     /**
      * @return the project classloader
@@ -46,7 +53,7 @@ public abstract class AbstractGwtMojo
     protected ClassLoader getProjectClassLoader()
         throws DependencyResolutionRequiredException, MalformedURLException
     {
-        getLog().debug( "GeneratedDtoMojo#getProjectClassLoader()" );
+        getLog().debug( "AbstractMojo#getProjectClassLoader()" );
 
         List<?> compile = project.getCompileClasspathElements();
         URL[] urls = new URL[compile.size()];

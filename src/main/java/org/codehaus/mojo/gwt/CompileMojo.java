@@ -28,9 +28,7 @@ import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
 
 /**
  * Goal which compiles a GWT file.
@@ -42,13 +40,8 @@ import org.apache.maven.project.MavenProject;
  * @requiresDependencyResolution compile
  */
 public class CompileMojo
-    extends AbstractMojo
+    extends AbstractGwtMojo
 {
-    /**
-     * @parameter expression="${project}"
-     * @required
-     */
-    private MavenProject project;
 
     /**
      * Location of the file.
@@ -67,19 +60,25 @@ public class CompileMojo
     private String module;
 
     /**
-     * The level of logging detail: ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or
-     * ALL
-     *
-     * @parameter default-value="WARN"
+     * The level of logging detail: ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL
+     * 
+     * @parameter default-value="WARN" expression="${gwt.logLevel}"
      */
     private String logLevel;
 
     /**
      * Script output style: OBF[USCATED], PRETTY, or DETAILED
-     *
-     * @parameter default-value="OBF"
+     * 
+     * @parameter default-value="OBF" expression="${gwt.style}"
      */
     private String style;
+
+    /**
+     * The directory into which generated files will be written for review
+     * 
+     * @parameter expression="${gwt.gen}"
+     */
+    private File gen;
 
     /**
      * {@inheritDoc}
@@ -161,7 +160,7 @@ public class CompileMojo
         Collection<?> sources = project.getCompileSourceRoots();
         Collection<?> resources = project.getResources();
         Collection<?> dependencies = project.getArtifacts();
-        URL[] urls = new URL[originalUrls.length + sources.size() + resources.size() + dependencies.size()];
+        URL[] urls = new URL[originalUrls.length + sources.size() + resources.size() + dependencies.size() + 1];
 
         int i = originalUrls.length;
         getLog().debug( "add compile source roots to GWTCompiler classpath " + sources.size() );
@@ -169,7 +168,15 @@ public class CompileMojo
         getLog().debug( "add resources to GWTCompiler classpath " + resources.size() );
         i = addClasspathElements( resources, urls, i );
         getLog().debug( "add project dependencies to GWTCompiler  classpath " + dependencies.size() );
-        addClasspathElements( dependencies, urls, i );
+        i = addClasspathElements( dependencies, urls, i );
+        try
+        {
+            urls[i] = generateDirectory.toURI().toURL();
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new MojoExecutionException( "Failed to convert project.build.outputDirectory to URL", e );
+        }
         return urls;
     }
 
@@ -298,6 +305,11 @@ public class CompileMojo
         args.add( logLevel );
         args.add( "-style" );
         args.add( style );
+        if ( gen != null )
+        {
+            args.add( "-gen" );
+            args.add( gen.getAbsolutePath() );
+        }
         args.add( module );
         if ( getLog().isDebugEnabled() )
         {

@@ -41,14 +41,6 @@ public class GenerateAsyncMojo
     extends AbstractGwtMojo
 {
     /**
-     * Location of the file.
-     *
-     * @parameter expression="${project.build.directory}/generated-sources/gwt
-     * @required
-     */
-    private File generateDirectory;
-
-    /**
      * Pattern for GWT service interface
      *
      * @parameter default-value="**\/*Service.java"
@@ -168,7 +160,7 @@ public class GenerateAsyncMojo
             }
             if ( method.getReturns().isVoid() )
             {
-                writer.println( "AsyncCallback callback );" );
+                writer.println( "AsyncCallback<Void> callback );" );
             }
             else
             {
