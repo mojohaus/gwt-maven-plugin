@@ -40,7 +40,7 @@ import org.apache.maven.plugin.MojoExecutionException;
  * @requiresDependencyResolution compile
  */
 public class CompileMojo
-    extends AbstractGwtMojo
+    extends AbstractGwtModuleMojo
 {
 
     /**
@@ -50,14 +50,6 @@ public class CompileMojo
      * @required
      */
     private File outputDirectory;
-
-    /**
-     * The GWT module to compile.
-     *
-     * @parameter
-     * @required
-     */
-    private String module;
 
     /**
      * The level of logging detail: ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL
@@ -88,7 +80,6 @@ public class CompileMojo
     {
         getLog().debug( "CompileMojo#execute()" );
 
-        final List<String> args = getGwtCompilerArguments();
         Object compiler = getGwtCompilerInstance();
 
         // Replace ContextClassLoader with the classloader used to build the
@@ -99,6 +90,29 @@ public class CompileMojo
         // Replace the SecurityManager to intercept System.exit()
         SecurityManager sm = System.getSecurityManager();
         System.setSecurityManager( new NoSystemExitSecurityManager( sm ) );
+        try
+        {
+            for ( String module : getModules() )
+            {
+                compile( module, compiler );
+            }
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader( cl );
+            System.setSecurityManager( sm );
+        }
+    }
+
+    /**
+     * @param args
+     * @param compiler
+     * @throws MojoExecutionException
+     */
+    private void compile( final String module, Object compiler )
+        throws MojoExecutionException
+    {
+        final List<String> args = getGwtCompilerArguments( module );
         try
         {
             getLog().debug( "invoke GWTCompiler#main(String[])" );
@@ -119,11 +133,6 @@ public class CompileMojo
         catch ( Exception e )
         {
             throw new MojoExecutionException( "GWTCompiler#main(String[]) failed.", e );
-        }
-        finally
-        {
-            Thread.currentThread().setContextClassLoader( cl );
-            System.setSecurityManager( sm );
         }
     }
 
@@ -296,7 +305,7 @@ public class CompileMojo
     /**
      * @return the GWTCompiler command line arguments
      */
-    protected List<String> getGwtCompilerArguments()
+    protected List<String> getGwtCompilerArguments( String module )
     {
         List<String> args = new LinkedList<String>();
         args.add( "-out" );

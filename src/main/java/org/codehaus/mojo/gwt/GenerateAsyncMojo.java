@@ -48,6 +48,13 @@ public class GenerateAsyncMojo
     private String servicePattern;
 
     /**
+     * Stop the build on error
+     * 
+     * @parameter default-value="false" expression="${maven.gwt.failOnError}"
+     */
+    private boolean failOnError;
+
+    /**
      * {@inheritDoc}
      */
     @SuppressWarnings( "unchecked" )
@@ -63,9 +70,13 @@ public class GenerateAsyncMojo
             {
                 scanAndGenerateAsync( new File( sourceRoot ) );
             }
-            catch ( Exception e )
+            catch ( Throwable e )
             {
                 getLog().error( "Failed to generate Async interface", e );
+                if ( failOnError )
+                {
+                    throw new MojoExecutionException( "Failed to generate Async interface", e );
+                }
             }
         }
         addCompileSourceRoot( generateDirectory );

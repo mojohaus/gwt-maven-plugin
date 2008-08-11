@@ -27,7 +27,7 @@ public class TestMojo
     /**
      * Set this to 'true' to skip running tests, but still compile them. Its use is NOT RECOMMENDED, but quite
      * convenient on occasion.
-     *
+     * 
      * @parameter expression="${skipTests}"
      */
     private boolean skipTests;
@@ -35,7 +35,7 @@ public class TestMojo
     /**
      * DEPRECATED This old parameter is just like skipTests, but bound to the old property maven.test.skip.exec. Use
      * -DskipTests instead; it's shorter.
-     *
+     * 
      * @deprecated
      * @parameter expression="${maven.test.skip.exec}"
      */
@@ -45,7 +45,7 @@ public class TestMojo
      * Set this to 'true' to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable it using
      * the "maven.test.skip" property, because maven.test.skip disables both running the tests and compiling the tests.
      * Consider using the skipTests parameter instead.
-     *
+     * 
      * @parameter expression="${maven.test.skip}"
      */
     private boolean skip;
@@ -72,7 +72,7 @@ public class TestMojo
 
     /**
      * {@inheritDoc}
-     *
+     * 
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     @SuppressWarnings( "unchecked" )
@@ -127,7 +127,7 @@ public class TestMojo
         {
             forkToRunTest( classpath, jvm, test );
         }
-        
+
         // TODO create a surefire-like report (code reuse ?)
 
         if ( failures > 0 )
@@ -136,7 +136,6 @@ public class TestMojo
         }
 
     }
-
 
     private int failures;
 

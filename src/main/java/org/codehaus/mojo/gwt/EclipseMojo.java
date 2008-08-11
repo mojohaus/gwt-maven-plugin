@@ -45,15 +45,8 @@ import freemarker.template.TemplateException;
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class EclipseMojo
-    extends AbstractGwtMojo
+    extends AbstractGwtModuleMojo
 {
-    /**
-     * The GWT module to setup.
-     *
-     * @parameter
-     * @required
-     */
-    private String module;
 
     /**
      * Location of the file.
@@ -82,7 +75,10 @@ public class EclipseMojo
     {
         unpackNativeLibraries();
 
-        createLaunchConfigurationForHostedModeBrowser();
+        for ( String module : getModules() )
+        {
+            createLaunchConfigurationForHostedModeBrowser( module );
+        }
     }
 
     private void unpackNativeLibraries()
@@ -114,7 +110,7 @@ public class EclipseMojo
         }
     }
 
-    private void createLaunchConfigurationForHostedModeBrowser()
+    private void createLaunchConfigurationForHostedModeBrowser( String module )
         throws MojoExecutionException
     {
 

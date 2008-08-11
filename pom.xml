@@ -14,7 +14,7 @@
   <url>http://mojo.codehaus.org/gwt-maven-plugin</url>
   <description>Maven plugin for Google Web Toolkit</description>
   <properties>
-    <gwt.version>1.5-RC1</gwt.version>
+    <gwt.version>1.5.1</gwt.version>
   </properties>
   <dependencies>
     <dependency>
@@ -70,9 +70,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>org.apache.maven.surefire</groupId>
-    	<artifactId>surefire-booter</artifactId>
-    	<version>2.4.3</version>
+      <groupId>org.apache.maven.surefire</groupId>
+      <artifactId>surefire-booter</artifactId>
+      <version>2.4.3</version>
     </dependency>
   </dependencies>
   <profiles>
