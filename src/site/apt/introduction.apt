@@ -115,9 +115,12 @@ Configuring Google Web Toolkit support for maven
 
   The {{{test-mojo.html}test}} goal can be used to run GWTTestCase during the intergation-test
   phase. It will fork a process with the required arguments to run the test, and will report
-  on the console the result. To avoid conflicts with unit tests, we recommand to follow the
-  naming convention to prefix your GWT tests with ''GWTTest'' and to use an exclusion
-  patterns in surefire plugin configuration :
+  on the console the result. It will also create the standard surefire-reports to be used
+  by project site reporting.
+
+  To avoid conflicts with unit tests, we recommand to follow the naming convention to prefix
+  your GWT tests with ''GWTTest'' and to use an exclusion patterns in surefire plugin
+  configuration :
 
 +---+
 <project>
