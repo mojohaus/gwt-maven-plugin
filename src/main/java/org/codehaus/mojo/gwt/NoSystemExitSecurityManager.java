@@ -1,26 +1,32 @@
 package org.codehaus.mojo.gwt;
 
 /*
- * Copyright 2006- org.codehaus.
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
+
 
 import java.io.FileDescriptor;
 import java.net.InetAddress;
 
 /**
- * A custom SecurityManager that delegates to it's parent BUT checkExit.
+ * A custom SecurityManager that delegates to it's parent BUT checkExit. Required to run the GWTCompile that calls
+ * System.exit() when compilation is done, and would halt the maven build.
+ * 
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 class NoSystemExitSecurityManager
@@ -173,7 +179,7 @@ class NoSystemExitSecurityManager
     /**
      * {@inheritDoc}
      */
-    public void checkMemberAccess( Class<?> arg0, int arg1 )
+    public void checkMemberAccess( Class < ? > arg0, int arg1 )
     {
         if ( parent != null )
         {
@@ -184,6 +190,7 @@ class NoSystemExitSecurityManager
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings( "deprecation" )
     public void checkMulticast( InetAddress maddr, byte ttl )
     {
         if ( parent != null )

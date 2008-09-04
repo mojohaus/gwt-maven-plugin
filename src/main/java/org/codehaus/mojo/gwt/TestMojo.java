@@ -1,5 +1,24 @@
 package org.codehaus.mojo.gwt;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -19,7 +38,7 @@ import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Mimic surefire to run GWTTestCases during integration-test phase, until SUREFIRE-508 is fixed
- * 
+ *
  * @goal test
  * @phase integration-test
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -32,7 +51,7 @@ public class TestMojo
     /**
      * Set this to 'true' to skip running tests, but still compile them. Its use is NOT RECOMMENDED, but quite
      * convenient on occasion.
-     * 
+     *
      * @parameter expression="${skipTests}"
      */
     private boolean skipTests;
@@ -40,7 +59,7 @@ public class TestMojo
     /**
      * DEPRECATED This old parameter is just like skipTests, but bound to the old property maven.test.skip.exec. Use
      * -DskipTests instead; it's shorter.
-     * 
+     *
      * @deprecated
      * @parameter expression="${maven.test.skip.exec}"
      */
@@ -50,7 +69,7 @@ public class TestMojo
      * Set this to 'true' to bypass unit tests entirely. Its use is NOT RECOMMENDED, especially if you enable it using
      * the "maven.test.skip" property, because maven.test.skip disables both running the tests and compiling the tests.
      * Consider using the skipTests parameter instead.
-     * 
+     *
      * @parameter expression="${maven.test.skip}"
      */
     private boolean skip;
@@ -82,7 +101,7 @@ public class TestMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     @SuppressWarnings( "unchecked" )
@@ -97,7 +116,7 @@ public class TestMojo
         List<String> classpath;
         try
         {
-            classpath = new ArrayList<String>( getProject().getTestClasspathElements() );;
+            classpath = new ArrayList<String>( getProject().getTestClasspathElements() );
         }
         catch ( DependencyResolutionRequiredException e )
         {
@@ -124,6 +143,7 @@ public class TestMojo
     /**
      * @return
      */
+    @SuppressWarnings( "unchecked" )
     private List<String> findTests()
     {
         List<String> tests = new ArrayList<String>();
@@ -194,10 +214,10 @@ public class TestMojo
     }
 
     /**
-     * @param clazz TODO
-     * @return
+     * @param clazz class to check for classpath resolution
+     * @return The classpath element this class was loaded from
      */
-    private String getClassPathElementFor( Class clazz )
+    private String getClassPathElementFor( Class < ? > clazz )
     {
         String classFile = clazz.getName().replace( '.', '/' ) + ".class";
         ClassLoader cl = Thread.currentThread().getContextClassLoader();

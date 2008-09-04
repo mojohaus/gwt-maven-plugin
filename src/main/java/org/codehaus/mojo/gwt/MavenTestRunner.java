@@ -1,5 +1,24 @@
 package org.codehaus.mojo.gwt;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +41,7 @@ import org.apache.maven.surefire.report.XMLReporter;
 
 /**
  * Mostly a copy/paste of surefire TestListenerInvocationHandler
- *
+ * 
  * @author ndeloof
  */
 public class MavenTestRunner
@@ -52,7 +71,7 @@ public class MavenTestRunner
 
     /**
      * {@inheritDoc}
-     *
+     * 
      * @see junit.textui.TestRunner#createTestResult()
      */
     @Override
@@ -65,7 +84,7 @@ public class MavenTestRunner
 
     /**
      * {@inheritDoc}
-     *
+     * 
      * @see junit.textui.TestRunner#doRun(junit.framework.Test, boolean)
      */
     @Override
@@ -135,8 +154,9 @@ public class MavenTestRunner
      */
     public void addError( Test test, Throwable t )
     {
+        String desc = test.toString();
         ReportEntry report =
-            new ReportEntry( test.getClass().getName(), test.toString(), test.toString(), getStackTraceWriter( test, t ) );
+            new ReportEntry( test.getClass().getName(), desc, desc, getStackTraceWriter( test, t ) );
 
         reportManager.testError( report );
         testHadFailed = true;
@@ -147,8 +167,9 @@ public class MavenTestRunner
      */
     public void addFailure( Test test, AssertionFailedError t )
     {
+        String desc = test.toString();
         ReportEntry report =
-            new ReportEntry( test.getClass().getName(), test.toString(), test.toString(), getStackTraceWriter( test, t ) );
+            new ReportEntry( test.getClass().getName(), desc, desc, getStackTraceWriter( test, t ) );
 
         reportManager.testFailed( report );
         testHadFailed = true;

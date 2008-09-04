@@ -1,0 +1,14 @@
+ ---
+ Maven 2 GWT Plugin F.A.Q.
+ ---
+ ---
+
+Do I need GWT SDK on my computer to use the plugin ?
+
+  No. The plugin uses maven dependency management to get the required librairies and native components depending on
+  your operating system
+
+How to use another version of GWT to compile my project ?
+
+  Use a <dependencies> element in your plugin configuration to override the plugin dependency on
+  ''com.google.gwt:gwt-user'' and ''com.google.gwt:gwt-dev''. Please note this only works with maven 2.0.9 and later.

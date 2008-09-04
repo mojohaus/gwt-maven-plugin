@@ -1,42 +1,89 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+  <!--
+    ~ Licensed to the Apache Software Foundation (ASF) under one ~ or more contributor license agreements. See the
+    NOTICE file ~ distributed with this work for additional information ~ regarding copyright ownership. The ASF
+    licenses this file ~ to you under the Apache License, Version 2.0 (the ~ "License"); you may not use this file
+    except in compliance ~ with the License. You may obtain a copy of the License at ~ ~
+    http://www.apache.org/licenses/LICENSE-2.0 ~ ~ Unless required by applicable law or agreed to in writing, ~ software
+    distributed under the License is distributed on an ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY ~ KIND,
+    either express or implied. See the License for the ~ specific language governing permissions and limitations ~ under
+    the License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.codehaus.mojo</groupId>
-    <artifactId>mojo-sandbox</artifactId>
-    <version>4</version>
+    <artifactId>mojo</artifactId>
+    <version>17</version>
   </parent>
-  <groupId>org.codehaus.mojo</groupId>
   <artifactId>gwt-maven-plugin</artifactId>
-  <packaging>maven-plugin</packaging>
   <version>1.0-SNAPSHOT</version>
+  <packaging>maven-plugin</packaging>
   <name>Maven GWT Plugin</name>
-  <url>http://mojo.codehaus.org/gwt-maven-plugin</url>
   <description>Maven plugin for Google Web Toolkit</description>
+  <url>http://mojo.codehaus.org/gwt-maven-plugin</url>
+  <inceptionYear>2007</inceptionYear>
+  <licenses>
+    <license>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <name>Apache 2.0</name>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>ndeloof</id>
+      <name>Nicolas De Loof</name>
+      <email>nicolas@apache.org</email>
+    </developer>
+  </developers>
+  <prerequisites>
+    <maven>2.0.9</maven>
+  </prerequisites>
+  <scm>
+    <connection>scm:svn:http://svn.codehaus.org/mojo/trunk/mojo-sandbox/gwt-maven-plugin</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo-sandbox/gwt-maven-plugin</developerConnection>
+    <url>http://fisheye.codehaus.org/browse/mojo/trunk/mojo-sandbox/gwt-maven-plugin</url>
+  </scm>
+  <issueManagement>
+    <system>jira</system>
+    <url>http://jira.codehaus.org/browse/MOJO</url>
+  </issueManagement>
   <properties>
-    <gwt.version>1.5.1</gwt.version>
+    <gwt.version>1.5.2</gwt.version>
   </properties>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-project</artifactId>
-      <version>2.0.8</version>
+      <version>2.0.9</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-model</artifactId>
+      <version>2.0.9</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact</artifactId>
+      <version>2.0.9</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
-      <version>2.0.8</version>
+      <version>2.0.9</version>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-utils</artifactId>
+      <version>1.4.6</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
       <!-- User can override this version by setting a <dependencies> block in <plugin> -->
       <version>${gwt.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.3</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>qdox</groupId>
@@ -74,6 +121,24 @@
       <artifactId>surefire-booter</artifactId>
       <version>2.4.3</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.surefire</groupId>
+      <artifactId>surefire-api</artifactId>
+      <version>2.4.3</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
+      <version>${gwt.version}</version>
+      <classifier>${gwt.variant}</classifier>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
+      <version>${gwt.version}</version>
+      <classifier>${gwt.variant}-libs</classifier>
+      <type>zip</type>
+    </dependency>
   </dependencies>
   <profiles>
     <profile>
@@ -83,21 +148,9 @@
           <family>mac</family>
         </os>
       </activation>
-      <dependencies>
-        <dependency>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-dev</artifactId>
-          <version>${gwt.version}</version>
-          <classifier>mac</classifier>
-        </dependency>
-        <dependency>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-dev</artifactId>
-          <version>${gwt.version}</version>
-          <classifier>mac-libs</classifier>
-          <type>zip</type>
-        </dependency>
-      </dependencies>
+      <properties>
+        <gwt.variant>mac</gwt.variant>
+      </properties>
     </profile>
     <profile>
       <id>linux</id>
@@ -106,22 +159,9 @@
           <family>unix</family>
         </os>
       </activation>
-      <dependencies>
-        <dependency>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-dev</artifactId>
-          <version>${gwt.version}</version>
-          <classifier>linux</classifier>
-        </dependency>
-        <dependency>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-dev</artifactId>
-          <version>${gwt.version}</version>
-          <classifier>linux-libs</classifier>
-          <type>zip</type>
-        </dependency>
-
-      </dependencies>
+      <properties>
+        <gwt.variant>linux</gwt.variant>
+      </properties>
     </profile>
     <profile>
       <id>windows</id>
@@ -130,22 +170,9 @@
           <family>windows</family>
         </os>
       </activation>
-      <dependencies>
-        <dependency>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-dev</artifactId>
-          <version>${gwt.version}</version>
-          <classifier>windows</classifier>
-        </dependency>
-        <dependency>
-          <groupId>com.google.gwt</groupId>
-          <artifactId>gwt-dev</artifactId>
-          <version>${gwt.version}</version>
-          <classifier>windows-libs</classifier>
-          <type>zip</type>
-        </dependency>
-
-      </dependencies>
+      <properties>
+        <gwt.variant>windows</gwt.variant>
+      </properties>
     </profile>
   </profiles>
 
@@ -168,6 +195,15 @@
         <version>2.3</version>
         <configuration>
           <targetJdk>1.5</targetJdk>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <enableRulesSummary>false</enableRulesSummary>
+          <configLocation>http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven_checks.xml</configLocation>
+          <headerLocation>http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven-header.txt</headerLocation>
         </configuration>
       </plugin>
     </plugins>

@@ -1,170 +1,27 @@
  ------
-GWT Maven Plugin Usage
+GWT Maven Plugin Introduction
  ------
  ------
  ------
 
-Configuring Google Web Toolkit support for maven
+Introduction
 
-* Translate GWT application to JavaScript
+  This maven plugin is dedicated to the Google Web Toolkit integration in maven.
 
-  You can use the following configuration in your pom.xml to run the GWT compiler
-  when the project is built. By default, the {{{compile-mojo.html}compile}} goal is configured
-  to be executed during the ''process-class'' phase.
+  It's primary goal is to run the GWT SDK tools from maven, and also to mimic the GWT
+  integration with Eclipse IDE.
 
-+---+
-<project>
-  [...]
-  <build>
-    <plugins>
-      [...]
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <configuration>
-              <module>com.mycompany.gwt.Module</module>
-            </configuration>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      [...]
-    </plugins>
-  </build>
-  [...]
-</project>
-+---+
+  It's secondary goal is to use maven dependency management to avoid installation of
+  the GWT SDK on the developper platform. Importing a GWT-based application as maven
+  project then requires no setup on the developer computer.
 
-* Generate Async interface for GWT-RPC services
+  GWT Maven Plugin supports :
 
-  The {{{generateAsync-mojo.html}generateAsync}} goal will create a generate-sources folder an create Async interface for all
-  RemoteInterface found in the project. To avoid a full scan, only Java source files that matches a
-  pattern (defaults to ''**/*Service.java'') are checked.
+  * setting Eclipse for development with GWT,
 
-+---+
-<project>
-  [...]
-  <build>
-    <plugins>
-      [...]
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <configuration>
-              <servicePattern>**/gwt/**/*Service.java</servicePattern>
-            </configuration>
-            <goals>
-              <goal>compile</goal>
-              <goal>generateAsync</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      [...]
-    </plugins>
-  </build>
-  [...]
-</project>
-+---+
+  * GWT compiler execution,
 
+  * running tests based on GWTTestCase framework
 
-* Setup hosted mode browser
+  * code generation for GWT-RPC Async interface from synchronous server-side interfaces.
 
-  The {{{eclipse-mojo.html}eclipse}} goal can be used to create an eclipse launch configuration for executing the GWT
-  module in hosted browser mode. The required native libraries are also downloaded and installed in
-  the user local repository.
-
-+---+
-<project>
-  [...]
-  <build>
-    <plugins>
-      [...]
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <configuration>
-              <module>com.mycompany.gwt.Module</module>
-            </configuration>
-            <goals>
-              <goal>eclipse</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      [...]
-    </plugins>
-  </build>
-  [...]
-</project>
-+---+
-
-* Run GWTTestCase inside maven
-
-  GWTTestCase requires some complex setup that makes them difficult to run in maven with the
-  surefire plugin. Such tests also are long and start the whole GWT module, so they are not
-  ''unit'' but ''integration'' tests.
-
-  The {{{test-mojo.html}test}} goal can be used to run GWTTestCase during the intergation-test
-  phase. It will fork a process with the required arguments to run the test, and will report
-  on the console the result. It will also create the standard surefire-reports to be used
-  by project site reporting.
-
-
-+---+
-<project>
-  [...]
-  <build>
-    <plugins>
-      [...]
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>test</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      [...]
-    </plugins>
-  </build>
-  [...]
-</project>
-+---+
-
-  This plugin declaration could be part of a profile, so that it gets only enabled on
-  continuous integration server, as such test execution is long and will penalize the developper.
-
-  To avoid conflicts with unit tests, we recommand to follow the naming convention to prefix
-  your GWT tests with ''GWTTest'' and to use an exclusion patterns in surefire plugin
-  configuration :
-
-+---+
-<project>
-  [...]
-  <build>
-    <plugins>
-      [...]
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>**/*GwtTest.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      [...]
-  </build>
-</project>
-+---+
