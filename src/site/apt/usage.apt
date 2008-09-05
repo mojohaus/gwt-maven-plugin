@@ -39,6 +39,9 @@ Configuring Google Web Toolkit support for maven
 </project>
 +---+
 
+  You can also configure compilation for multiple modules by nesting them inside a ''<modules>'' element. If none is
+  set, the plugin will scan project source and resources directories for ''.gwt.xml'' module files.
+
 * Generate Async interface for GWT-RPC services
 
   The {{{generateAsync-mojo.html}generateAsync}} goal will create a generate-sources folder an create Async interface for all

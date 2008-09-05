@@ -48,8 +48,8 @@ public abstract class AbstractGwtModuleMojo
     private String module; // NOPMD
 
     /**
-     * The project GWT modules.
-     *
+     * The project GWT modules. If not set, the plugin will scan the project for <code>.gwt.xml</code> files.
+     * 
      * @parameter
      */
     private String[] modules;
