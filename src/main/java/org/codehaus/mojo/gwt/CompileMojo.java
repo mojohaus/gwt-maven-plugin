@@ -181,7 +181,7 @@ public class CompileMojo
         Collection < ? > sources = project.getCompileSourceRoots();
         Collection < ? > resources = project.getResources();
         Collection < ? > dependencies = project.getArtifacts();
-        URL[] urls = new URL[originalUrls.length + sources.size() + resources.size() + dependencies.size() + 1];
+        URL[] urls = new URL[originalUrls.length + sources.size() + resources.size() + dependencies.size() + 2];
 
         int i = originalUrls.length;
         getLog().debug( "add compile source roots to GWTCompiler classpath " + sources.size() );
@@ -192,7 +192,8 @@ public class CompileMojo
         i = addClasspathElements( dependencies, urls, i );
         try
         {
-            urls[i] = generateDirectory.toURI().toURL();
+            urls[i++] = generateDirectory.toURL();
+            urls[i] = new File( project.getBuild().getOutputDirectory() ).toURL();
         }
         catch ( MalformedURLException e )
         {
