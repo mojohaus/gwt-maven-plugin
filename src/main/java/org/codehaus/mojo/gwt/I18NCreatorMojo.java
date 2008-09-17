@@ -36,14 +36,15 @@ public class I18NCreatorMojo
     private String resourceBundle;
 
     /**
-     * If ture, create scripts for a ConstantsWithLookup interface rather than a Constants one
+     * If true, create scripts for a ConstantsWithLookup interface rather than a Constants one
      * 
      * @parameter expression="gwt.createConstantsWithLookup"
      */
     private boolean constantsWithLookup;
 
     /**
-     * If ture, create scripts for a Messages interface rather than a Constants one
+     * If true, create scripts for a Messages interface rather than a Constants one
+     * 
      * @parameter default-value="true" expression="gwt.createMessages"
      */
     private boolean messages;

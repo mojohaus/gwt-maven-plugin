@@ -47,7 +47,7 @@ public abstract class AbstractGwtMojo
     protected MavenProject project;
 
     /**
-     * Location of the file.
+     * Folder where generated-source will be created (automatically added to compile classpath).
      * 
      * @parameter expression="${project.build.directory}/generated-sources/gwt
      * @required
@@ -103,11 +103,11 @@ public abstract class AbstractGwtMojo
         throws MojoExecutionException
     {
         URLClassLoader myClassLoader = (URLClassLoader) getClass().getClassLoader();
-    
+
         URL[] originalUrls = myClassLoader.getURLs();
         URL[] urls = addProjectClasspathElements( originalUrls );
         System.arraycopy( originalUrls, 0, urls, 0, originalUrls.length );
-    
+
         if ( getLog().isDebugEnabled() )
         {
             for ( int i = 0; i < urls.length; i++ )
@@ -115,7 +115,7 @@ public abstract class AbstractGwtMojo
                 getLog().debug( "  URL:" + urls[i] );
             }
         }
-    
+
         return new URLClassLoader( urls, myClassLoader.getParent() );
     }
 
@@ -133,7 +133,7 @@ public abstract class AbstractGwtMojo
         Collection < ? > resources = project.getResources();
         Collection < ? > dependencies = project.getArtifacts();
         URL[] urls = new URL[originalUrls.length + sources.size() + resources.size() + dependencies.size() + 2];
-    
+
         int i = originalUrls.length;
         getLog().debug( "add compile source roots to GWTCompiler classpath " + sources.size() );
         i = addClasspathElements( sources, urls, i );
