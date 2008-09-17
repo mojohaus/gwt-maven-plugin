@@ -44,7 +44,7 @@ Configuring Google Web Toolkit support for maven
 
 * Generate Async interface for GWT-RPC services
 
-  The {{{generateAsync-mojo.html}generateAsync}} goal will create a generate-sources folder an create Async interface for all
+  The {{{generateAsync-mojo.html}generateAsync}} goal will create a generate-sources folder and Async interface for all
   RemoteInterface found in the project. To avoid a full scan, only Java source files that matches a
   pattern (defaults to ''**/*Service.java'') are checked.
 
@@ -65,6 +65,40 @@ Configuring Google Web Toolkit support for maven
             <goals>
               <goal>compile</goal>
               <goal>generateAsync</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      [...]
+    </plugins>
+  </build>
+  [...]
+</project>
++---+
+
+* Generate Message / Consants interface for GWT internationalization
+
+  The {{{i18n-mojo.html}i18n}} goal will create a generate-sources folder and Message (or Constants) interface for the
+  ResourceBundles specified in configuration. You can specify the "constantsWithLookup" or "message" parameters to
+  choose the interface hierarchy (Message or Constants) to use, "Message" beeing used by default.
+
++---+
+<project>
+  [...]
+  <build>
+    <plugins>
+      [...]
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+              <resourceBundle>com.mycompany.MyApp</resourceBundle>
+            </configuration>
+            <goals>
+              <goal>i18n</goal>
+              <message>true</message>
             </goals>
           </execution>
         </executions>

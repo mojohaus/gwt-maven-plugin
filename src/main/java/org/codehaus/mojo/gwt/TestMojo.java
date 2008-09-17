@@ -113,18 +113,17 @@ public class TestMojo
             return;
         }
 
-        List<String> classpath;
+        List<String> classpath = new ArrayList<String>();
+        classpath.addAll( getProject().getCompileSourceRoots() );
+        classpath.addAll( getProject().getTestCompileSourceRoots() );
         try
         {
-            classpath = new ArrayList<String>( getProject().getTestClasspathElements() );
+            classpath.addAll( getProject().getTestClasspathElements() );
         }
         catch ( DependencyResolutionRequiredException e )
         {
             throw new MojoExecutionException( "Failed to resolve dependencies", e );
         }
-
-        classpath.addAll( getProject().getCompileSourceRoots() );
-        classpath.addAll( getProject().getTestCompileSourceRoots() );
 
         String jvm = System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + "java";
         getLog().debug( "Using JVM: " + jvm );

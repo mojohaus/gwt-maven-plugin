@@ -19,7 +19,6 @@ package org.codehaus.mojo.gwt;
  * under the License.
  */
 
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.PrintWriter;
@@ -52,6 +51,14 @@ public class GenerateAsyncMojo
     private String servicePattern;
 
     /**
+     * Extension for GWT-RPC. May be set to "rpc" if you want to map GWT-RPC calls to "*.rpc" in web.xml, for example
+     * when using Spring dispatch servlet to handle RPC requests.
+     * 
+     * @parameter default-value="" expression="${gwt.rpcExtension}"
+     */
+    private String rpcExtension;
+
+    /**
      * Stop the build on error
      * 
      * @parameter default-value="false" expression="${maven.gwt.failOnError}"
@@ -67,7 +74,7 @@ public class GenerateAsyncMojo
     {
         getLog().debug( "GenerateAsyncMojo#execute()" );
 
-        List < String > sourceRoots = getProject().getCompileSourceRoots();
+        List<String> sourceRoots = getProject().getCompileSourceRoots();
         for ( String sourceRoot : sourceRoots )
         {
             try
@@ -145,9 +152,13 @@ public class GenerateAsyncMojo
                 writer.println( "import " + string + ";" );
             }
         }
+        writer.println( "import com.google.gwt.core.client.GWT;" );
         writer.println( "import com.google.gwt.user.client.rpc.AsyncCallback;" );
+        writer.println( "import com.google.gwt.user.client.rpc.ServiceDefTarget;" );
+
         writer.println();
-        writer.println( "public interface " + clazz.getName() + "Async" );
+        String className = clazz.getName();
+        writer.println( "public interface " + className + "Async" );
         writer.println( "{" );
 
         JavaMethod[] methods = clazz.getMethods();
@@ -185,6 +196,31 @@ public class GenerateAsyncMojo
         }
 
         writer.println();
+
+        writer.println( "    /**" );
+        writer.println( "     * Utility class to get the RPC Async interface from client-side code" );
+        writer.println( "     */" );
+        writer.println( "    public static class Util " );
+        writer.println( "    { " );
+        writer.println( "        private static " + className + "Async instance;" );
+        writer.println();
+        writer.println( "        public static " + className + "Async getInstance()" );
+        writer.println( "        {" );
+        writer.println( "            if ( instance == null )" );
+        writer.println( "            {" );
+        writer.println( "                instance = (" + className + "Async) GWT.create( " + className + ".class );" );
+        writer.println( "                ServiceDefTarget target = (ServiceDefTarget) instance;" );
+        writer.print( "                target.setServiceEntryPoint( GWT.getModuleBaseURL() + \"" + className + "\"" );
+        if ( rpcExtension != null && rpcExtension.length() > 0 )
+        {
+            writer.print( " + " + rpcExtension );
+        }
+        writer.println( " );" );
+        writer.println( "            }" );
+        writer.println( "            return instance;" );
+        writer.println( "        }" );
+        writer.println( "    }" );
+
         writer.println( "}" );
         writer.close();
     }

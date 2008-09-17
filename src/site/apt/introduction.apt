@@ -25,3 +25,5 @@ Introduction
 
   * code generation for GWT-RPC Async interface from synchronous server-side interfaces.
 
+  * code generation for GWT internalionalization ("i18n")
+
