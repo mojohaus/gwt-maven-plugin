@@ -60,7 +60,7 @@ public class EclipseMojo
     private File outputDirectory;
 
     /**
-     * Additional parameters to append to the module URL. For example, gwt-log users will set "?log_level=DEBUG"
+     * Additional parameters to append to the module URL. For example, gwt-log users will set "log_level=DEBUG"
      * 
      * @parameter
      */
@@ -138,7 +138,12 @@ public class EclipseMojo
         context.put( "generated", generateDirectory.getAbsolutePath() );
         context.put( "module", module );
         int idx = module.lastIndexOf( '.' );
-        context.put( "page", module.substring( idx + 1 ) + additionalPageParameters );
+        String page = module.substring( idx + 1 ) + ".html";
+        if ( additionalPageParameters != null )
+        {
+            page += "?" + additionalPageParameters;
+        }
+        context.put( "page", page );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", outputDirectory.getAbsolutePath().substring( basedir + 1 ) );
         context.put( "project", getProjectName() );
