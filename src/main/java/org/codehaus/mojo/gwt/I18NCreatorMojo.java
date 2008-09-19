@@ -78,6 +78,7 @@ public class I18NCreatorMojo
         {
             // We need to fork a process as I18NSync uses the system classloader to load the resourceBundle,
             // so we have no option to reconfigure the classloader (as CompileMojo does)
+            // @see http://code.google.com/p/google-web-toolkit/issues/detail?id=2894
 
             Commandline cli = new Commandline();
             cli.setExecutable( jvm );
