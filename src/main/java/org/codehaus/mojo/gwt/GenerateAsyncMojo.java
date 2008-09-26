@@ -75,11 +75,12 @@ public class GenerateAsyncMojo
         getLog().debug( "GenerateAsyncMojo#execute()" );
 
         List<String> sourceRoots = getProject().getCompileSourceRoots();
+        boolean generated = false;
         for ( String sourceRoot : sourceRoots )
         {
             try
             {
-                scanAndGenerateAsync( new File( sourceRoot ) );
+                generated |= scanAndGenerateAsync( new File( sourceRoot ) );
             }
             catch ( Throwable e )
             {
@@ -90,13 +91,16 @@ public class GenerateAsyncMojo
                 }
             }
         }
-        addCompileSourceRoot( generateDirectory );
+        if ( generated )
+        {
+            addCompileSourceRoot( generateDirectory );
+        }
     }
 
     /**
      * @param file
      */
-    private void scanAndGenerateAsync( File file )
+    private boolean scanAndGenerateAsync( File file )
         throws Exception
     {
         DirectoryScanner scanner = new DirectoryScanner();
@@ -104,10 +108,15 @@ public class GenerateAsyncMojo
         scanner.setIncludes( new String[] { servicePattern } );
         scanner.scan();
         String[] sources = scanner.getIncludedFiles();
+        if ( sources.length == 0 )
+        {
+            return false;
+        }
         for ( String source : sources )
         {
             generateAsync( new File( file, source ), source );
         }
+        return true;
     }
 
     /**

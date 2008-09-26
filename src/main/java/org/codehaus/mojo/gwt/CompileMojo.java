@@ -34,7 +34,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 /**
  * Goal which compiles a GWT file.
- * 
+ *
  * @goal compile
  * @phase compile
  * @author Shinobu Kawai
@@ -47,7 +47,7 @@ public class CompileMojo
 
     /**
      * Location of the file.
-     * 
+     *
      * @parameter expression="${project.build.directory}/${project.build.finalName}"
      * @required
      */
@@ -55,21 +55,21 @@ public class CompileMojo
 
     /**
      * The level of logging detail: ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL
-     * 
+     *
      * @parameter default-value="WARN" expression="${gwt.logLevel}"
      */
     private String logLevel;
 
     /**
      * Script output style: OBF[USCATED], PRETTY, or DETAILED
-     * 
+     *
      * @parameter default-value="OBF" expression="${gwt.style}"
      */
     private String style;
 
     /**
      * The directory into which generated files will be written for review
-     * 
+     *
      * @parameter expression="${gwt.gen}"
      */
     private File gen;
@@ -126,7 +126,15 @@ public class CompileMojo
         {
             if ( e.getTargetException() instanceof SystemExitSecurityException )
             {
-                getLog().debug( "System.exit has been intercepted --> ignored" );
+                SystemExitSecurityException sse = (SystemExitSecurityException) e.getTargetException();
+                if (sse.getStatus() == 0)
+                {
+                    getLog().debug( "System.exit(0) has been intercepted --> ignored" );
+                }
+                else
+                {
+                    throw new MojoExecutionException( "GWTCompiler failed" );
+                }
             }
             else
             {
@@ -142,7 +150,7 @@ public class CompileMojo
     /**
      * TODO : Due to PLX-220, we must convert the classpath URLs to escaped URI form. cf.
      * http://jira.codehaus.org/browse/PLX-220
-     * 
+     *
      * @return an alternate ClassLoader including plugin dependencies and project source foler
      * @throws MojoExecutionException failed to configure ClassLoader
      */
@@ -184,7 +192,7 @@ public class CompileMojo
 
     /**
      * Retrieve a GWTCompiler instance and configure the Thread contextClassLoader
-     * 
+     *
      * @return a GWTCompiler instante
      * @throws MojoExecutionException failed to retrieve an instante
      */

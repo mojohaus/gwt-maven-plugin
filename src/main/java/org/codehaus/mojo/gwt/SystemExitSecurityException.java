@@ -29,12 +29,23 @@ public class SystemExitSecurityException
 {
     private static final long serialVersionUID = 1L;
 
+    private int status;
+
     /**
      * @param s message
      */
-    public SystemExitSecurityException( String s )
+    public SystemExitSecurityException( String s, int status )
     {
         super( s );
+        this.status = status;
+    }
+
+    /**
+     * @return the status
+     */
+    public int getStatus()
+    {
+        return status;
     }
 
 }

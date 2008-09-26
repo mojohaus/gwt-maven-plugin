@@ -19,7 +19,6 @@ package org.codehaus.mojo.gwt;
  * under the License.
  */
 
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -54,30 +53,32 @@ public class EclipseMojo
 
     /**
      * Location of the file.
-     * 
+     *
      * @parameter default-value="${project.build.directory}/${project.build.finalName}"
      */
     private File outputDirectory;
 
     /**
      * Additional parameters to append to the module URL. For example, gwt-log users will set "log_level=DEBUG"
-     * 
+     *
      * @parameter
      */
     private String additionalPageParameters;
 
     /**
      * To look up Archiver/UnArchiver implementations
-     * 
+     *
      * @parameter expression="${component.org.codehaus.plexus.archiver.manager.ArchiverManager}"
      * @required
      * @readonly
      */
     protected ArchiverManager archiverManager;
 
+    private File gwtDevJarPath;
+
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     public void execute()
@@ -91,7 +92,7 @@ public class EclipseMojo
         }
     }
 
-    private void unpackNativeLibraries()
+    protected void unpackNativeLibraries()
         throws MojoFailureException
     {
         // How to access the plugin MavenProject -> getCompileClasspathElements()
@@ -133,9 +134,9 @@ public class EclipseMojo
         Configuration cfg = new Configuration();
         cfg.setClassForTemplateLoading( EclipseMojo.class, "" );
 
-        Map < String, String > context = new HashMap < String, String >();
+        Map<String, Object> context = new HashMap<String, Object>();
         context.put( "src", getProject().getBuild().getSourceDirectory() );
-        context.put( "generated", generateDirectory.getAbsolutePath() );
+        context.put( "generated", generateDirectory );
         context.put( "module", module );
         int idx = module.lastIndexOf( '.' );
         String page = module.substring( idx + 1 ) + ".html";
@@ -172,7 +173,7 @@ public class EclipseMojo
     /**
      * Read the Eclipse project name for .project file. Fall back to artifactId on error
      */
-    private String getProjectName()
+    protected String getProjectName()
     {
         File dotProject = new File( getProject().getBasedir(), ".project" );
         try
@@ -190,27 +191,28 @@ public class EclipseMojo
     /**
      * @return
      */
-    private File getPlatformDependentGWTDevJar()
+    protected File getPlatformDependentGWTDevJar()
     {
-        // Retrieve GWT
-        File gwtDevJarPath = null;
-        URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
-        URL[] urls = cl.getURLs();
-        for ( int i = 0; i < urls.length; i++ )
-        {
-            if ( urls[i].getFile().indexOf( "gwt-dev" ) >= 0 && urls[i].getFile().endsWith( ".jar" ) )
-            {
-                gwtDevJarPath = new File( urls[i].getFile() );
-                break;
-            }
-        }
         if ( gwtDevJarPath == null )
         {
-            getLog().error( "Failed to retrieve the path of gwt-dev-XX.jar" );
-        }
-        else
-        {
-            getLog().info( "gwt-dev-XX.jar found at " + gwtDevJarPath.getAbsolutePath() );
+            URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
+            URL[] urls = cl.getURLs();
+            for ( int i = 0; i < urls.length; i++ )
+            {
+                if ( urls[i].getFile().indexOf( "gwt-dev" ) >= 0 && urls[i].getFile().endsWith( ".jar" ) )
+                {
+                    gwtDevJarPath = new File( urls[i].getFile() );
+                    break;
+                }
+            }
+            if ( gwtDevJarPath == null )
+            {
+                getLog().error( "Failed to retrieve the path of gwt-dev-XX.jar" );
+            }
+            else
+            {
+                getLog().info( "gwt-dev-XX.jar found at " + gwtDevJarPath.getAbsolutePath() );
+            }
         }
         return gwtDevJarPath;
     }

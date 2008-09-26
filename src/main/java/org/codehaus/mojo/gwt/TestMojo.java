@@ -33,7 +33,6 @@ import org.apache.maven.surefire.booter.shade.org.codehaus.plexus.util.cli.Comma
 import org.apache.maven.surefire.booter.shade.org.codehaus.plexus.util.cli.Commandline;
 import org.apache.maven.surefire.booter.shade.org.codehaus.plexus.util.cli.StreamConsumer;
 import org.apache.maven.surefire.report.ReporterManager;
-import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -113,7 +112,7 @@ public class TestMojo
             return;
         }
 
-        List<String> classpath = new ArrayList<String>();
+        final List<String> classpath = new ArrayList<String>();
         classpath.addAll( getProject().getCompileSourceRoots() );
         classpath.addAll( getProject().getTestCompileSourceRoots() );
         try
@@ -125,48 +124,22 @@ public class TestMojo
             throw new MojoExecutionException( "Failed to resolve dependencies", e );
         }
 
-        String jvm = System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + "java";
+        final String jvm = System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + "java";
         getLog().debug( "Using JVM: " + jvm );
 
-        for ( String test : findTests() )
+        new TestTemplate( getProject(), includes, excludes, new TestTemplate.CallBack()
         {
-            forkToRunTest( classpath, jvm, test );
-        }
+            public void doWithTest( File sourceDir, String test )
+            throws MojoExecutionException
+            {
+                forkToRunTest( classpath, jvm, test );
+            }
+        } );
 
         if ( failures > 0 )
         {
             throw new MojoExecutionException( "There was test failures." );
         }
-    }
-
-    /**
-     * @return
-     */
-    @SuppressWarnings( "unchecked" )
-    private List<String> findTests()
-    {
-        List<String> tests = new ArrayList<String>();
-        for ( String root : (List<String>) getProject().getTestCompileSourceRoots() )
-        {
-            if ( !new File( root ).exists() )
-            {
-                continue;
-            }
-            DirectoryScanner scanner = new DirectoryScanner();
-            scanner.setBasedir( new File( root ) );
-            scanner.setIncludes( includes.split( "," ) );
-            if ( excludes != null && !"".equals( excludes ) )
-            {
-                scanner.setExcludes( excludes.split( "," ) );
-            }
-            scanner.scan();
-            String[] files = scanner.getIncludedFiles();
-            for ( String file : files )
-            {
-                tests.add( file );
-            }
-        }
-        return tests;
     }
 
     private int failures;
@@ -216,7 +189,7 @@ public class TestMojo
      * @param clazz class to check for classpath resolution
      * @return The classpath element this class was loaded from
      */
-    private String getClassPathElementFor( Class < ? > clazz )
+    private String getClassPathElementFor( Class<?> clazz )
     {
         String classFile = clazz.getName().replace( '.', '/' ) + ".class";
         ClassLoader cl = Thread.currentThread().getContextClassLoader();

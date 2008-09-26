@@ -52,7 +52,7 @@ class NoSystemExitSecurityManager
      */
     public void checkExit( int status )
     {
-        throw new SystemExitSecurityException( "Intercepted System.exit" );
+        throw new SystemExitSecurityException( "Intercepted System.exit", status );
     }
 
     /**
