@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -37,7 +38,7 @@ import freemarker.template.TemplateException;
  * Goal which install GWT artifacts in local repository.
  * 
  * @goal eclipseTest
- * @phase validate
+ * @phase process-test-sources
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class EclipseTestMojo
@@ -98,9 +99,9 @@ public class EclipseTestMojo
         cfg.setClassForTemplateLoading( EclipseTestMojo.class, "" );
 
         Map<String, Object> context = new HashMap<String, Object>();
-        context.put( "src", getProject().getBuild().getSourceDirectory() );
+        List<String> sources = getProject().getCompileSourceRoots();
+        context.put( "sources", sources );
         context.put( "testSrc", testSrc.getAbsolutePath() );
-        context.put( "generated", generateDirectory );
         context.put( "test", fqcn );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", testOutputDirectory.getAbsolutePath().substring( basedir + 1 ) );

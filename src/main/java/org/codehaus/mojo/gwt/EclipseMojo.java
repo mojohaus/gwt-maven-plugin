@@ -27,6 +27,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -135,8 +136,8 @@ public class EclipseMojo
         cfg.setClassForTemplateLoading( EclipseMojo.class, "" );
 
         Map<String, Object> context = new HashMap<String, Object>();
-        context.put( "src", getProject().getBuild().getSourceDirectory() );
-        context.put( "generated", generateDirectory );
+        List<String> sources = getProject().getCompileSourceRoots();
+        context.put( "sources", sources );
         context.put( "module", module );
         int idx = module.lastIndexOf( '.' );
         String page = module.substring( idx + 1 ) + ".html";
