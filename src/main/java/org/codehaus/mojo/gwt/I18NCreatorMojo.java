@@ -86,7 +86,8 @@ public class I18NCreatorMojo
             cli.createArg( false ).setLine( StringUtils.join( classpath.iterator(), File.pathSeparator ) );
             cli.createArg( false ).setLine( "com.google.gwt.i18n.tools.I18NSync" );
             cli.createArg( false ).setLine( "-out" );
-            generateDirectory.mkdirs();
+            File bundle = new File( generateDirectory, resourceBundle.replace( '.', File.separatorChar ) );
+            bundle.getParentFile().mkdirs();
             cli.createArg( false ).setLine( generateDirectory.getAbsolutePath() );
             if ( constantsWithLookup )
             {

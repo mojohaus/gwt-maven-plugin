@@ -17,9 +17,11 @@ Introduction
 
   GWT Maven Plugin supports :
 
-  * setting Eclipse for development with GWT,
-
   * GWT compiler execution,
+
+  * creating Eclipse launch configuration to start the project module(s) in GWT hosted mode,
+
+  * creating Eclipse launch configuration to run GWTTestCase-based unit tests in eclipse,
 
   * running tests based on GWTTestCase framework
 

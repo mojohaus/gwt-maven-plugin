@@ -93,13 +93,13 @@ Configuring Google Web Toolkit support for maven
         <artifactId>gwt-maven-plugin</artifactId>
         <executions>
           <execution>
-            <configuration>
-              <resourceBundle>com.mycompany.MyApp</resourceBundle>
-            </configuration>
             <goals>
               <goal>i18n</goal>
-              <message>true</message>
             </goals>
+            <configuration>
+              <resourceBundle>com.mycompany.MyApp</resourceBundle>
+              <message>true</message>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -133,6 +133,39 @@ Configuring Google Web Toolkit support for maven
             </configuration>
             <goals>
               <goal>eclipse</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      [...]
+    </plugins>
+  </build>
+  [...]
+</project>
++---+
+
+* Setup GWTTestCase to run in Eclipse
+
+  The {{{eclipseTest-mojo.html}eclipseTest}} goal can be used to create an eclipse launch configuration for executing
+  the GWTTestCase-based unit tests. The required native libraries are also downloaded and installed in
+  the user local repository.
+
+  To avoid conflicts with unit tests, we recommand to follow the naming convention to prefix
+  your GWT tests with ''GWTTest''
+
++---+
+<project>
+  [...]
+  <build>
+    <plugins>
+      [...]
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>eclipseTest</goal>
             </goals>
           </execution>
         </executions>
