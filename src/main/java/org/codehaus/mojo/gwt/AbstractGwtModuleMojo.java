@@ -29,7 +29,7 @@ import org.apache.maven.model.Resource;
 import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
- * @author ndeloof
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public abstract class AbstractGwtModuleMojo
     extends AbstractGwtMojo
