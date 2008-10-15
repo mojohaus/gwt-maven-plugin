@@ -99,9 +99,9 @@ public class EclipseTestMojo
         cfg.setClassForTemplateLoading( EclipseTestMojo.class, "" );
 
         Map<String, Object> context = new HashMap<String, Object>();
-        List<String> sources = getProject().getCompileSourceRoots();
+        List<String> sources = getProjectSourceDirectories();
+        sources.add( 0, testSrc.getAbsolutePath() );
         context.put( "sources", sources );
-        context.put( "testSrc", testSrc.getAbsolutePath() );
         context.put( "test", fqcn );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", testOutputDirectory.getAbsolutePath().substring( basedir + 1 ) );

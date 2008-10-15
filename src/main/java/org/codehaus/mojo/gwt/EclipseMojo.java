@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,7 +137,7 @@ public class EclipseMojo
         cfg.setClassForTemplateLoading( EclipseMojo.class, "" );
 
         Map<String, Object> context = new HashMap<String, Object>();
-        List<String> sources = getProject().getCompileSourceRoots();
+        List<String> sources = getProjectSourceDirectories();
         context.put( "sources", sources );
         context.put( "module", module );
         int idx = module.lastIndexOf( '.' );
@@ -169,6 +170,22 @@ public class EclipseMojo
         {
             throw new MojoExecutionException( "Unable to merge freemarker template", te );
         }
+    }
+
+    /**
+     * getProject().getCompileSourceRoots(); is not adequate as we run in validate phase
+     * 
+     * @return project source directories
+     */
+    protected List<String> getProjectSourceDirectories()
+    {
+        List<String> sources = new ArrayList<String>();
+        sources.add( getProject().getBuild().getSourceDirectory() );
+        if ( generateDirectory.exists() )
+        {
+            sources.add( generateDirectory.getAbsolutePath() );
+        }
+        return sources;
     }
 
     /**
