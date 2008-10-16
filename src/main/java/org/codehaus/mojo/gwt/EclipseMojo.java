@@ -35,6 +35,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
@@ -78,6 +79,12 @@ public class EclipseMojo
 
     private File gwtDevJarPath;
 
+    public void setAdditionalPageParameters( String parameters )
+    {
+        // escape the '&' char used for multiple parameters as the result must be XML compliant
+        this.additionalPageParameters = StringUtils.replace( parameters, "&", "&amp;" );
+    }
+    
     /**
      * {@inheritDoc}
      *
