@@ -18,7 +18,7 @@ import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Execute the i18nCreator tool
- * 
+ *
  * @goal i18n
  * @phase generate-sources
  * @see http://code.google.com/webtoolkit/documentation/com.google.gwt.doc.DeveloperGuide.Fundamentals.html#i18nCreator
@@ -28,12 +28,26 @@ public class I18NCreatorMojo
     extends AbstractGwtMojo
 {
     /**
-     * The messages ResourceBundle used to generate the GWT i18n inteface
+     * The messages ResourceBundles used to generate the GWT i18n inteface
+     *
+     * @parameter
+     */
+    private String[] resourceBundles;
+
+    /**
+     * Shortcut for a single resourceBundle
      * 
      * @parameter
-     * @required
      */
+    @SuppressWarnings( "unused" )
     private String resourceBundle;
+
+    // Maven Hack : resourceBundle attribute is used to declare the parameter, but plexus will use
+    // the setter to inject value.
+    public void setResourceBundle( String resourceBundle )
+    {
+        this.resourceBundles = new String[] { resourceBundle };
+    }
 
     /**
      * If true, create scripts for a ConstantsWithLookup interface rather than a Constants one
@@ -44,20 +58,32 @@ public class I18NCreatorMojo
 
     /**
      * If true, create scripts for a Messages interface rather than a Constants one
-     * 
+     *
      * @parameter default-value="true" expression="gwt.createMessages"
      */
     private boolean messages;
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
-        getLog().info( "Running I18NSync to generate message bundles from " + resourceBundle );
+        for ( String bundle : resourceBundles )
+        {
+            runI18NSync( bundle );
+        }
+    }
+
+    /**
+     * @throws MojoExecutionException
+     */
+    private void runI18NSync( String bundle )
+        throws MojoExecutionException
+    {
+        getLog().info( "Running I18NSync to generate message bundles from " + bundle );
 
         String jvm = System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + "java";
         List<String> classpath = new ArrayList<String>();
@@ -86,8 +112,8 @@ public class I18NCreatorMojo
             cli.createArg( false ).setLine( StringUtils.join( classpath.iterator(), File.pathSeparator ) );
             cli.createArg( false ).setLine( "com.google.gwt.i18n.tools.I18NSync" );
             cli.createArg( false ).setLine( "-out" );
-            File bundle = new File( generateDirectory, resourceBundle.replace( '.', File.separatorChar ) );
-            bundle.getParentFile().mkdirs();
+            File file = new File( generateDirectory, bundle.replace( '.', File.separatorChar ) );
+            file.getParentFile().mkdirs();
             cli.createArg( false ).setLine( generateDirectory.getAbsolutePath() );
             if ( constantsWithLookup )
             {
@@ -97,7 +123,7 @@ public class I18NCreatorMojo
             {
                 cli.createArg( false ).setLine( "-createMessages" );
             }
-            cli.createArg( false ).setLine( resourceBundle );
+            cli.createArg( false ).setLine( bundle );
 
             getLog().debug( "execute : " + cli.toString() );
             StreamConsumer systemOut = new ForkingStreamConsumer( new StandardOutputConsumer() );
