@@ -79,9 +79,7 @@ Compile GWT module(s)
 +---+  
 
   Where LOGLEVEL can be ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL
-  
-  The compiler will output the generated javascript in the project output folder. For a WAR project, this matches
-  the exploded web application root. You can override this behaviour by setting the ''outputDirectory'' parameter.
+
   
   The compiler style is set to its default value (OBFUSCATED) to generate compact javascript. You can override this
   for debugging purpose of the generated javascript by running with command line option :
@@ -89,5 +87,12 @@ Compile GWT module(s)
 +---+  
   -Dgwt.style=[PRETTY|DETAILED]
 +---+    
+  
+  The compiler will output the generated javascript in the project output folder (${project.build.directory}/${project.build.finalName}). 
+  For a WAR project, this matches the exploded web application root. You can override this behaviour by setting the ''outputDirectory''
+  parameter. For example, you may want to configure output to ${basedir}/src/main/webapp if you have configured your servlet container
+  to use the {{{http://maven.apache.org/plugins/maven-war-plugin/inplace-mojo.html}}"inplace"} mode of the war plugin.
+
+  
   
   
