@@ -12,3 +12,8 @@ How to use another version of GWT to compile my project ?
 
   Use a <dependencies> element in your plugin configuration to override the plugin dependency on
   ''com.google.gwt:gwt-user'' and ''com.google.gwt:gwt-dev''. Please note this only works with maven 2.0.9 and later.
+  
+How does this plugin compare to other maven / gwt plugins ?
+
+  This plugin, beeing part of the Mojo Project, can benefict for a large community of maven developpers. It's async interface
+  generation feature is AFAIK not supported by other plugins.

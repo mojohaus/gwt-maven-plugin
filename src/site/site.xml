@@ -18,11 +18,18 @@
     <menu name="Mojo">
       <item name="Back to Mojo" href="http://mojo.codehaus.org"/>
     </menu>
-    <menu name="Overview">
+	<menu name="Overview">
       <item name="Introduction" href="introduction.html"/>
       <item name="Goals" href="plugin-info.html"/>
       <item name="Usage" href="usage.html"/>
       <item name="FAQ" href="faq.html"/>
+    </menu>
+    <menu name="Examples">
+      <item name="compile a GWT module" href="examples/compile.html"/>
+      <item name="generate async interfaces" href="examples/asyn.html"/>
+      <item name="generate i18n bundles interfaces" href="examples/i18n.html"/>
+      <item name="configure eclipse" href="examples/eclipse.html"/>
+      <item name="run GWT intergration Tests" href="examples/test.html"/>
     </menu>
     ${reports}
   </body>
