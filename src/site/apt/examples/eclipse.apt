@@ -33,6 +33,13 @@ Configure Eclipse IDE
 </project>
 +---+  
 
+  If you want to create a lanch configuration for a single module, use the command line option :
+  
++---+  
+  -Dgwt.module=[Module]
++---+  
+
+  
   You can also request the plugin to generate lanch configuration for your GWTTestCase-based integration 
   tests.
   
@@ -58,3 +65,10 @@ Configure Eclipse IDE
   [...]
 </project>
 +---+ 
+
+  If you want to create a lanch configuration for a single test, or a subset of your GWT Tests, 
+  use the command line option to override the includes/ecludes patterns :
+  
++---+  
+  -Dgwt.tests.includes=**/*MyGwtTest.java -Dgwt.tests.excludes=**/*Skip*
++---+  

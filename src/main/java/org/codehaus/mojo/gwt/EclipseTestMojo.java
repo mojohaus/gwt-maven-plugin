@@ -53,12 +53,12 @@ public class EclipseTestMojo
     private File testOutputDirectory;
 
     /**
-     * @parameter default-value="**\/*GwtTest.java"
+     * @parameter default-value="**\/*GwtTest.java" expression="${gwt.tests.includes}"
      */
     private String includes;
 
     /**
-     * @parameter
+     * @parameter expression="${gwt.tests.excludes}"
      */
     private String excludes;
 

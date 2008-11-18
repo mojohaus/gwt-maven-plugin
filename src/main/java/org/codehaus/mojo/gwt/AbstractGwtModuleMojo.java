@@ -43,7 +43,7 @@ public abstract class AbstractGwtModuleMojo
     /**
      * A single GWT module (Shortcut for modules)
      * 
-     * @parameter
+     * @parameter expression="${gwt.module}"
      */
     private String module; // NOPMD
 
