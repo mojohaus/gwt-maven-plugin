@@ -53,11 +53,13 @@ public class EclipseTestMojo
     private File testOutputDirectory;
 
     /**
+     * Comma separated list of ant-style inclusion patterns for GWT integration tests   
      * @parameter default-value="**\/*GwtTest.java" expression="${gwt.tests.includes}"
      */
     private String includes;
 
     /**
+     * Comma separated list of ant-style exclusion patterns for GWT integration tests   
      * @parameter expression="${gwt.tests.excludes}"
      */
     private String excludes;

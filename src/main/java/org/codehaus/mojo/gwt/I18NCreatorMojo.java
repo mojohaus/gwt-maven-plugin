@@ -53,6 +53,7 @@ public class I18NCreatorMojo
     private String[] resourceBundles;
 
     /**
+     * Timeout for i18nCreator execution in a dedicated JVM
      * @parameter default-value="10000"
      */
     private int timeOut;

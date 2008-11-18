@@ -40,6 +40,7 @@ public abstract class AbstractGwtMojo
     extends AbstractMojo
 {
     /**
+     * The maven project descriptor
      * @parameter expression="${project}"
      * @required
      */
