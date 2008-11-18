@@ -180,7 +180,8 @@ public class EclipseMojo
     }
 
     /**
-     * getProject().getCompileSourceRoots(); is not adequate as we run in validate phase
+     * getProject().getCompileSourceRoots(); is not adequate as we can't assume the mojo is
+     * running as part of a phase-based build (user may execute 'mvn gwt:eclipse').
      * 
      * @return project source directories
      */

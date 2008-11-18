@@ -49,7 +49,7 @@
     <url>http://jira.codehaus.org/browse/MGWT</url>
   </issueManagement>
   <properties>
-    <gwt.version>1.5.2</gwt.version>
+    <gwt.version>1.5.3</gwt.version>
   </properties>
   <dependencies>
     <dependency>

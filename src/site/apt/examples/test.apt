@@ -5,9 +5,10 @@ Run GWTTestCase integration tests
  ------
 
 
-  GWT-maven-plugin can execute integration tests that use the GWTTestCase framework. Such tests
-  require a complex setup (with a headless hosted mode browser) that is not recommended for
-  unit testing. The test Mojo can be used to execute such tests during the integration-test phase.
+  GWT-maven-plugin can execute integration tests that use the 
+  {{{http://code.google.com/docreader/#p=google-web-toolkit-doc-1-5&t=DevGuideJUnitIntegration}GWTTestCase framework}}. 
+  Such tests require a complex setup (that run a headless hosted mode browser) that is not recommended for
+  unit testing. The {{{../test-mojo.html}test}} Mojo can be used to execute such tests during the integration-test phase.
   
 +---+
 <project>
@@ -34,7 +35,7 @@ Run GWTTestCase integration tests
 +---+  
 
   To distinct such tests from unit tests, we recommend to use the following naming conventions :
-  GWT integration tests are follow the pattern ''*GwtTest.java''. You can the easily configure the
+  GWT integration tests are follow the pattern <<<**/*GwtTest.java>>>. You can the easily configure the
   surefire plugin to exclude them from the test phase :
   
 +---+
@@ -48,13 +49,13 @@ Run GWTTestCase integration tests
       </plugin>
 +---+  
   
-  If you have your own naming convention, the ''test'' Mojo has standard includes/excludes parameter you can set.
+  If you have your own naming convention, the {{{../test-mojo.html}test}} Mojo has standard includes/excludes parameter you can set.
   
   A standard surefire report will be generated for each test execution so that you can use the standard maven reporting
   plugins to build the project documentation site or integration with a CI server.
   
-  Running GWTTestCase require to fork a new JVM, so the main build has to wait tests to complete. The ''timeOut'' parameter
+  Running GWTTestCase require to fork a new JVM, so the main build has to wait tests to complete. The <<<timeOut>>> parameter
   can be used if your testcase require very long processing.
   
-  The test Mojo also support the (not recommended but usefull) ''-Dmaven.test.skip=true'' option if you want to skip tests,
-  and the shortcut ''-DskipTests=true''.
+  The test Mojo also support the (not recommended but usefull) <<<-Dmaven.test.skip=true>>> option if you want to skip tests,
+  and the shortcut <<<-DskipTests=true>>>.

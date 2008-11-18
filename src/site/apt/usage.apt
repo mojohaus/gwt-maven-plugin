@@ -41,12 +41,16 @@ Configuring Google Web Toolkit support for maven
 
   You can also configure compilation for multiple modules by nesting them inside a ''<modules>'' element. If none is
   set, the plugin will scan project source and resources directories for ''.gwt.xml'' module files.
+  
+  See {{{examples/compile.html}examples}} for more details.
 
 * Generate Async interface for GWT-RPC services
 
   The {{{generateAsync-mojo.html}generateAsync}} goal will create a generate-sources folder and Async interface for all
   RemoteInterface found in the project. To avoid a full scan, only Java source files that matches a
   pattern (defaults to ''**/*Service.java'') are checked.
+  
+  See {{{examples/asyn.html}examples}} for more details.  
 
 +---+
 <project>
@@ -81,6 +85,8 @@ Configuring Google Web Toolkit support for maven
   The {{{i18n-mojo.html}i18n}} goal will create a generate-sources folder and Message (or Constants) interface for the
   ResourceBundles specified in configuration. You can specify the "constantsWithLookup" or "message" parameters to
   choose the interface hierarchy (Message or Constants) to use, "Message" beeing used by default.
+  
+  See {{{examples/i18n.html}examples}} for more details.
 
 +---+
 <project>
@@ -116,7 +122,9 @@ Configuring Google Web Toolkit support for maven
   The {{{eclipse-mojo.html}eclipse}} goal can be used to create an eclipse launch configuration for executing the GWT
   module in hosted browser mode. The required native libraries are also downloaded and installed in
   the user local repository.
-
+  
+  See {{{examples/eclipse.html}examples}} for more details.
+  
 +---+
 <project>
   [...]
@@ -152,7 +160,7 @@ Configuring Google Web Toolkit support for maven
 
   To avoid conflicts with unit tests, we recommand to follow the naming convention to prefix
   your GWT tests with ''GWTTest''
-
+  
 +---+
 <project>
   [...]
@@ -188,6 +196,7 @@ Configuring Google Web Toolkit support for maven
   on the console the result. It will also create the standard surefire-reports to be used
   by project site reporting.
 
+  See {{{examples/test.html}examples}} for more details.
 
 +---+
 <project>

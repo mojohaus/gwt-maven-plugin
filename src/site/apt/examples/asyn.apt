@@ -20,12 +20,16 @@ Generate asynchronous interfaces for GWT-RPC services
   class to retrieve the RPC proxy from client-side code :
 
 +---+
-  public interface HelloWorldServiceAsync
-  {
-      String helloWorld( String message, AsyncCallBack<String> callback );
+public interface HelloWorldServiceAsync
+{
+    String helloWorld( String message, AsyncCallBack<String> callback );
 	  
-	  
-  }
+	public static class Util 
+    { 
+        public static ContactPrefereServiceAsync getInstance()
+        ...
+    }
+}
 +---+
 
   To enable this feature, simply include the generateAsync goal in your POM.xml :
@@ -55,11 +59,11 @@ Generate asynchronous interfaces for GWT-RPC services
 +---+  
   
   To avoid full scan of project sources, the plugin uses a naming convention for RPC services. By default, it only
-  checks ''*Service.java'' source files. You can override this convention using the ''servicePattern'' parameter.
+  checks <<<**/*Service.java>>> source files. You can override this convention using the <<<servicePattern>>> parameter.
   
-  The ''rpcExtension'' is used to configure the URL pattern used on the server to publish the GWT-RPC services. It will
+  The <<<rpcExtension>>> is used to configure the URL pattern used on the server to publish the GWT-RPC services. It will
   be used by the generator to create helper code (see later).
   
-  The ''failOnError'' parameter can also be helpfull is you have issue with the generator.
+  The <<<failOnError>>> parameter can also be helpfull is you have issue with the generator.
   
   

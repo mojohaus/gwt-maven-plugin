@@ -35,8 +35,8 @@ Compile GWT module(s)
 </project>
 +---+
 
-  You can also configure compilation for multiple modules by nesting them inside a ''<modules>'' element. If none is
-  set, the plugin will scan project source and resources directories for ''.gwt.xml'' module files.
+  You can also configure compilation for multiple modules by nesting them inside a <<<\<modules\>>>> element. If none is
+  set, the plugin will scan project source and resources directories for <<<.gwt.xml>>> module files.
 
 +---+
 <project>
@@ -81,17 +81,17 @@ Compile GWT module(s)
   Where LOGLEVEL can be ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL
 
   
-  The compiler style is set to its default value (OBFUSCATED) to generate compact javascript. You can override this
+  The compiler style is set to its default value (<<<OBFUSCATED>>>) to generate compact javascript. You can override this
   for debugging purpose of the generated javascript by running with command line option :
   
 +---+  
   -Dgwt.style=[PRETTY|DETAILED]
 +---+    
   
-  The compiler will output the generated javascript in the project output folder (${project.build.directory}/${project.build.finalName}). 
+  The compiler will output the generated javascript in the project output folder (<<<${project.build.directory}/${project.build.finalName}>>>). 
   For a WAR project, this matches the exploded web application root. You can override this behaviour by setting the ''outputDirectory''
-  parameter. For example, you may want to configure output to ${basedir}/src/main/webapp if you have configured your servlet container
-  to use the {{{http://maven.apache.org/plugins/maven-war-plugin/inplace-mojo.html}}"inplace"} mode of the war plugin.
+  parameter. For example, you may want to configure output to <<<${basedir}/src/main/webapp>>> if you have configured your servlet container
+  to use the {{{http://maven.apache.org/plugins/maven-war-plugin/inplace-mojo.html}"inplace"}} mode of the war plugin.
 
   
   
