@@ -83,6 +83,12 @@ public class EclipseTestMojo
         } );
     }
 
+    /**
+     * Create an eclipse launch configuration file for the specified test
+     * @param test the GWTTestCase
+     * @param testSrc the source directory where the test lives
+     * @throws MojoExecutionException some error occured
+     */
     private void createLaunchConfigurationForGwtTestCase( File testSrc, String test )
         throws MojoExecutionException
     {
@@ -98,8 +104,8 @@ public class EclipseTestMojo
         Configuration cfg = new Configuration();
         cfg.setClassForTemplateLoading( EclipseTestMojo.class, "" );
 
-        Map<String, Object> context = new HashMap<String, Object>();
-        List<String> sources = getProjectSourceDirectories();
+        Map < String, Object > context = new HashMap < String, Object > ();
+        List < String > sources = getProjectSourceDirectories();
         sources.add( 0, testSrc.getAbsolutePath() );
         context.put( "sources", sources );
         context.put( "test", fqcn );

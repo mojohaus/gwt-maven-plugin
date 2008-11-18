@@ -27,12 +27,15 @@ package org.codehaus.mojo.gwt;
 public class SystemExitSecurityException
     extends SecurityException
 {
+    /** ID for serialisable */
     private static final long serialVersionUID = 1L;
 
+    /** command returned status */
     private int status;
 
     /**
      * @param s message
+     * @param status returned value
      */
     public SystemExitSecurityException( String s, int status )
     {

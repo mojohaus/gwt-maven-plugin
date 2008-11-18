@@ -36,7 +36,7 @@ class NoSystemExitSecurityManager
     protected SecurityManager parent;
 
     /**
-     * {@inheritDoc}
+     * @param parent parent in SecurityManager hierachy
      */
     public NoSystemExitSecurityManager( SecurityManager parent )
     {

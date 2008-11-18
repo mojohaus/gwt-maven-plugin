@@ -77,8 +77,12 @@ public class EclipseMojo
      */
     protected ArchiverManager archiverManager;
 
+    /** path to the gwt-dev JAR */
     private File gwtDevJarPath;
 
+    /** 
+     * @param parameters additional parameter for module URL
+     */      
     public void setAdditionalPageParameters( String parameters )
     {
         // escape the '&' char used for multiple parameters as the result must be XML compliant
@@ -101,6 +105,10 @@ public class EclipseMojo
         }
     }
 
+    /**
+     * unpack the GWT runtime native dependencies in the local repository
+     * @throws MojoFailureException some error occured
+     */
     protected void unpackNativeLibraries()
         throws MojoFailureException
     {
@@ -130,6 +138,11 @@ public class EclipseMojo
         }
     }
 
+    /** 
+     * create an Eclipse launch configuration file to Eclipse to run the module in hosted browser
+     * @param module the GWT module
+     * @throws MojoExecutionException some error occured
+     */
     private void createLaunchConfigurationForHostedModeBrowser( String module )
         throws MojoExecutionException
     {
@@ -143,8 +156,8 @@ public class EclipseMojo
         Configuration cfg = new Configuration();
         cfg.setClassForTemplateLoading( EclipseMojo.class, "" );
 
-        Map<String, Object> context = new HashMap<String, Object>();
-        List<String> sources = getProjectSourceDirectories();
+        Map < String, Object > context = new HashMap < String, Object > ();
+        List < String > sources = getProjectSourceDirectories();
         context.put( "sources", sources );
         context.put( "module", module );
         int idx = module.lastIndexOf( '.' );
@@ -157,8 +170,8 @@ public class EclipseMojo
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", outputDirectory.getAbsolutePath().substring( basedir + 1 ) );
         context.put( "project", getProjectName() );
-        File gwtDevJarPath = getPlatformDependentGWTDevJar();
-        context.put( "gwtDevJarPath", gwtDevJarPath.getAbsolutePath() );
+        File path = getPlatformDependentGWTDevJar();
+        context.put( "gwtDevJarPath", path.getAbsolutePath() );
 
         try
         {
@@ -185,9 +198,9 @@ public class EclipseMojo
      * 
      * @return project source directories
      */
-    protected List<String> getProjectSourceDirectories()
+    protected List < String > getProjectSourceDirectories()
     {
-        List<String> sources = new ArrayList<String>();
+        List < String > sources = new ArrayList < String > ();
         sources.add( getProject().getBuild().getSourceDirectory() );
         if ( generateDirectory.exists() )
         {
@@ -198,6 +211,7 @@ public class EclipseMojo
 
     /**
      * Read the Eclipse project name for .project file. Fall back to artifactId on error
+     * @return project name in eclipse workspace
      */
     protected String getProjectName()
     {
@@ -215,7 +229,7 @@ public class EclipseMojo
     }
 
     /**
-     * @return
+     * @return gwt-dev JAR path
      */
     protected File getPlatformDependentGWTDevJar()
     {

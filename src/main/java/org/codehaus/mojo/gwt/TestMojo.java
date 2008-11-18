@@ -112,7 +112,7 @@ public class TestMojo
             return;
         }
 
-        final List<String> classpath = new ArrayList<String>();
+        final List < String > classpath = new ArrayList < String > ();
         classpath.addAll( getProject().getCompileSourceRoots() );
         classpath.addAll( getProject().getTestCompileSourceRoots() );
         try
@@ -142,15 +142,16 @@ public class TestMojo
         }
     }
 
+    /** failures counter */
     private int failures;
 
     /**
-     * @param classpath
-     * @param jvm
-     * @param test
-     * @throws MojoExecutionException
+     * @param classpath the test execution classpath
+     * @param jvm the JVM process command
+     * @param test the test to run
+     * @throws MojoExecutionException some error occured
      */
-    private void forkToRunTest( List<String> classpath, String jvm, String test )
+    private void forkToRunTest( List < String > classpath, String jvm, String test )
         throws MojoExecutionException
     {
         classpath.add( getClassPathElementFor( TestMojo.class ) );
@@ -189,7 +190,7 @@ public class TestMojo
      * @param clazz class to check for classpath resolution
      * @return The classpath element this class was loaded from
      */
-    private String getClassPathElementFor( Class<?> clazz )
+    private String getClassPathElementFor( Class < ? > clazz )
     {
         String classFile = clazz.getName().replace( '.', '/' ) + ".class";
         ClassLoader cl = Thread.currentThread().getContextClassLoader();

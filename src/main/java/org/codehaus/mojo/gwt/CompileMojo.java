@@ -127,7 +127,7 @@ public class CompileMojo
             if ( e.getTargetException() instanceof SystemExitSecurityException )
             {
                 SystemExitSecurityException sse = (SystemExitSecurityException) e.getTargetException();
-                if (sse.getStatus() == 0)
+                if ( sse.getStatus() == 0 )
                 {
                     getLog().debug( "System.exit(0) has been intercepted --> ignored" );
                 }
@@ -230,11 +230,12 @@ public class CompileMojo
     }
 
     /**
+     * @param module the GWT module to compile
      * @return the GWTCompiler command line arguments
      */
     protected List < String > getGwtCompilerArguments( String module )
     {
-        List < String > args = new LinkedList < String >();
+        List < String > args = new LinkedList < String > ();
         args.add( "-out" );
         args.add( outputDirectory.getAbsolutePath() );
         args.add( "-logLevel" );

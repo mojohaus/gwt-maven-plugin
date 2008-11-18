@@ -79,7 +79,7 @@ public abstract class AbstractGwtModuleMojo
     @SuppressWarnings( "unchecked" )
     public String[] getModules()
     {
-        List<String> mods = new ArrayList<String>();
+        List < String > mods = new ArrayList < String > ();
         if ( modules == null )
         {
             DirectoryScanner scanner = new DirectoryScanner();
@@ -88,7 +88,7 @@ public abstract class AbstractGwtModuleMojo
             scanner.scan();
             mods.addAll( Arrays.asList( scanner.getIncludedFiles() ) );
 
-            Collection<Resource> resources = (Collection<Resource>) project.getResources();
+            Collection < Resource > resources = ( Collection < Resource > ) project.getResources();
             for ( Resource resource : resources )
             {
                 scanner = new DirectoryScanner();

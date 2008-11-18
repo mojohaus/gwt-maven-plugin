@@ -19,7 +19,6 @@ package org.codehaus.mojo.gwt;
  * under the License.
  */
 
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -56,6 +55,8 @@ public abstract class AbstractGwtMojo
 
     /**
      * @return the project classloader
+     * @throws DependencyResolutionRequiredException failed to resolve project dependencies
+     * @throws MalformedURLException configuration issue ?
      */
     protected ClassLoader getProjectClassLoader()
         throws DependencyResolutionRequiredException, MalformedURLException
@@ -80,6 +81,9 @@ public abstract class AbstractGwtMojo
         return new URLClassLoader( urls, ClassLoader.getSystemClassLoader() );
     }
 
+    /** 
+     * @param path file to add to the project compile directories
+     */
     protected void addCompileSourceRoot( File path )
     {
         project.addCompileSourceRoot( path.getAbsolutePath() );
@@ -156,7 +160,7 @@ public abstract class AbstractGwtMojo
     /**
      * Add classpath elements to a classpath URL set
      * 
-     * @param originalUrls the initial URL set
+     * @param elements the initial URL set
      * @param urls the urls to add
      * @param startPosition the position to insert URLS
      * @return full classpath URL set

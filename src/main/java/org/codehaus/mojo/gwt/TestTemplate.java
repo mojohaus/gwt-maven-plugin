@@ -1,12 +1,5 @@
 package org.codehaus.mojo.gwt;
 
-import java.io.File;
-import java.util.List;
-
-import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.util.DirectoryScanner;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -25,23 +18,44 @@ import org.codehaus.plexus.util.DirectoryScanner;
  * specific language governing permissions and limitations
  * under the License.
  */
+ 
+import java.io.File;
+import java.util.List;
+
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class TestTemplate
 {
+    /**
+     * Callback to do something with a test
+     */
     public interface CallBack
     {
+        /**
+         * @param sourceDir where the test was found
+         * @param test the test name
+         * @throws MojoExecutionException some error occured
+         */
         void doWithTest( File sourceDir, String test )
             throws MojoExecutionException;
     }
 
+    /**
+     * @param project the maven project
+     * @param includes inclusion patterns
+     * @param excludes exclusion patterns
+     * @param callBack what to do with thoses tests
+     * @throws MojoExecutionException some error occured
+     */
     public TestTemplate( MavenProject project, String includes, String excludes, CallBack callBack )
         throws MojoExecutionException
-
     {
-        for ( String root : (List<String>) project.getTestCompileSourceRoots() )
+        for ( String root : ( List < String > ) project.getTestCompileSourceRoots() )
         {
             File sourceDir = new File( root );
             if ( !sourceDir.exists() )

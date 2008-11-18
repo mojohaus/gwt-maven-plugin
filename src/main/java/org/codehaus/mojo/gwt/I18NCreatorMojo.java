@@ -1,5 +1,24 @@
 package org.codehaus.mojo.gwt;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -8,7 +27,6 @@ import java.util.List;
 
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.surefire.booter.output.ForkingStreamConsumer;
 import org.apache.maven.surefire.booter.output.StandardOutputConsumer;
 import org.apache.maven.surefire.booter.shade.org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -35,6 +53,11 @@ public class I18NCreatorMojo
     private String[] resourceBundles;
 
     /**
+     * @parameter default-value="10000"
+     */
+    private int timeOut;
+
+    /**
      * Shortcut for a single resourceBundle
      * 
      * @parameter
@@ -42,8 +65,11 @@ public class I18NCreatorMojo
     @SuppressWarnings( "unused" )
     private String resourceBundle;
 
-    // Maven Hack : resourceBundle attribute is used to declare the parameter, but plexus will use
-    // the setter to inject value.
+    /**
+     * Maven Hack : resourceBundle attribute is used to declare the parameter, but plexus will use
+     * the setter to inject value.
+     * @param resourceBundle the single bundle to process
+     */
     public void setResourceBundle( String resourceBundle )
     {
         this.resourceBundles = new String[] { resourceBundle };
@@ -69,7 +95,7 @@ public class I18NCreatorMojo
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     public void execute()
-        throws MojoExecutionException, MojoFailureException
+        throws MojoExecutionException
     {
         for ( String bundle : resourceBundles )
         {
@@ -78,7 +104,8 @@ public class I18NCreatorMojo
     }
 
     /**
-     * @throws MojoExecutionException
+     * @param bundle the message bundle to convert to i18n interface
+     * @throws MojoExecutionException some error occured
      */
     private void runI18NSync( String bundle )
         throws MojoExecutionException
@@ -86,9 +113,9 @@ public class I18NCreatorMojo
         getLog().info( "Running I18NSync to generate message bundles from " + bundle );
 
         String jvm = System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + "java";
-        List<String> classpath = new ArrayList<String>();
+        List < String > classpath = new ArrayList < String > ();
         classpath.addAll( getProject().getCompileSourceRoots() );
-        List<Resource> resources = getProject().getResources();
+        List < Resource > resources = getProject().getResources();
         for ( Resource resource : resources )
         {
             classpath.add( resource.getDirectory() );
@@ -128,7 +155,7 @@ public class I18NCreatorMojo
             getLog().debug( "execute : " + cli.toString() );
             StreamConsumer systemOut = new ForkingStreamConsumer( new StandardOutputConsumer() );
             StreamConsumer systemErr = new ForkingStreamConsumer( new StandardOutputConsumer() );
-            int status = CommandLineUtils.executeCommandLine( cli, systemOut, systemErr, 10000 );
+            int status = CommandLineUtils.executeCommandLine( cli, systemOut, systemErr, timeOut );
             if ( status != 0 )
             {
                 throw new MojoExecutionException( "Failed to run I18NSync : returned " + status );

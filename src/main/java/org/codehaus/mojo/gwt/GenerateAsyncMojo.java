@@ -74,7 +74,7 @@ public class GenerateAsyncMojo
     {
         getLog().debug( "GenerateAsyncMojo#execute()" );
 
-        List<String> sourceRoots = getProject().getCompileSourceRoots();
+        List < String > sourceRoots = getProject().getCompileSourceRoots();
         boolean generated = false;
         for ( String sourceRoot : sourceRoots )
         {
@@ -98,7 +98,9 @@ public class GenerateAsyncMojo
     }
 
     /**
-     * @param file
+     * @param file the base directory to scan for RPC services
+     * @return true if some file have been generated
+     * @throws Exception generation failure
      */
     private boolean scanAndGenerateAsync( File file )
         throws Exception
@@ -120,7 +122,9 @@ public class GenerateAsyncMojo
     }
 
     /**
-     * @param source
+     * @param source the RPC service java source file
+     * @param name the service name
+     * @throws Exception generation failure
      */
     private void generateAsync( File source, String name )
         throws Exception

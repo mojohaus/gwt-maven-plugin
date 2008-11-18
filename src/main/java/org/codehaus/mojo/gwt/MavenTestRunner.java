@@ -47,10 +47,13 @@ import org.apache.maven.surefire.report.XMLReporter;
 public class MavenTestRunner
     extends TestRunner
 {
-    ReporterManager reportManager;
+    /** reporter to gather errors */
+    private ReporterManager reportManager;
 
-    boolean testHadFailed;
+    /** flag for test failures */
+    private boolean testHadFailed;
 
+    /** entry point for runner in a dedicated JVM */
     public static void main( String args[] )
     {
         try
@@ -58,7 +61,9 @@ public class MavenTestRunner
             MavenTestRunner runner = new MavenTestRunner();
             TestResult r = runner.start( args );
             if ( !r.wasSuccessful() )
+            {
                 System.exit( FAILURE_EXIT );
+            }
             System.exit( SUCCESS_EXIT );
         }
         catch ( Throwable t )
@@ -118,7 +123,7 @@ public class MavenTestRunner
     public MavenTestRunner()
     {
         String dir = System.getProperty( "surefire.reports" );
-        List<Reporter> reports = new ArrayList<Reporter>();
+        List < Reporter > reports = new ArrayList < Reporter > ();
         reports.add( new XMLReporter( new File( dir ), false ) );
         reports.add( new FileReporter( new File( dir ), false ) );
         reports.add( new BriefConsoleReporter( true ) );
@@ -128,6 +133,7 @@ public class MavenTestRunner
 
     /**
      * A test started.
+     * @param test the test
      */
     public void startTest( Test test )
     {
@@ -138,6 +144,7 @@ public class MavenTestRunner
 
     /**
      * A test ended.
+     * @param test the test
      */
     public void endTest( Test test )
     {
@@ -151,6 +158,8 @@ public class MavenTestRunner
 
     /**
      * An error occurred.
+     * @param test the test
+     * @param t the error
      */
     public void addError( Test test, Throwable t )
     {
@@ -164,6 +173,8 @@ public class MavenTestRunner
 
     /**
      * A failure occurred.
+     * @param test the test
+     * @param t the failure
      */
     public void addFailure( Test test, AssertionFailedError t )
     {
@@ -175,6 +186,11 @@ public class MavenTestRunner
         testHadFailed = true;
     }
 
+    /**
+     * @param test the test
+     * @param t a throwable    
+     * @return a StackTraceWriter to trace the error
+     */
     private StackTraceWriter getStackTraceWriter( Test test, Throwable t )
     {
         String name = test.getClass().getName();
