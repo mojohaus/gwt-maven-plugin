@@ -71,9 +71,7 @@ public class EclipseMojo
     /**
      * To look up Archiver/UnArchiver implementations
      *
-     * @parameter expression="${component.org.codehaus.plexus.archiver.manager.ArchiverManager}"
-     * @required
-     * @readonly
+     * @component
      */
     protected ArchiverManager archiverManager;
 

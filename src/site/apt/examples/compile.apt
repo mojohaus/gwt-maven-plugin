@@ -17,6 +17,7 @@ Compile GWT module(s)
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <configuration>
@@ -47,13 +48,14 @@ Compile GWT module(s)
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <configuration>
               <modules>
-			    <module>com.mycompany.gwt.Module1</module>
-			    <module>com.mycompany.gwt.Module2</module>
-			    <module>...</module>
+                <module>com.mycompany.gwt.Module1</module>
+                <module>com.mycompany.gwt.Module2</module>
+                <module>...</module>
               </modules>
             </configuration>
             <goals>

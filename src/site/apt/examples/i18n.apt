@@ -18,16 +18,17 @@ Generate i18n message bundle interfaces
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <goals>
               <goal>i18n</goal>
             </goals>
-          </execution>		  
+          </execution>          
         </executions>
-		<configuration>
-		  <resourceBundle>com.mycompany.gwt.Bundle</resourceBundle>
-		</configuration>
+        <configuration>
+          <resourceBundle>com.mycompany.gwt.Bundle</resourceBundle>
+        </configuration>
       </plugin>
       [...]
     </plugins>
@@ -47,20 +48,21 @@ Generate i18n message bundle interfaces
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <goals>
               <goal>i18n</goal>
             </goals>
-          </execution>		  
+          </execution>          
         </executions>
-		<configuration>
-		  <resourceBundles>
-			<resourceBundle>com.mycompany.gwt.Bundle1</resourceBundle>
-			<resourceBundle>com.mycompany.gwt.Bundle2</resourceBundle>
-			<resourceBundle>...</resourceBundle>
-		  </resourceBundles>
-		</configuration>
+        <configuration>
+          <resourceBundles>
+            <resourceBundle>com.mycompany.gwt.Bundle1</resourceBundle>
+            <resourceBundle>com.mycompany.gwt.Bundle2</resourceBundle>
+            <resourceBundle>...</resourceBundle>
+          </resourceBundles>
+        </configuration>
       </plugin>
       [...]
     </plugins>

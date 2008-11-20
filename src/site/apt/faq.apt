@@ -7,7 +7,7 @@ Frequently Asked Questions
  
 * Do I need GWT SDK on my computer to use the plugin ?
 
-  No. The plugin uses maven dependency management to get the required librairies and native components depending on
+  No. The plugin uses maven dependency management to get the required libraries and native components depending on
   your operating system
 
 * How to use another version of GWT to compile my project ?
@@ -17,5 +17,5 @@ Frequently Asked Questions
   
 * How does this plugin compare to other maven / gwt plugins ?
 
-  This plugin, beeing part of the Mojo Project, can benefict for a large community of maven developpers. It's async interface
+  This plugin, beeing part of the Mojo Project, can benefict for a large community of maven developers. It's async interface
   generation feature is AFAIK not supported by other plugins.

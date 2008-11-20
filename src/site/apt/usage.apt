@@ -21,6 +21,7 @@ Configuring Google Web Toolkit support for maven
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <configuration>
@@ -61,6 +62,7 @@ Configuring Google Web Toolkit support for maven
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <configuration>
@@ -97,6 +99,7 @@ Configuring Google Web Toolkit support for maven
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <goals>
@@ -134,6 +137,7 @@ Configuring Google Web Toolkit support for maven
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <configuration>
@@ -170,6 +174,7 @@ Configuring Google Web Toolkit support for maven
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <goals>
@@ -207,6 +212,7 @@ Configuring Google Web Toolkit support for maven
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <goals>
@@ -237,6 +243,7 @@ Configuring Google Web Toolkit support for maven
       [...]
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>...</version>
         <configuration>
           <excludes>
             <exclude>**/*GwtTest.java</exclude>

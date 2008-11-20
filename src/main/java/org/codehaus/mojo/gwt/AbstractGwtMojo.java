@@ -43,13 +43,14 @@ public abstract class AbstractGwtMojo
      * The maven project descriptor
      * @parameter expression="${project}"
      * @required
+     * @readonly
      */
     protected MavenProject project;
 
     /**
      * Folder where generated-source will be created (automatically added to compile classpath).
      * 
-     * @parameter expression="${project.build.directory}/generated-sources/gwt
+     * @parameter default-value="${project.build.directory}/generated-sources/gwt
      * @required
      */
     protected File generateDirectory;

@@ -18,12 +18,13 @@ Configure Eclipse IDE
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <goals>
               <goal>eclipse</goal>
             </goals>
-          </execution>		  
+          </execution>          
         </executions>
       </plugin>
       [...]
@@ -52,12 +53,13 @@ Configure Eclipse IDE
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <goals>
               <goal>eclipseTest</goal>
             </goals>
-          </execution>		  
+          </execution>          
         </executions>
       [...]
     </plugins>

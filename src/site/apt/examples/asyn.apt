@@ -23,8 +23,8 @@ Generate asynchronous interfaces for GWT-RPC services
 public interface HelloWorldServiceAsync
 {
     String helloWorld( String message, AsyncCallBack<String> callback );
-	  
-	public static class Util 
+      
+    public static class Util 
     { 
         public static ContactPrefereServiceAsync getInstance()
         ...
@@ -43,6 +43,7 @@ public interface HelloWorldServiceAsync
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.0</version>
         <executions>
           <execution>
             <goals>

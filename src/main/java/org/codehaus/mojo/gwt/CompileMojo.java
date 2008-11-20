@@ -48,7 +48,7 @@ public class CompileMojo
     /**
      * Location of the file.
      *
-     * @parameter expression="${project.build.directory}/${project.build.finalName}"
+     * @parameter default-value="${project.build.directory}/${project.build.finalName}"
      * @required
      */
     private File outputDirectory;
