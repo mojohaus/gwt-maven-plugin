@@ -17,7 +17,7 @@
     <version>18</version>
   </parent>
   <artifactId>gwt-maven-plugin</artifactId>
-  <version>1.0</version>
+  <version>1.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
   <name>Maven GWT Plugin</name>
   <description>
@@ -43,9 +43,9 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:svn:http://svn.codehaus.org/mojo/tags/gwt-maven-plugin-1.0</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/tags/gwt-maven-plugin-1.0</developerConnection>
-    <url>http://fisheye.codehaus.org/browse/mojo/tags/gwt-maven-plugin-1.0</url>
+    <connection>scm:svn:http://svn.codehaus.org/mojo/trunk/mojo/gwt-maven-plugin</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo/gwt-maven-plugin</developerConnection>
+    <url>http://fisheye.codehaus.org/browse/mojo/trunk/mojo/gwt-maven-plugin</url>
   </scm>
   <issueManagement>
     <system>jira</system>
