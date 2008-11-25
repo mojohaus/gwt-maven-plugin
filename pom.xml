@@ -141,6 +141,16 @@
       <classifier>${gwt.variant}-libs</classifier>
       <type>zip</type>
     </dependency>
+    <dependency>
+    	<groupId>commons-io</groupId>
+    	<artifactId>commons-io</artifactId>
+    	<version>1.4</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.jdom</groupId>
+    	<artifactId>jdom</artifactId>
+    	<version>1.1</version>
+    </dependency>
   </dependencies>
   <profiles>
     <profile>

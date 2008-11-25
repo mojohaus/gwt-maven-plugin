@@ -1,4 +1,4 @@
-package org.codehaus.mojo.gwt;
+package org.codehaus.mojo.gwt.eclipse;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -29,6 +29,8 @@ import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.mojo.gwt.TestTemplate;
+import org.codehaus.mojo.gwt.TestTemplate.CallBack;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
