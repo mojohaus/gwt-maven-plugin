@@ -1,4 +1,4 @@
-package org.codehaus.mojo.gwt;
+package org.codehaus.mojo.gwt.compile;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
 
 /**
  * Goal which compiles a GWT file.
