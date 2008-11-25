@@ -1,4 +1,4 @@
-package org.codehaus.mojo.gwt;
+package org.codehaus.mojo.gwt.test;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -33,6 +33,7 @@ import org.apache.maven.surefire.booter.shade.org.codehaus.plexus.util.cli.Comma
 import org.apache.maven.surefire.booter.shade.org.codehaus.plexus.util.cli.Commandline;
 import org.apache.maven.surefire.booter.shade.org.codehaus.plexus.util.cli.StreamConsumer;
 import org.apache.maven.surefire.report.ReporterManager;
+import org.codehaus.mojo.gwt.AbstractGwtMojo;
 import org.codehaus.plexus.util.StringUtils;
 
 /**

@@ -29,8 +29,8 @@ import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.codehaus.mojo.gwt.TestTemplate;
-import org.codehaus.mojo.gwt.TestTemplate.CallBack;
+import org.codehaus.mojo.gwt.test.TestTemplate;
+import org.codehaus.mojo.gwt.test.TestTemplate.CallBack;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
