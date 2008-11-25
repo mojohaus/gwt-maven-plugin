@@ -27,7 +27,6 @@ import org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptUtil;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriterFactory;
-import org.codehaus.mojo.gwt.support.MakeCatalinaBase;
 import org.codehaus.plexus.util.FileUtils;
 
 /**

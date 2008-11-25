@@ -1,4 +1,4 @@
-package org.codehaus.mojo.gwt.support;
+package org.codehaus.mojo.gwt.shell;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one

@@ -1,4 +1,4 @@
-package org.codehaus.mojo.gwt;
+package org.codehaus.mojo.gwt.webxml;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -27,8 +27,6 @@ import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo;
-import org.codehaus.mojo.gwt.support.ExitException;
-import org.codehaus.mojo.gwt.support.GwtWebInfProcessor;
 
 /**
  * Merges GWT servlet elements into deployment descriptor (and non GWT servlets into shell).

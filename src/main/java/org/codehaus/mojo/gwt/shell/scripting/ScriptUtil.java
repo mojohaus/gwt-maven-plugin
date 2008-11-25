@@ -23,112 +23,148 @@ import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.gwt.shell.scripting.TestResult.TestCode;
+import org.codehaus.plexus.util.cli.CommandLineException;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.codehaus.plexus.util.cli.Commandline;
+import org.codehaus.plexus.util.cli.StreamConsumer;
 
 import com.totsp.mavenplugin.gwt.AbstractGWTMojo;
 
-public final class ScriptUtil {
+public final class ScriptUtil
+{
 
-   private ScriptUtil() {
-   }
+    private ScriptUtil()
+    {
+    }
 
-   public static void runScript(final File exec) throws MojoExecutionException {
-      ProcessWatcher pw = null;
-      if (AbstractGWTMojo.OS_NAME.startsWith(AbstractGWTMojo.WINDOWS)) {
-         pw = new ProcessWatcher("\"" + exec.getAbsolutePath() + "\"");
-      }
-      else {
-         pw = new ProcessWatcher(exec.getAbsolutePath().replaceAll(" ", "\\ "));
-      }
+    public static void runScript( final File exec )
+        throws MojoExecutionException
+    {
 
-      try {
-         pw.startProcess(System.out, System.err);
-         int retVal = pw.waitFor();
-         if (retVal != 0) {
-            throw new MojoExecutionException(exec.getName() + " script exited abnormally with code - " + retVal);
-         }
-      }
-      catch (Exception e) {
-         throw new MojoExecutionException("Exception attempting to run script - " + exec.getName(), e);
-      }
-   }
+        // TODO use plexus-util Commandline
 
-   public static TestResult runTestScript(final File exec) throws MojoExecutionException {
-      TestResult testResult = new TestResult();
-      StringBuilder out = new StringBuilder();
-      StringBuilder err = new StringBuilder();
-      ProcessWatcher pw = null;
-      if (AbstractGWTMojo.OS_NAME.startsWith(AbstractGWTMojo.WINDOWS)) {
-         pw = new ProcessWatcher("\"" + exec.getAbsolutePath() + "\"");
-      }
-      else {
-         pw = new ProcessWatcher(exec.getAbsolutePath().replaceAll(" ", "\\ "));
-      }
+        ProcessWatcher pw = null;
+        if ( AbstractGWTMojo.OS_NAME.startsWith( AbstractGWTMojo.WINDOWS ) )
+        {
+            pw = new ProcessWatcher( "\"" + exec.getAbsolutePath() + "\"" );
+        }
+        else
+        {
+            pw = new ProcessWatcher( exec.getAbsolutePath().replaceAll( " ", "\\ " ) );
+        }
 
-      try {
-         pw.startProcess(out, err);
-         pw.waitFor();
+         try
+        {
+            pw.startProcess( System.out, System.err );
+            int retVal = pw.waitFor();
+            if ( retVal != 0 )
+            {
+                throw new MojoExecutionException( exec.getName() + " script exited abnormally with code - " + retVal );
+            }
+        }
+        catch ( Exception e )
+        {
+            throw new MojoExecutionException( "Exception attempting to run script - " + exec.getName(), e );
+        }
+    }
 
-         // if err has anything it's an exception - excepting special Leopard stuff
-         if (err.length() > 0) {
-            boolean validError = true;
+    protected static int executeCommandLine( Commandline commandLine, StreamConsumer stream1, StreamConsumer stream2 )
+        throws CommandLineException
+    {
+        return CommandLineUtils.executeCommandLine( commandLine, stream1, stream2 );
+    }
 
-            // the Mac VM will log CocoaComponent messages to stderr, falsely triggering the exception
-            if (AbstractGWTMojo.OS_NAME.startsWith(AbstractGWTMojo.MAC)) {
-               validError = false;
-               final String[] errLines = err.toString().split("\n");
-               for (int i = 0; i < errLines.length; ++i) {
-                  final String currentErrLine = errLines[i].trim();
-                  if (!currentErrLine.endsWith("[JavaCocoaComponent compatibility mode]: Enabled")
-                           && !currentErrLine
-                                    .endsWith("[JavaCocoaComponent compatibility mode]: Setting timeout for SWT to 0.100000")
-                           && currentErrLine.length() != 0) {
-                     validError = true;
-                     break;
-                  }
-               }
+    public static TestResult runTestScript( final File exec )
+        throws MojoExecutionException
+    {
+        TestResult testResult = new TestResult();
+        StringBuilder out = new StringBuilder();
+        StringBuilder err = new StringBuilder();
+        ProcessWatcher pw = null;
+        if ( AbstractGWTMojo.OS_NAME.startsWith( AbstractGWTMojo.WINDOWS ) )
+        {
+            pw = new ProcessWatcher( "\"" + exec.getAbsolutePath() + "\"" );
+        }
+        else
+        {
+            pw = new ProcessWatcher( exec.getAbsolutePath().replaceAll( " ", "\\ " ) );
+        }
+
+        try
+        {
+            pw.startProcess( out, err );
+            pw.waitFor();
+
+            // if err has anything it's an exception - excepting special Leopard stuff
+            if ( err.length() > 0 )
+            {
+                boolean validError = true;
+
+                // the Mac VM will log CocoaComponent messages to stderr, falsely triggering the exception
+                if ( AbstractGWTMojo.OS_NAME.startsWith( AbstractGWTMojo.MAC ) )
+                {
+                    validError = false;
+                    final String[] errLines = err.toString().split( "\n" );
+                    for ( int i = 0; i < errLines.length; ++i )
+                    {
+                        final String currentErrLine = errLines[i].trim();
+                        if ( !currentErrLine.endsWith( "[JavaCocoaComponent compatibility mode]: Enabled" )
+                            && !currentErrLine.endsWith( "[JavaCocoaComponent compatibility mode]: Setting timeout for SWT to 0.100000" )
+                            && currentErrLine.length() != 0 )
+                        {
+                            validError = true;
+                            break;
+                        }
+                    }
+                }
+
+                if ( validError )
+                {
+                    throw new MojoExecutionException( "error attempting to run test - " + exec.getName() + " - "
+                        + err.toString() );
+                }
             }
 
-            if (validError) {
-               throw new MojoExecutionException("error attempting to run test - " + exec.getName() + " - "
-                        + err.toString());
-            }
-         }
-
-         // otherwise populate and return the TestResult
-         //
-         // SUCCESS ends up in system.out "OK"
-         // FAILURE ends up in system.out "FAILURES!!!"
-         // ERROR ends up in system.out "FAILURES!!!"
-         //
-         // example gwt output below
-         //
-         // FAILURES!!!
-         // Tests run: 1,  Failures: 0,  Errors: 1
+            // otherwise populate and return the TestResult
             //
-         // OK (1 test)
+            // SUCCESS ends up in system.out "OK"
+            // FAILURE ends up in system.out "FAILURES!!!"
+            // ERROR ends up in system.out "FAILURES!!!"
+            //
+            // example gwt output below
+            //
+            // FAILURES!!!
+            // Tests run: 1, Failures: 0, Errors: 1
+            //
+            // OK (1 test)
 
-         String[] lines = null;
-         if (AbstractGWTMojo.OS_NAME.startsWith(AbstractGWTMojo.WINDOWS)) {
-            lines = out.toString().split("\r\n");
-         }
-         else {
-            lines = out.toString().split("\n");
-         }
-         String lastLine = lines[lines.length - 1];
-         testResult.lastLine = lastLine;
-         if (lastLine.indexOf("Tests run") != -1) {
-            // TODO add parsing to differentiate FAILURE and ERROR, or BOTH?
-            testResult.code = TestCode.FAILURE;
-         }
-         else if (lastLine.indexOf("OK") != -1) {
-            testResult.code = TestCode.SUCCESS;
-         }
-         testResult.message = out.toString();
-      }
-      catch (Exception e) {
-         throw new MojoExecutionException("error attempting to run test - " + exec.getName() + " - " + e.getMessage(),
-                  e);
-      }
-      return testResult;
-   }
+            String[] lines = null;
+            if ( AbstractGWTMojo.OS_NAME.startsWith( AbstractGWTMojo.WINDOWS ) )
+            {
+                lines = out.toString().split( "\r\n" );
+            }
+            else
+            {
+                lines = out.toString().split( "\n" );
+            }
+            String lastLine = lines[lines.length - 1];
+            testResult.lastLine = lastLine;
+            if ( lastLine.indexOf( "Tests run" ) != -1 )
+            {
+                // TODO add parsing to differentiate FAILURE and ERROR, or BOTH?
+                testResult.code = TestCode.FAILURE;
+            }
+            else if ( lastLine.indexOf( "OK" ) != -1 )
+            {
+                testResult.code = TestCode.SUCCESS;
+            }
+            testResult.message = out.toString();
+        }
+        catch ( Exception e )
+        {
+            throw new MojoExecutionException( "error attempting to run test - " + exec.getName() + " - "
+                + e.getMessage(), e );
+        }
+        return testResult;
+    }
 }

@@ -1,4 +1,4 @@
-package org.codehaus.mojo.gwt.support;
+package org.codehaus.mojo.gwt.shell;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -21,6 +21,9 @@ package org.codehaus.mojo.gwt.support;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import org.codehaus.mojo.gwt.webxml.GwtWebInfProcessor;
+import org.codehaus.mojo.gwt.webxml.ServletDescriptor;
 
 /**
  *
