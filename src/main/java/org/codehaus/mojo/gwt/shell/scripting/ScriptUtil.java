@@ -22,7 +22,7 @@ package org.codehaus.mojo.gwt.shell.scripting;
 import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo;
+import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.mojo.gwt.shell.scripting.TestResult.TestCode;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
@@ -43,7 +43,7 @@ public final class ScriptUtil
         // TODO use plexus-util Commandline
 
         ProcessWatcher pw = null;
-        if ( AbstractGwtShellMojo.OS_NAME.startsWith( AbstractGwtShellMojo.WINDOWS ) )
+        if ( PlatformUtil.OS_NAME.startsWith( PlatformUtil.WINDOWS ) )
         {
             pw = new ProcessWatcher( "\"" + exec.getAbsolutePath() + "\"" );
         }
@@ -80,7 +80,7 @@ public final class ScriptUtil
         StringBuilder out = new StringBuilder();
         StringBuilder err = new StringBuilder();
         ProcessWatcher pw = null;
-        if ( AbstractGwtShellMojo.OS_NAME.startsWith( AbstractGwtShellMojo.WINDOWS ) )
+        if ( PlatformUtil.OS_NAME.startsWith( PlatformUtil.WINDOWS ) )
         {
             pw = new ProcessWatcher( "\"" + exec.getAbsolutePath() + "\"" );
         }
@@ -100,7 +100,7 @@ public final class ScriptUtil
                 boolean validError = true;
 
                 // the Mac VM will log CocoaComponent messages to stderr, falsely triggering the exception
-                if ( AbstractGwtShellMojo.OS_NAME.startsWith( AbstractGwtShellMojo.MAC ) )
+                if ( PlatformUtil.OS_NAME.startsWith( PlatformUtil.MAC ) )
                 {
                     validError = false;
                     final String[] errLines = err.toString().split( "\n" );
@@ -138,7 +138,7 @@ public final class ScriptUtil
             // OK (1 test)
 
             String[] lines = null;
-            if ( AbstractGwtShellMojo.OS_NAME.startsWith( AbstractGwtShellMojo.WINDOWS ) )
+            if ( PlatformUtil.OS_NAME.startsWith( PlatformUtil.WINDOWS ) )
             {
                 lines = out.toString().split( "\r\n" );
             }

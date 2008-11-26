@@ -10,7 +10,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptUtil;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
-import org.codehaus.mojo.gwt.shell.scripting.ScriptWriterFactory;
 import org.codehaus.mojo.gwt.shell.scripting.TestScriptConfiguration;
 import org.codehaus.mojo.gwt.shell.scripting.TestResult.TestCode;
 
@@ -60,7 +59,7 @@ public class GWTTestMojo
 
       // build scripts for each test case for the correct platform
       // (note that scripts end up in outputDirectory/gwtTest)
-      ScriptWriter writer = ScriptWriterFactory.getInstance();
+        ScriptWriter writer = scriptWriterFactory.getScriptWriter();
       writer.writeTestScripts(this);
 
       // run the scripts

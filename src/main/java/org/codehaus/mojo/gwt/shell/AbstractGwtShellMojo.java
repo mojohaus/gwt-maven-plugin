@@ -22,15 +22,15 @@ package org.codehaus.mojo.gwt.shell;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
-import org.codehaus.mojo.gwt.AbstractGwtMojo;
-import org.codehaus.mojo.gwt.shell.scripting.DependencyScope;
-import org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration;
-import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
+import org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration;
+import org.codehaus.mojo.gwt.shell.scripting.ScriptWriterFactory;
 
 /**
  * Abstract Mojo for GWT-Maven.
@@ -40,58 +40,33 @@ import org.codehaus.plexus.util.FileUtils;
  * @author willpugh
  */
 public abstract class AbstractGwtShellMojo
-    extends AbstractGwtMojo
-    implements RunScriptConfiguration
+    extends AbstractGwtModuleMojo
+    implements GwtShellScriptConfiguration
 {
-
-    public static final String OS_NAME = System.getProperty( "os.name" ).toLowerCase( Locale.US );
 
     public static final String GWT_GROUP_ID = "com.google.gwt";
 
-    public static final String WINDOWS = "windows";
-
-    public static final String LINUX = "linux";
-
-    public static final String MAC = "mac";
-
-    public static final String LEOPARD = "leopard";
-
     public static final String GOOGLE_WEBTOOLKIT_HOME = "google.webtoolkit.home";
 
-    public static final String JAVA_COMMAND =
-        ( System.getProperty( "java.home" ) != null ) ? FileUtils.normalize( System.getProperty( "java.home" )
-            + File.separator + "bin" + File.separator + "java" ) : "java";
-
-    // Maven properties
-
     /**
-     * <i>Maven Internal</i>: List of artifacts for the plugin.
-     *
-     * @parameter expression="${plugin.artifacts}"
-     * @required
-     * @readonly
+     * @component
      */
-    private List pluginClasspathList;
+    protected ScriptWriterFactory scriptWriterFactory;
 
     /**
      * @component
      */
-    private org.apache.maven.artifact.factory.ArtifactFactory artifactFactory;
-
-    /**
-     * @component
-     */
-    private org.apache.maven.artifact.resolver.ArtifactResolver resolver;
+    protected BuildClasspathUtil buildClasspathUtil;
 
     /**
      * @parameter expression="${localRepository}"
      */
-    private org.apache.maven.artifact.repository.ArtifactRepository localRepository;
+    private ArtifactRepository localRepository;
 
     /**
      * @parameter expression="${project.remoteArtifactRepositories}"
      */
-    private java.util.List remoteRepositories;
+    private List<ArtifactRepository> remoteRepositories;
 
     // GWT-Maven properties
 
@@ -130,22 +105,6 @@ public abstract class AbstractGwtShellMojo
      * @parameter expression="${project.build.directory}/.generated"
      */
     private File gen;
-
-    /**
-     * List of GWT module names that should be compiled with the GWT compiler.
-     *
-     * @parameter property="compileTargets"
-     * @required
-     */
-    private String[] compileTarget;
-
-    /**
-     * URL that should be automatically opened by default in the GWT shell.
-     *
-     * @parameter
-     * @required
-     */
-    private String runTarget;
 
     /**
      * GWT logging level (-logLevel ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL).
@@ -352,7 +311,7 @@ public abstract class AbstractGwtShellMojo
             ClassRealm root = world.newRealm( "gwt-plugin", Thread.currentThread().getContextClassLoader() );
             ClassRealm realm = root.createChildRealm( "gwt-project" );
 
-            for ( Iterator it = BuildClasspathUtil.buildClasspathList( this, DependencyScope.COMPILE ).iterator(); it.hasNext(); )
+            for ( Iterator it = buildClasspathUtil.buildClasspathList( this, Artifact.SCOPE_COMPILE ).iterator(); it.hasNext(); )
             {
                 realm.addConstituent( ( (File) it.next() ).toURI().toURL() );
             }
@@ -373,11 +332,6 @@ public abstract class AbstractGwtShellMojo
     // accessors/mutators
     //
 
-    public void setBuildDir( File buildDir )
-    {
-        this.buildDir = buildDir;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getBuildDir()
@@ -387,23 +341,13 @@ public abstract class AbstractGwtShellMojo
         return this.buildDir;
     }
 
-    public void setCompileTarget( String[] compileTarget )
-    {
-        this.compileTarget = compileTarget;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getCompileTarget()
      */
     public String[] getCompileTarget()
     {
-        return this.compileTarget;
-    }
-
-    public void setContextXml( File contextXml )
-    {
-        this.contextXml = contextXml;
+        return getModules();
     }
 
     /**
@@ -415,11 +359,6 @@ public abstract class AbstractGwtShellMojo
         return this.contextXml;
     }
 
-    public void setExtraJvmArgs( String extraJvmArgs )
-    {
-        this.extraJvmArgs = extraJvmArgs;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getExtraJvmArgs()
@@ -427,11 +366,6 @@ public abstract class AbstractGwtShellMojo
     public String getExtraJvmArgs()
     {
         return this.extraJvmArgs;
-    }
-
-    public void setGen( File gen )
-    {
-        this.gen = gen;
     }
 
     /**
@@ -443,11 +377,6 @@ public abstract class AbstractGwtShellMojo
         return this.gen;
     }
 
-    public void setGwtHome( File gwtHome )
-    {
-        this.gwtHome = gwtHome;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getGwtHome()
@@ -455,11 +384,6 @@ public abstract class AbstractGwtShellMojo
     public File getGwtHome()
     {
         return this.gwtHome;
-    }
-
-    public void setLogLevel( String logLevel )
-    {
-        this.logLevel = logLevel;
     }
 
     /**
@@ -471,11 +395,6 @@ public abstract class AbstractGwtShellMojo
         return this.logLevel;
     }
 
-    public void setNoServer( boolean noServer )
-    {
-        this.noServer = noServer;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isNoServer()
@@ -483,11 +402,6 @@ public abstract class AbstractGwtShellMojo
     public boolean isNoServer()
     {
         return this.noServer;
-    }
-
-    public void setOutput( File output )
-    {
-        this.output = output;
     }
 
     /**
@@ -499,11 +413,6 @@ public abstract class AbstractGwtShellMojo
         return this.output;
     }
 
-    public void setPort( int port )
-    {
-        this.port = port;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getPort()
@@ -511,11 +420,6 @@ public abstract class AbstractGwtShellMojo
     public int getPort()
     {
         return this.port;
-    }
-
-    public void setProject( MavenProject project )
-    {
-        this.project = project;
     }
 
     /**
@@ -527,25 +431,6 @@ public abstract class AbstractGwtShellMojo
         return this.project;
     }
 
-    public void setRunTarget( String runTarget )
-    {
-        this.runTarget = runTarget;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getRunTarget()
-     */
-    public String getRunTarget()
-    {
-        return this.runTarget;
-    }
-
-    public void setStyle( String style )
-    {
-        this.style = style;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getStyle()
@@ -555,11 +440,6 @@ public abstract class AbstractGwtShellMojo
         return this.style;
     }
 
-    public void setTomcat( File tomcat )
-    {
-        this.tomcat = tomcat;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getTomcat()
@@ -567,11 +447,6 @@ public abstract class AbstractGwtShellMojo
     public File getTomcat()
     {
         return this.tomcat;
-    }
-
-    public void setWebXml( File webXml )
-    {
-        this.webXml = webXml;
     }
 
     /**
@@ -592,11 +467,6 @@ public abstract class AbstractGwtShellMojo
         return this.webXmlServletPathAsIs;
     }
 
-    public void setWebXmlServletPathAsIs( boolean webXmlServletPathAsIs )
-    {
-        this.webXmlServletPathAsIs = webXmlServletPathAsIs;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getShellServletMappingURL()
@@ -604,11 +474,6 @@ public abstract class AbstractGwtShellMojo
     public String getShellServletMappingURL()
     {
         return this.shellServletMappingURL;
-    }
-
-    public void setShellServletMappingURL( String shellServletMappingURL )
-    {
-        this.shellServletMappingURL = shellServletMappingURL;
     }
 
     /**
@@ -620,11 +485,6 @@ public abstract class AbstractGwtShellMojo
         return this.generatorRootClasses;
     }
 
-    public void setGeneratorRootClasses( String[] generatorRootClasses )
-    {
-        this.generatorRootClasses = generatorRootClasses;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getGeneratorDestinationPackage()
@@ -632,11 +492,6 @@ public abstract class AbstractGwtShellMojo
     public String getGeneratorDestinationPackage()
     {
         return this.generatorDestinationPackage;
-    }
-
-    public void setGeneratorDestinationPackage( String generatorDestinationPackage )
-    {
-        this.generatorDestinationPackage = generatorDestinationPackage;
     }
 
     /**
@@ -648,11 +503,6 @@ public abstract class AbstractGwtShellMojo
         return this.generateGettersAndSetters;
     }
 
-    public void setGenerateGettersAndSetters( boolean generateGettersAndSetters )
-    {
-        this.generateGettersAndSetters = generateGettersAndSetters;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isGeneratePropertyChangeSupport()
@@ -660,11 +510,6 @@ public abstract class AbstractGwtShellMojo
     public boolean isGeneratePropertyChangeSupport()
     {
         return this.generatePropertyChangeSupport;
-    }
-
-    public void setGeneratePropertyChangeSupport( boolean generatePropertyChangeSupport )
-    {
-        this.generatePropertyChangeSupport = generatePropertyChangeSupport;
     }
 
     /**
@@ -676,11 +521,6 @@ public abstract class AbstractGwtShellMojo
         return this.overwriteGeneratedClasses;
     }
 
-    public void setOverwriteGeneratedClasses( boolean overwriteGeneratedClasses )
-    {
-        this.overwriteGeneratedClasses = overwriteGeneratedClasses;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getDebugPort()
@@ -688,11 +528,6 @@ public abstract class AbstractGwtShellMojo
     public int getDebugPort()
     {
         return this.debugPort;
-    }
-
-    public void setDebugPort( int debugPort )
-    {
-        this.debugPort = debugPort;
     }
 
     /**
@@ -704,11 +539,6 @@ public abstract class AbstractGwtShellMojo
         return this.debugSuspend;
     }
 
-    public void setDebugSuspend( boolean debugSuspend )
-    {
-        this.debugSuspend = debugSuspend;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getGwtVersion()
@@ -716,16 +546,6 @@ public abstract class AbstractGwtShellMojo
     public String getGwtVersion()
     {
         return this.gwtVersion;
-    }
-
-    public void setGwtVersion( String gwtVersion )
-    {
-        this.gwtVersion = gwtVersion;
-    }
-
-    public void setCompileTargets( String[] targets )
-    {
-        this.compileTarget = targets;
     }
 
     /**
@@ -737,11 +557,6 @@ public abstract class AbstractGwtShellMojo
         return this.testFilter;
     }
 
-    public void setTestFilter( String testFilter )
-    {
-        this.testFilter = testFilter;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getSourcesOnPath()
@@ -749,11 +564,6 @@ public abstract class AbstractGwtShellMojo
     public boolean getSourcesOnPath()
     {
         return this.sourcesOnPath;
-    }
-
-    public void setSourcesOnPath( boolean value )
-    {
-        this.sourcesOnPath = value;
     }
 
     /**
@@ -765,11 +575,6 @@ public abstract class AbstractGwtShellMojo
         return resourcesOnPath;
     }
 
-    public void setResourcesOnPath( boolean resourcesOnPath )
-    {
-        this.resourcesOnPath = resourcesOnPath;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isEnableAssertions()
@@ -777,53 +582,6 @@ public abstract class AbstractGwtShellMojo
     public boolean isEnableAssertions()
     {
         return this.enableAssertions;
-    }
-
-    public void setEnableAssertions( boolean enableAssertions )
-    {
-        this.enableAssertions = enableAssertions;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getPluginClasspathList()
-     */
-    public List getPluginClasspathList()
-    {
-        return this.pluginClasspathList;
-    }
-
-    public void setPluginClasspathList( List pluginClasspathList )
-    {
-        this.pluginClasspathList = pluginClasspathList;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getArtifactFactory()
-     */
-    public org.apache.maven.artifact.factory.ArtifactFactory getArtifactFactory()
-    {
-        return this.artifactFactory;
-    }
-
-    public void setArtifactFactory( org.apache.maven.artifact.factory.ArtifactFactory artifactFactory )
-    {
-        this.artifactFactory = artifactFactory;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getResolver()
-     */
-    public org.apache.maven.artifact.resolver.ArtifactResolver getResolver()
-    {
-        return this.resolver;
-    }
-
-    public void setResolver( org.apache.maven.artifact.resolver.ArtifactResolver resolver )
-    {
-        this.resolver = resolver;
     }
 
     /**
@@ -835,11 +593,6 @@ public abstract class AbstractGwtShellMojo
         return this.localRepository;
     }
 
-    public void setLocalRepository( org.apache.maven.artifact.repository.ArtifactRepository localRepository )
-    {
-        this.localRepository = localRepository;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getRemoteRepositories()
@@ -847,11 +600,6 @@ public abstract class AbstractGwtShellMojo
     public java.util.List getRemoteRepositories()
     {
         return this.remoteRepositories;
-    }
-
-    public void setRemoteRepositories( java.util.List remoteRepositories )
-    {
-        this.remoteRepositories = remoteRepositories;
     }
 
     /**
@@ -863,11 +611,6 @@ public abstract class AbstractGwtShellMojo
         return this.i18nOutputDir;
     }
 
-    public void setI18nOutputDir( File outputDir )
-    {
-        this.i18nOutputDir = outputDir;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getI18nMessagesNames()
@@ -875,11 +618,6 @@ public abstract class AbstractGwtShellMojo
     public String[] getI18nMessagesNames()
     {
         return this.i18nMessagesNames;
-    }
-
-    public void setI18nMessagesNames( String[] messagesNames )
-    {
-        this.i18nMessagesNames = messagesNames;
     }
 
     /**
@@ -891,11 +629,6 @@ public abstract class AbstractGwtShellMojo
         return this.i18nConstantsNames;
     }
 
-    public void setI18nConstantsNames( String[] constantsNames )
-    {
-        this.i18nConstantsNames = constantsNames;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getExtraTestArgs()
@@ -905,11 +638,6 @@ public abstract class AbstractGwtShellMojo
         return this.extraTestArgs;
     }
 
-    public void setExtraTestArgs( String extraTestArgs )
-    {
-        this.extraTestArgs = extraTestArgs;
-    }
-
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isTestSkip()
@@ -917,11 +645,6 @@ public abstract class AbstractGwtShellMojo
     public boolean isTestSkip()
     {
         return this.testSkip;
-    }
-
-    public void setTestSkip( boolean skip )
-    {
-        this.testSkip = skip;
     }
 
 }

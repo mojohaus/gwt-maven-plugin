@@ -29,7 +29,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.shell.scripting.CompileScriptConfiguration;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptUtil;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
-import org.codehaus.mojo.gwt.shell.scripting.ScriptWriterFactory;
 
 /**
  * Invokes the GWTCompiler for the project source.
@@ -57,7 +56,7 @@ public class CompileMojo
         }
 
         // build it for the correct platform
-        ScriptWriter writer = ScriptWriterFactory.getInstance();
+        ScriptWriter writer = scriptWriterFactory.getScriptWriter();
         File exec = writer.writeCompileScript( this );
 
         // run it

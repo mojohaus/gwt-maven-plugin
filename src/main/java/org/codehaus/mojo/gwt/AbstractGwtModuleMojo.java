@@ -51,6 +51,7 @@ public abstract class AbstractGwtModuleMojo
      * The project GWT modules. If not set, the plugin will scan the project for <code>.gwt.xml</code> files.
      * 
      * @parameter
+     * @alias compileTargets
      */
     private String[] modules;
 

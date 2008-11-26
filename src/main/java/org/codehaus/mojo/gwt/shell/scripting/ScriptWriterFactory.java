@@ -19,21 +19,35 @@ package org.codehaus.mojo.gwt.shell.scripting;
  * under the License.
  */
 
-import org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo;
+import org.codehaus.mojo.gwt.shell.PlatformUtil;
 
-public final class ScriptWriterFactory {
+/**
+ * Plexus component to select a ScriptWriter depending on the Platform.
+ * 
+ * @todo can Plexus automagically handle this using role-hints ?
+ * @plexus.component role="org.codehaus.mojo.gwt.shell.scripting.ScriptWriterFactory"
+ */
+public final class ScriptWriterFactory
+{
+    /**
+     * @plexus.requirement role-hint="windows"
+     */
+    private ScriptWriter scriptWriterWindows;
 
-    private ScriptWriterFactory() {
-    }
+    /**
+     * @plexus.requirement role-hint="unix"
+     */
+    private ScriptWriter scriptWriterUnix;
 
-    public static ScriptWriter getInstance() {
-        ScriptWriter sw = null;
-        if ( AbstractGwtShellMojo.OS_NAME.startsWith( AbstractGwtShellMojo.WINDOWS ) )
+    public ScriptWriter getScriptWriter()
+    {
+        if ( PlatformUtil.onWindows() )
         {
-            sw = new ScriptWriterWindows();
-        } else {
-            sw = new ScriptWriterUnix();
+            return scriptWriterWindows;
         }
-        return sw;
+        else
+        {
+            return scriptWriterUnix;
+        }
     }
 }

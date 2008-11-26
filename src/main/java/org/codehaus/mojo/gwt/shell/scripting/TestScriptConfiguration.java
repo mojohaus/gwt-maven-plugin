@@ -5,7 +5,7 @@ package org.codehaus.mojo.gwt.shell.scripting;
  *
  */
 public interface TestScriptConfiguration
-    extends RunScriptConfiguration
+    extends GwtShellScriptConfiguration
 {
 
     /**

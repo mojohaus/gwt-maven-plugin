@@ -7,7 +7,7 @@ import java.io.File;
  *
  */
 public interface I18nScriptConfiguration
-    extends RunScriptConfiguration
+    extends GwtShellScriptConfiguration
 {
 
     /**

@@ -27,7 +27,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.shell.scripting.I18nScriptConfiguration;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptUtil;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
-import org.codehaus.mojo.gwt.shell.scripting.ScriptWriterFactory;
 
 /**
  * Creates I18N interfaces for constants and messages files.
@@ -63,7 +62,7 @@ public class I18NMojo
         }
 
         // build it for the correct platform
-        ScriptWriter writer = ScriptWriterFactory.getInstance();
+        ScriptWriter writer = scriptWriterFactory.getScriptWriter();
         File exec = writer.writeI18nScript( this );
 
         // run it

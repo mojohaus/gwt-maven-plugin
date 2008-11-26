@@ -41,6 +41,11 @@
       <name>Nicolas De Loof</name>
       <email>nicolas@apache.org</email>
     </developer>
+    <developer>
+      <id>charlie.collins</id>
+      <name>Charlie Collins</name>
+      <email>charlie.collins@gmail.com</email>
+    </developer>
   </developers>
   <scm>
     <connection>scm:svn:http://svn.codehaus.org/mojo/trunk/mojo/gwt-maven-plugin</connection>
@@ -142,14 +147,14 @@
       <type>zip</type>
     </dependency>
     <dependency>
-    	<groupId>commons-io</groupId>
-    	<artifactId>commons-io</artifactId>
-    	<version>1.4</version>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.4</version>
     </dependency>
     <dependency>
-    	<groupId>org.jdom</groupId>
-    	<artifactId>jdom</artifactId>
-    	<version>1.1</version>
+      <groupId>org.jdom</groupId>
+      <artifactId>jdom</artifactId>
+      <version>1.1</version>
     </dependency>
   </dependencies>
   <profiles>
@@ -191,11 +196,22 @@
   <build>
     <plugins>
         <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-                <source>1.5</source>
-                <target>1.5</target>
-            </configuration>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.5</source>
+            <target>1.5</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.plexus</groupId>
+          <artifactId>plexus-maven-plugin</artifactId>
+          <executions>
+            <execution>
+              <goals>
+                <goal>descriptor</goal>
+              </goals>
+            </execution>
+          </executions>
         </plugin>
     </plugins>
   </build>

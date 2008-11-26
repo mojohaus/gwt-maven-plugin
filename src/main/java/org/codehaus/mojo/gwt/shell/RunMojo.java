@@ -23,9 +23,9 @@ import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptUtil;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
-import org.codehaus.mojo.gwt.shell.scripting.ScriptWriterFactory;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -41,7 +41,25 @@ import org.codehaus.plexus.util.FileUtils;
  */
 public class RunMojo
     extends AbstractGwtShellMojo
+    implements RunScriptConfiguration
 {
+
+    /**
+     * URL that should be automatically opened by default in the GWT shell.
+     * 
+     * @parameter
+     */
+    private String runTarget;
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration#getRunTarget()
+     */
+    public String getRunTarget()
+    {
+        return this.runTarget;
+    }
 
     public void execute()
         throws MojoExecutionException, MojoFailureException
@@ -60,7 +78,7 @@ public class RunMojo
         }
 
         // build it for the correct platform
-        ScriptWriter writer = ScriptWriterFactory.getInstance();
+        ScriptWriter writer = scriptWriterFactory.getScriptWriter();
         File exec = writer.writeRunScript( this );
 
         // run it

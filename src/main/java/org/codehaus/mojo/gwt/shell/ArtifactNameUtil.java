@@ -19,10 +19,6 @@ package org.codehaus.mojo.gwt.shell;
  * under the License.
  */
 
-import static org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo.LINUX;
-import static org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo.MAC;
-import static org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo.OS_NAME;
-import static org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo.WINDOWS;
 
 public class ArtifactNameUtil
 {
@@ -43,16 +39,15 @@ public class ArtifactNameUtil
      */
     public static final String getPlatformName()
     {
-        String result = WINDOWS;
-        if ( OS_NAME.startsWith( MAC ) )
+        if ( PlatformUtil.onWindows() )
         {
-            result = MAC;
+            return PlatformUtil.WINDOWS;
         }
-        else if ( OS_NAME.startsWith( LINUX ) )
+        if ( PlatformUtil.onMac() )
         {
-            result = LINUX;
+            return PlatformUtil.MAC;
         }
-        return result;
+        return PlatformUtil.LINUX;
     }
 
     /**
@@ -62,11 +57,11 @@ public class ArtifactNameUtil
      */
     public static final String guessDevJarName()
     {
-        if ( OS_NAME.startsWith( WINDOWS ) )
+        if ( PlatformUtil.OS_NAME.startsWith( PlatformUtil.WINDOWS ) )
         {
             return "gwt-dev-windows.jar";
         }
-        else if ( OS_NAME.startsWith( MAC ) )
+        else if ( PlatformUtil.OS_NAME.startsWith( PlatformUtil.MAC ) )
         {
             return "gwt-dev-mac.jar";
         }

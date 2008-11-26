@@ -29,10 +29,10 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.HiddenFileFilter;
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo;
-import org.codehaus.mojo.gwt.shell.BuildClasspathUtil;
+import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -40,8 +40,11 @@ import org.codehaus.plexus.util.StringUtils;
  * 
  * @author ccollins
  * @author rcooper
+ * @plexus.component role="org.codehaus.mojo.gwt.shell.scripting.ScriptWriter" role-hint="windows"
  */
-public class ScriptWriterWindows implements ScriptWriter {
+public class ScriptWriterWindows
+    extends AbstractScriptWriter
+{
 
     public ScriptWriterWindows() {
     }
@@ -72,10 +75,10 @@ public class ScriptWriterWindows implements ScriptWriter {
     {
         String filename = ( debugPort >= 0 ) ? "debug.cmd" : "run.cmd";
         File file = new File(configuration.getBuildDir(), filename);
-        PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, DependencyScope.RUNTIME );
+        PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_RUNTIME );
 
         String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
-        writer.print( "\"" + AbstractGwtShellMojo.JAVA_COMMAND + "\" " + extra + " -cp %CLASSPATH% " );
+        writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp %CLASSPATH% " );
 
         if ( debugPort >= 0 )
         {
@@ -84,7 +87,7 @@ public class ScriptWriterWindows implements ScriptWriter {
             writer.print(",suspend=y ");
         }
 
-        writer.print("-Dcatalina.base=\"" + configuration.getTomcat().getAbsolutePath() + "\" ");
+        writer.print( " -Dcatalina.base=\"" + configuration.getTomcat().getAbsolutePath() + "\" " );
         writer.print(" com.google.gwt.dev.GWTShell");
         writer.print(" -gen \"");
         writer.print(configuration.getGen().getAbsolutePath());
@@ -116,11 +119,11 @@ public class ScriptWriterWindows implements ScriptWriter {
         throws MojoExecutionException
     {
         File file = new File(configuration.getBuildDir(), "compile.cmd");
-        PrintWriter writer = this.getPrintWriterWithClasspath(configuration, file, DependencyScope.COMPILE);
+        PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE );
 
         for (String target : configuration.getCompileTarget()) {
             String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
-            writer.print( "\"" + AbstractGwtShellMojo.JAVA_COMMAND + "\" " + extra + " -cp %CLASSPATH% " );
+            writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp %CLASSPATH% " );
             writer.print(" com.google.gwt.dev.GWTCompiler ");
             writer.print(" -gen \"");
             writer.print(configuration.getGen().getAbsolutePath());
@@ -171,14 +174,14 @@ public class ScriptWriterWindows implements ScriptWriter {
                                          + exe.getMessage(), exe );
             }
         }
-        PrintWriter writer = this.getPrintWriterWithClasspath(configuration, file, DependencyScope.COMPILE);
+        PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE );
 
         // constants
         if (configuration.getI18nConstantsNames() != null) {
             for (String target : configuration.getI18nConstantsNames()) {
                 String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
 
-                writer.print( "\"" + AbstractGwtShellMojo.JAVA_COMMAND + "\" " + extra + " -cp %CLASSPATH%" );
+                writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp %CLASSPATH%" );
                 writer.print(" com.google.gwt.i18n.tools.I18NSync");
                 writer.print(" -out ");
                 writer.print("\"" + configuration.getI18nOutputDir() + "\"");
@@ -193,7 +196,7 @@ public class ScriptWriterWindows implements ScriptWriter {
             for (String target : configuration.getI18nMessagesNames()) {
                 String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
 
-                writer.print( "\"" + AbstractGwtShellMojo.JAVA_COMMAND + "\" " + extra + " -cp %CLASSPATH%" );
+                writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp %CLASSPATH%" );
                 writer.print(" com.google.gwt.i18n.tools.I18NSync");
                 writer.print(" -createMessages ");
                 writer.print(" -out ");
@@ -253,10 +256,10 @@ public class ScriptWriterWindows implements ScriptWriter {
 
                 // start script inside gwtTest output dir, and name it with test class name
                 File file = new File(configuration.getBuildDir() + File.separator + "gwtTest", "gwtTest-" + testName + ".cmd");
-                PrintWriter writer = this.getPrintWriterWithClasspath(configuration, file, DependencyScope.TEST);
+                PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_TEST );
 
                 // build Java command
-                writer.print( "\"" + AbstractGwtShellMojo.JAVA_COMMAND + "\" " );
+                writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " );
                 if (extra.length() > 0) {
                     writer.print(" " + extra + " ");
                 }
@@ -282,8 +285,8 @@ public class ScriptWriterWindows implements ScriptWriter {
      * @return
      * @throws MojoExecutionException
      */
-    private PrintWriter getPrintWriterWithClasspath( final RunScriptConfiguration config, File file,
-                                                     final DependencyScope scope )
+    private PrintWriter getPrintWriterWithClasspath( final GwtShellScriptConfiguration config, File file,
+                                                     final String scope )
             throws MojoExecutionException {
 
         PrintWriter writer = null;
@@ -295,7 +298,7 @@ public class ScriptWriterWindows implements ScriptWriter {
         }
 
         try {
-            Collection<File> classpath = BuildClasspathUtil.buildClasspathList( config, scope );
+            Collection<File> classpath = buildClasspathUtil.buildClasspathList( config, scope );
             writer.print("set CLASSPATH=");
 
             StringBuffer cpString = new StringBuffer();
