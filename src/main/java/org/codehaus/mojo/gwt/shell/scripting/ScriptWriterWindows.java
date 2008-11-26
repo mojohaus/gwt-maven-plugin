@@ -33,7 +33,6 @@ import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo;
 import org.codehaus.mojo.gwt.shell.BuildClasspathUtil;
-import org.codehaus.mojo.gwt.shell.DebugMojo;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -48,21 +47,40 @@ public class ScriptWriterWindows implements ScriptWriter {
     }
 
     /**
-     * Write run script.
+     * Write debug script.
      */
-    public File writeRunScript( ScriptConfiguration configuration )
+    public File writeDebugScript( DebugScriptConfiguration configuration )
         throws MojoExecutionException
     {
-        String filename = (configuration instanceof DebugMojo) ? "debug.cmd" : "run.cmd";
+        return writeRunScript( configuration, configuration.getDebugPort() );
+    }
+
+    /**
+     * Write run script.
+     */
+    public File writeRunScript( RunScriptConfiguration configuration )
+        throws MojoExecutionException
+    {
+        return writeRunScript( configuration, -1 );
+    }
+
+    /**
+     * Write run script.
+     */
+    private File writeRunScript( RunScriptConfiguration configuration, int debugPort )
+        throws MojoExecutionException
+    {
+        String filename = ( debugPort >= 0 ) ? "debug.cmd" : "run.cmd";
         File file = new File(configuration.getBuildDir(), filename);
         PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, DependencyScope.RUNTIME );
 
         String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
         writer.print( "\"" + AbstractGwtShellMojo.JAVA_COMMAND + "\" " + extra + " -cp %CLASSPATH% " );
 
-        if (configuration instanceof DebugMojo) {
+        if ( debugPort >= 0 )
+        {
             writer.print(" -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,address=");
-            writer.print(configuration.getDebugPort());
+            writer.print( debugPort );
             writer.print(",suspend=y ");
         }
 
@@ -94,7 +112,7 @@ public class ScriptWriterWindows implements ScriptWriter {
     /**
      * Write compile script.
      */
-    public File writeCompileScript( ScriptConfiguration configuration )
+    public File writeCompileScript( CompileScriptConfiguration configuration )
         throws MojoExecutionException
     {
         File file = new File(configuration.getBuildDir(), "compile.cmd");
@@ -132,7 +150,7 @@ public class ScriptWriterWindows implements ScriptWriter {
     /**
      * Write i18n script.
      */
-    public File writeI18nScript( ScriptConfiguration configuration )
+    public File writeI18nScript( I18nScriptConfiguration configuration )
         throws MojoExecutionException
     {
         File file = new File(configuration.getBuildDir(), "i18n.cmd");
@@ -195,7 +213,7 @@ public class ScriptWriterWindows implements ScriptWriter {
     /**
      * Write test scripts.
      */
-    public void writeTestScripts( ScriptConfiguration configuration )
+    public void writeTestScripts( TestScriptConfiguration configuration )
         throws MojoExecutionException
     {
 
@@ -264,7 +282,7 @@ public class ScriptWriterWindows implements ScriptWriter {
      * @return
      * @throws MojoExecutionException
      */
-    private PrintWriter getPrintWriterWithClasspath( final ScriptConfiguration config, File file,
+    private PrintWriter getPrintWriterWithClasspath( final RunScriptConfiguration config, File file,
                                                      final DependencyScope scope )
             throws MojoExecutionException {
 

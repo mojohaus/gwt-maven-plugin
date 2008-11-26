@@ -28,16 +28,20 @@ import org.apache.maven.plugin.MojoExecutionException;
  */
 public interface ScriptWriter
 {
-    File writeRunScript( ScriptConfiguration configuration )
+    File writeRunScript( RunScriptConfiguration configuration )
         throws MojoExecutionException;
 
-    File writeCompileScript( ScriptConfiguration configuration )
+    File writeDebugScript( DebugScriptConfiguration configuration )
         throws MojoExecutionException;
 
-    File writeI18nScript( ScriptConfiguration configuration )
+    File writeCompileScript( CompileScriptConfiguration configuration )
         throws MojoExecutionException;
 
-    void writeTestScripts( ScriptConfiguration configuration )
+    File writeI18nScript( I18nScriptConfiguration configuration )
         throws MojoExecutionException;
+
+    void writeTestScripts( TestScriptConfiguration configuration )
+        throws MojoExecutionException;
+
 
 }

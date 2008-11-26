@@ -35,9 +35,9 @@ import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
 
 /**
  * Goal which compiles a GWT file.
- *
+ * 
  * @goal compile
- * @phase compile
+ * @phase process-classes
  * @author Shinobu Kawai
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @requiresDependencyResolution compile

@@ -29,7 +29,7 @@ import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.mojo.gwt.AbstractGwtMojo;
 import org.codehaus.mojo.gwt.shell.scripting.DependencyScope;
-import org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration;
+import org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -41,7 +41,7 @@ import org.codehaus.plexus.util.FileUtils;
  */
 public abstract class AbstractGwtShellMojo
     extends AbstractGwtMojo
-    implements ScriptConfiguration
+    implements RunScriptConfiguration
 {
 
     public static final String OS_NAME = System.getProperty( "os.name" ).toLowerCase( Locale.US );

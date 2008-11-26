@@ -1,0 +1,275 @@
+GWT-Maven Setup
+
+  In order to use GWT-Maven, you will need to configure GWT-Maven using the plugin configuration in your POM, 
+  and you will need to decide how you want to handle GWT being present (automatic or manual mode - more below). 
+
+
+* Configuring GWT-Maven itself
+ 
+ Regardless of which "mode" you use, <<automatic>>, or <<manual>>, you also need to configure GWT-Maven itself, of course. 
+ 
+ Also, as a convenience it helps to define a property for the GWT version (so you can change it in one place later to upgrade).
+ 
+ For example:
+ 
++-- 
+          <properties>
+             <gwtVersion>1.5.3</gwtVersion>
+           </properties>
+
+            <plugin>
+                <groupId>com.totsp.gwt</groupId>
+                <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
+                <version>2.0-beta26</version>
+                <configuration>
+                    <compileTargets>
+                        <value>com.totsp.sample.Application</value>
+                    </compileTargets>
+                    <runTarget>com.totsp.sample.Application/Application.html</runTarget>
+                    <logLevel>INFO</logLevel>
+                    <style>DETAILED</style>
+                    <noServer>false</noServer>
+                    <extraJvmArgs>-Xmx512m</extraJvmArgs>
+                    <gwtVersion>${gwtVersion}</gwtVersion>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>mergewebxml</goal>
+                            <!--<goal>i18n</goal>-->
+                            <goal>compile</goal>                            
+                            <!-- <goal>test</goal>-->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>          
++--
+
+* Getting the Plugin
+
+  Getting the plugin is simple.  You just need to add the GWT-Maven <<pluginRepository>>, 
+  and standard <<repository>> (used for support libraries) to your POM.  
+  
++--
+<pluginRepositories>
+    <pluginRepository>
+      <id>gwt-maven</id>
+      <url>http://gwt-maven.googlecode.com/svn/trunk/mavenrepo</url>
+    </pluginRepository>
+</pluginRepositories>
+    
+<repositories>
+    <repository>
+      <id>gwt-maven</id>
+      <url>
+         http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/
+       </url>
+    </repository>        
+</repositories>
++--   
+
+
+* Handling GWT 
+
+  The plugin needs to know where to find GWT (jars *and* native libraries).  There are two ways you can do this.
+
+    [[1]]  Use the Maven dependency plugin to automatically extract GWT native libraries from central repo (automatic mode)
+
+    [[1]]  Download and unpack GWT yourself and set the gwtHome plugin configuration property to the location where it is installed (manual mode)  
+    
+** Automatic Mode Setup
+
+  If you are going to do automatic setup, you need to include the GWT dependencies in your POM. 
+  
+  For example:
+  
++--
+  <!--  GWT deps (from central repo) -->
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwtVersion}</version>
+            <classifier>${platform}-libs</classifier>
+            <type>zip</type>
+            <scope>provided</scope>
+        </dependency>       
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwtVersion}</version>
+            <classifier>${platform}</classifier>
+            <scope>provided</scope>
+        </dependency>
++--
+  
+  You then also need to specify some properties to the dependency plugin
+  so it knows what how and where to unpack the gwt native libs dependency (the one with the platform-libs classifier).  
+  
+  For example:
+
++--
+    <plugins>      
+             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.google.gwt</groupId>
+                                    <artifactId>gwt-dev</artifactId>
+                                    <version>${gwtVersion}</version>
+                                    <classifier>${platform}-libs</classifier>
+                                    <type>zip</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${settings.localRepository}/com/google/gwt/gwt-dev/${gwtVersion}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+    </plugins>
++--
+
+    Also, with automatic OR manual mode, you may want to configure profiles for each platform, so the same POM can be used in multiple environments. 
+    
+    For example:
+    
++--
+<!--  profiles (with activation per platform) -->
+    <profiles>
+        <profile>
+            <id>gwt-dev-windows</id>
+            <properties>
+                <platform>windows</platform>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+        </profile>
+        <profile>
+            <id>gwt-dev-mac</id>
+            <properties>
+                <platform>mac</platform>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+        </profile>        
+        <profile>
+            <id>gwt-dev-linux</id>
+            <properties>
+                <platform>linux</platform>
+            </properties>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <os>
+                    <name>linux</name>
+                </os>
+            </activation>
+        </profile>
+    </profiles> 
++--
+ 
+  For a complete automatic mode POM example see the {{{examples.html}Examples}} page, specifically:
+  {{{http://gwt-maven.googlecode.com/svn/trunk/maven-googlewebtoolkit2-plugin/simplesample/pom.xml}pom.xml}}. 
+ 
+** Manual Setup
+
+  If you are going to setup GWT manually, you will need to first download GWT, and unpackage it (http://code.google.com/webtoolkit/download.html).
+  Then, you will need to tell GWT-Maven where GWT is. This can be done with the <<gwtHome>> plugin configuration property (this property is unset for automatic mode, but required for manual mode).
+
+  For manual mode you also still need the GWT dependencies defined (these are required because plugins and goals other than GWT-Maven need them, like the standard compiler). 
+  
+  Note that with manual mode even though the dependencies are still needed, the difference is that the source of the dependencies
+  can be your locally installed GWT location (gwtHome), rather than a Maven repository, and there is no separate step to unpack the native libraries (they are already in gwtHome).
+  
+  For example:
+  
++--
+        . . . .
+ 
+        <properties>
+           <gwtVersion>1.5.3</gwtVersion>
+        </properties>
+    
+        . . . .
+
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>system</scope>
+            <systemPath>${env.GWT_HOME}/gwt-user.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwtVersion}</version>
+            <classifier>${platform}</classifier>
+            <scope>system</scope>
+            <systemPath>${env.GWT_HOME}/gwt-dev-${platform}.jar</systemPath>
+        </dependency>
+        
+        . . . .
+        
+        <plugin>
+                <groupId>com.totsp.gwt</groupId>
+                <artifactId>maven-googlewebtoolkit2-plugin</artifactId>
+                <version>2.0-beta26</version>
+                <configuration>
+                    <gwtHome>${env.GWT_HOME}</gwtHome>
+                    <compileTargets>
+                        <value>com.totsp.sample.Application</value>
+                    </compileTargets>
+                    <runTarget>com.totsp.sample.Application/Application.html</runTarget>
+                    <extraJvmArgs>-Xmx512m</extraJvmArgs>
+                    <gwtVersion>${gwtVersion}</gwtVersion>                  
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>mergewebxml</goal>
+                            <goal>i18n</goal>                            
+                            <goal>compile</goal>                            
+                        </goals>
+                    </execution>
+                </executions>
+        </plugin>
++--   
+   
+  For a complete manual mode POM example see the {{{examples.html}Examples}} page, specifically: 
+  {{{http://gwt-maven.googlecode.com/svn/trunk/maven-googlewebtoolkit2-plugin/simplesample/pom-with-gwthome.xml}pom-with-gwthome.xml}}.
+
+ 

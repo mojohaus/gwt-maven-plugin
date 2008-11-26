@@ -35,7 +35,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.ActiveProjectArtifact;
 import org.codehaus.mojo.gwt.shell.scripting.DependencyScope;
-import org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration;
+import org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration;
 
 /**
  * Util to consolidate classpath manipulation stuff in one place.
@@ -59,7 +59,7 @@ public class BuildClasspathUtil {
     * @return file collection for classpath
     * @throws DependencyResolutionRequiredException
     */
-   public static Collection<File> buildClasspathList( final ScriptConfiguration mojo, final DependencyScope scope )
+   public static Collection<File> buildClasspathList( final RunScriptConfiguration mojo, final DependencyScope scope )
             throws DependencyResolutionRequiredException, MojoExecutionException {
 
       mojo.getLog().info("establishing classpath list (buildClaspathList - scope = " + scope + ")");
@@ -139,7 +139,7 @@ public class BuildClasspathUtil {
     * @param mojo
     * @return
     */
-   public static Collection<File> injectGwtDepsFromGwtHome( final File gwtHome, final ScriptConfiguration mojo )
+   public static Collection<File> injectGwtDepsFromGwtHome( final File gwtHome, final RunScriptConfiguration mojo )
     {
       mojo
                .getLog()
@@ -158,7 +158,7 @@ public class BuildClasspathUtil {
      * @param config
      * @return
      */
-   public static Collection<File> injectGwtDepsFromRepo( final ScriptConfiguration config )
+   public static Collection<File> injectGwtDepsFromRepo( final RunScriptConfiguration config )
         throws MojoExecutionException
     {
       config

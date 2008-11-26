@@ -19,7 +19,7 @@ package org.codehaus.mojo.gwt.shell.scripting;
  * under the License.
  */
 
-import com.totsp.mavenplugin.gwt.AbstractGWTMojo;
+import org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo;
 
 public final class ScriptWriterFactory {
 
@@ -28,7 +28,7 @@ public final class ScriptWriterFactory {
 
     public static ScriptWriter getInstance() {
         ScriptWriter sw = null;
-        if ( AbstractGWTMojo.OS_NAME.startsWith( AbstractGWTMojo.WINDOWS ) )
+        if ( AbstractGwtShellMojo.OS_NAME.startsWith( AbstractGwtShellMojo.WINDOWS ) )
         {
             sw = new ScriptWriterWindows();
         } else {

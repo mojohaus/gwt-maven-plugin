@@ -34,7 +34,6 @@ import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo;
 import org.codehaus.mojo.gwt.shell.BuildClasspathUtil;
-import org.codehaus.mojo.gwt.shell.DebugMojo;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
@@ -48,28 +47,47 @@ public class ScriptWriterUnix implements ScriptWriter {
    public ScriptWriterUnix() {
    }
 
-   /**
-    * Write run script.
-    */
-   public File writeRunScript( ScriptConfiguration configuration )
+    /**
+     * Write debug script.
+     */
+    public File writeDebugScript( DebugScriptConfiguration configuration )
         throws MojoExecutionException
     {
-      String filename = (configuration instanceof DebugMojo) ? "debug.sh" : "run.sh";
+        return writeRunScript( configuration, configuration.getDebugPort(), configuration.isDebugSuspend() );
+    }
+
+    /**
+     * Write run script.
+     */
+   public File writeRunScript( RunScriptConfiguration configuration )
+       throws MojoExecutionException
+    {
+        return writeRunScript( configuration, -1, false );
+    }
+
+    /**
+     * Write run script.
+     */
+    private File writeRunScript( RunScriptConfiguration configuration, int debugPort, boolean debugSuspend )
+        throws MojoExecutionException
+    {
+      String filename = ( debugPort >= 0 ) ? "debug.sh" : "run.sh";
       File file = new File(configuration.getBuildDir(), filename);
       PrintWriter writer = this.getPrintWriterWithClasspath(configuration, file, DependencyScope.RUNTIME);
 
       String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
       if ( AbstractGwtShellMojo.OS_NAME.startsWith( "mac" ) && ( extra.indexOf( "-XstartOnFirstThread" ) == -1 ) )
-        {
+      {
          extra = "-XstartOnFirstThread " + extra;
       }
 
       writer.print( "\"" + AbstractGwtShellMojo.JAVA_COMMAND + "\" " + extra + " -cp $CLASSPATH " );
 
-      if (configuration instanceof DebugMojo) {
+      if ( debugPort >= 0 )
+      {
          writer.print(" -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,address=");
-         writer.print(configuration.getDebugPort());
-         writer.print(configuration.isDebugSuspend() ? ",suspend=y " : ",suspend=n ");
+         writer.print( debugPort );
+         writer.print( debugSuspend ? ",suspend=y " : ",suspend=n " );
       }
 
       writer.print("-Dcatalina.base=\"" + configuration.getTomcat().getAbsolutePath() + "\" ");
@@ -102,7 +120,7 @@ public class ScriptWriterUnix implements ScriptWriter {
    /**
     * Write compile script.
     */
-   public File writeCompileScript( ScriptConfiguration configuration )
+   public File writeCompileScript( CompileScriptConfiguration configuration )
         throws MojoExecutionException
     {
       File file = new File(configuration.getBuildDir(), "compile.sh");
@@ -146,7 +164,7 @@ public class ScriptWriterUnix implements ScriptWriter {
     /**
      * Write i18n script.
      */
-   public File writeI18nScript( ScriptConfiguration configuration )
+   public File writeI18nScript( I18nScriptConfiguration configuration )
         throws MojoExecutionException
     {
 
@@ -218,7 +236,7 @@ public class ScriptWriterUnix implements ScriptWriter {
    /**
     * Write test scripts.
     */
-   public void writeTestScripts( ScriptConfiguration configuration )
+   public void writeTestScripts( TestScriptConfiguration configuration )
         throws MojoExecutionException
     {
 
@@ -293,7 +311,7 @@ public class ScriptWriterUnix implements ScriptWriter {
      * @return
      * @throws MojoExecutionException
      */
-   private PrintWriter getPrintWriterWithClasspath( final ScriptConfiguration mojo, File file,
+   private PrintWriter getPrintWriterWithClasspath( final RunScriptConfiguration mojo, File file,
                                                      final DependencyScope scope )
             throws MojoExecutionException {
 
