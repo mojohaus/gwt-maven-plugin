@@ -19,20 +19,20 @@ package org.codehaus.mojo.gwt.shell.scripting;
  * under the License.
  */
 
-import org.codehaus.mojo.gwt.shell.BuildClasspathUtil;
+import org.codehaus.mojo.gwt.shell.ClasspathBuilder;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * @author ndeloof
  *
  */
 public abstract class AbstractScriptWriter
+    extends AbstractLogEnabled
     implements ScriptWriter
 {
 
     /**
      * @plexus.requirement
      */
-    protected BuildClasspathUtil buildClasspathUtil;
-
-
+    protected ClasspathBuilder buildClasspathUtil;
 }

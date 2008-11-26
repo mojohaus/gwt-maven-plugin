@@ -25,10 +25,12 @@ import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
+import org.codehaus.mojo.gwt.AbstractGwtMojo;
 import org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriterFactory;
 
@@ -44,10 +46,6 @@ public abstract class AbstractGwtShellMojo
     implements GwtShellScriptConfiguration
 {
 
-    public static final String GWT_GROUP_ID = "com.google.gwt";
-
-    public static final String GOOGLE_WEBTOOLKIT_HOME = "google.webtoolkit.home";
-
     /**
      * @component
      */
@@ -56,7 +54,7 @@ public abstract class AbstractGwtShellMojo
     /**
      * @component
      */
-    protected BuildClasspathUtil buildClasspathUtil;
+    protected ClasspathBuilder buildClasspathUtil;
 
     /**
      * @parameter expression="${localRepository}"
@@ -80,7 +78,7 @@ public abstract class AbstractGwtShellMojo
     /**
      * Set the GWT version number - used to build dependency paths, should match the "version" in the Maven repo.
      *
-     * @parameter default-value="1.5.3"
+     * @parameter
      */
     private String gwtVersion;
 
@@ -297,8 +295,35 @@ public abstract class AbstractGwtShellMojo
     // methods
 
     /**
+     * {@inheritDoc}
+     */
+    public void initialize()
+        throws MojoExecutionException
+    {
+        if ( gwtVersion == null )
+        {
+            for ( Iterator iterator = project.getArtifacts().iterator(); iterator.hasNext(); )
+            {
+                Artifact artifact = (Artifact) iterator.next();
+                if ( AbstractGwtMojo.GWT_GROUP_ID.equals( artifact.getGroupId() )
+                    && "gwt-user".equals( artifact.getArtifactId() ) )
+                {
+                    gwtVersion = artifact.getVersion();
+                    getLog().info( "GWT version found in project dependencies : " + gwtVersion );
+                    break;
+                }
+            }
+        }
+        if ( gwtVersion == null )
+        {
+            getLog().error( "gwtVersion not set and no com.google.gwt:gwt-user dependency found in project" );
+            throw new MojoExecutionException( "cannot resolve GWT version" );
+        }
+    }
+
+    /**
      * Helper hack for classpath problems, used as a fallback.
-     *
+     * 
      * @return
      */
     protected ClassLoader fixThreadClasspath()

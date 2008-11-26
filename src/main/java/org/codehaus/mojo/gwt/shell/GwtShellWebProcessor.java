@@ -32,12 +32,14 @@ import org.codehaus.mojo.gwt.webxml.ServletDescriptor;
 public class GwtShellWebProcessor extends GwtWebInfProcessor {
 
     /** Creates a new instance of GwtShellWebProcessor */
-    public GwtShellWebProcessor(String targetWebXml, String sourceWebXml, String shellServletMappingURL) throws Exception {
+    public GwtShellWebProcessor( String targetWebXml, File sourceWebXml, String shellServletMappingURL )
+        throws Exception
+    {
         // obtain web.xml
-        this.webXmlPath = sourceWebXml;
-        File webXmlFile = new File(sourceWebXml);
+        this.webXmlPath = sourceWebXml.getAbsolutePath();
 
-        if(!webXmlFile.exists() || !webXmlFile.canRead()) {
+        if ( !sourceWebXml.exists() || !sourceWebXml.canRead() )
+        {
             throw new Exception("Unable to locate source web.xml");
         }
 

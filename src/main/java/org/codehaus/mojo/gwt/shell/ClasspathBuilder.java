@@ -19,6 +19,8 @@ package org.codehaus.mojo.gwt.shell;
  * under the License.
  */
 
+import static org.codehaus.mojo.gwt.AbstractGwtMojo.GWT_GROUP_ID;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
@@ -37,16 +39,17 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.ActiveProjectArtifact;
 import org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * Util to consolidate classpath manipulation stuff in one place.
- *
+ * 
  * @author ccollins
- * @plexus.component role="org.codehaus.mojo.gwt.shell.BuildClasspathUtil"
+ * @plexus.component role="org.codehaus.mojo.gwt.shell.ClasspathBuilderl"
  */
-public class BuildClasspathUtil
+public class ClasspathBuilder
+    extends AbstractLogEnabled
 {
-
     /**
      * @plexus.requirement
      */
@@ -73,7 +76,7 @@ public class BuildClasspathUtil
         throws DependencyResolutionRequiredException, MojoExecutionException
     {
 
-        mojo.getLog().info( "establishing classpath list (buildClaspathList - scope = " + scope + ")" );
+        getLogger().info( "establishing classpath list (buildClaspathList - scope = " + scope + ")" );
 
         File gwtHome = mojo.getGwtHome();
         MavenProject project = mojo.getProject();
@@ -86,14 +89,14 @@ public class BuildClasspathUtil
         // TODO filter the rest of the stuff so we don't double add these
         if ( gwtHome != null )
         {
-            mojo.getLog().info(
-                                "google.webtoolkit.home (gwtHome) set, using it for GWT dependencies - "
-                                    + gwtHome.getAbsolutePath() );
+            getLogger().info(
+                              "google.webtoolkit.home (gwtHome) set, using it for GWT dependencies - "
+                                  + gwtHome.getAbsolutePath() );
             items.addAll( injectGwtDepsFromGwtHome( gwtHome, mojo ) );
         }
         else
         {
-            mojo.getLog().info( "google.webtoolkit.home (gwtHome) *not* set, using project POM for GWT dependencies" );
+            getLogger().info( "google.webtoolkit.home (gwtHome) *not* set, using project dependencies" );
             items.addAll( injectGwtDepsFromRepo( mojo ) );
         }
 
@@ -110,7 +113,7 @@ public class BuildClasspathUtil
         }
 
         // add classes dir
-        items.add( new File( project.getBasedir(), "classes" ) );
+        items.add( new File( project.getBuild().getOutputDirectory() ) );
 
         // if runtime add runtime
         if ( scope == Artifact.SCOPE_RUNTIME )
@@ -146,10 +149,10 @@ public class BuildClasspathUtil
             items.add( new File( it.next().toString() ) );
         }
 
-        mojo.getLog().debug( "SCRIPT INJECTION CLASSPATH LIST" );
+        getLogger().debug( "SCRIPT INJECTION CLASSPATH LIST" );
         for ( File f : items )
         {
-            mojo.getLog().debug( "   " + f.getAbsolutePath() );
+            getLogger().debug( "   " + f.getAbsolutePath() );
         }
 
         return items;
@@ -163,8 +166,9 @@ public class BuildClasspathUtil
      */
     public Collection<File> injectGwtDepsFromGwtHome( final File gwtHome, final GwtShellScriptConfiguration mojo )
     {
-        mojo.getLog().debug(
-                             "injecting gwt-user and gwt-dev for script classpath from google.webtoolkit.home (and expecting relative native libs)" );
+        getLogger().debug(
+                           "injecting gwt-user and gwt-dev for script classpath "
+                               + "from google.webtoolkit.home (and expecting relative native libs)" );
         Collection<File> items = new LinkedHashSet<File>();
         File userJar = new File( gwtHome, "gwt-user.jar" );
         File devJar = new File( gwtHome, ArtifactNameUtil.guessDevJarName() );
@@ -182,15 +186,16 @@ public class BuildClasspathUtil
     public Collection<File> injectGwtDepsFromRepo( final GwtShellScriptConfiguration config )
         throws MojoExecutionException
     {
-        config.getLog().debug(
-                               "injecting gwt-user and gwt-dev for script classpath from local repository (and expecting relative native libs)" );
+        getLogger().debug(
+                           "injecting gwt-user and gwt-dev for script classpath "
+                               + "from local repository (and expecting relative native libs)" );
         Collection<File> items = new LinkedHashSet<File>();
 
         Artifact gwtUser =
-            artifactFactory.createArtifactWithClassifier( "com.google.gwt", "gwt-user", config.getGwtVersion(), "jar",
+            artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, "gwt-user", config.getGwtVersion(), "jar",
                                                           null );
         Artifact gwtDev =
-            artifactFactory.createArtifactWithClassifier( "com.google.gwt", "gwt-dev", config.getGwtVersion(), "jar",
+            artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, "gwt-dev", config.getGwtVersion(), "jar",
                                                           ArtifactNameUtil.getPlatformName() );
 
         List remoteRepositories = config.getRemoteRepositories();

@@ -50,6 +50,7 @@ public class I18NMojo
 
     public void execute() throws MojoExecutionException, MojoFailureException {
 
+        initialize();
         if (this.getI18nMessagesNames() == null && this.getI18nConstantsNames() == null) {
             throw new MojoExecutionException(
                     "neither i18nConstantsNames nor i18nMessagesNames present, cannot execute i18n goal");

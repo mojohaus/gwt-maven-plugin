@@ -39,6 +39,9 @@ import org.apache.maven.project.MavenProject;
 public abstract class AbstractGwtMojo
     extends AbstractMojo
 {
+    /** GWT artifacts groupId */
+    public static final String GWT_GROUP_ID = "com.google.gwt";
+
     /**
      * The maven project descriptor
      * @parameter expression="${project}"
@@ -83,7 +86,7 @@ public abstract class AbstractGwtMojo
         return new URLClassLoader( urls, ClassLoader.getSystemClassLoader() );
     }
 
-    /** 
+    /**
      * @param path file to add to the project compile directories
      */
     protected void addCompileSourceRoot( File path )

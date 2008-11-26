@@ -173,16 +173,15 @@ public class ScriptWriterUnix
 
       File file = new File(configuration.getBuildDir(), "i18n.sh");
       if (!file.exists()) {
-         if (configuration.getLog().isDebugEnabled())
-            configuration.getLog().debug("File '" + file.getAbsolutePath() + "' does not exsists, trying to create.");
+         getLogger().debug( "File '" + file.getAbsolutePath() + "' does not exsists, trying to create." );
          try {
             file.getParentFile().mkdirs();
             file.createNewFile();
-            if (configuration.getLog().isDebugEnabled())
-               configuration.getLog().debug("New file '" + file.getAbsolutePath() + "' created.");
+            getLogger().debug( "New file '" + file.getAbsolutePath() + "' created." );
          }
          catch (Exception exe) {
-            configuration.getLog().error("Couldn't create file '" + file.getAbsolutePath() + "'. Reason: " + exe.getMessage(),
+            getLogger().error(
+                                   "Couldn't create file '" + file.getAbsolutePath() + "'. Reason: " + exe.getMessage(),
                      exe);
          }
       }
@@ -267,7 +266,7 @@ public class ScriptWriterUnix
          for (File currFile : coll) {
 
             String testName = currFile.toString();
-            configuration.getLog().debug(("gwtTest test match found (after filter applied) - " + testName));
+            getLogger().debug( ( "gwtTest test match found (after filter applied) - " + testName ) );
 
             // parse off the extension
             if (testName.lastIndexOf('.') > testName.lastIndexOf(File.separatorChar)) {
@@ -280,7 +279,7 @@ public class ScriptWriterUnix
                testName = testName.substring(1);
             }
             testName = StringUtils.replace(testName, File.separatorChar, '.');
-            configuration.getLog().debug("testName after parsing - " + testName);
+            getLogger().debug( "testName after parsing - " + testName );
 
             // start script inside gwtTest output dir, and name it with test class name
             File file = new File(configuration.getBuildDir() + File.separator + "gwtTest", "gwtTest-" + testName + ".sh");

@@ -31,8 +31,7 @@ import org.codehaus.plexus.util.FileUtils;
 /**
  * Goal which run a GWT module in the GWT Shell.
  * 
- * @goal run
- * @alias gwt
+ * @goal gwt
  * @execute phase=compile
  * @requiresDependencyResolution compile
  * @description Runs the the project in the GWTShell for development.
@@ -64,6 +63,7 @@ public class RunMojo
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
+        initialize();
         try
         {
             this.makeCatalinaBase();
@@ -104,10 +104,8 @@ public class RunMojo
             this.getLog().info( "source web.xml NOT present, using default empty web.xml for shell" );
         }
 
-        // note that MakeCatalinaBase (support jar) will use emptyWeb.xml if webXml does not exist
-        String[] args =
-            { this.getTomcat().getAbsolutePath(), this.getWebXml().getAbsolutePath(), this.getShellServletMappingURL() };
-        MakeCatalinaBase.main( args );
+        // note that MakeCatalinaBase will use emptyWeb.xml if webXml does not exist
+        new MakeCatalinaBase( this.getTomcat(), this.getWebXml(), this.getShellServletMappingURL() ).setup();
 
         if ( ( this.getContextXml() != null ) && this.getContextXml().exists() )
         {

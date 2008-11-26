@@ -51,6 +51,9 @@ public class CompileMojo
     }
 
     public void execute() throws MojoExecutionException, MojoFailureException {
+
+        initialize();
+
         if (!this.getOutput().exists()) {
             this.getOutput().mkdirs();
         }

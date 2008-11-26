@@ -21,88 +21,71 @@ package org.codehaus.mojo.gwt.shell;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
+import org.apache.commons.io.IOUtils;
 
 /**
- *
  * @author cooper
  */
-public class MakeCatalinaBase {
+public class MakeCatalinaBase
+{
+
+    private File baseDir;
+
+    private File sourceWebXml;
+
+    private String shellServletMappingURL;
+
     /**
-     * default read size for stream copy
+     * @param baseDir
+     * @param sourceWebXml
+     * @param shellServletMappingURL
      */
-    static final int DEFAULT_BUFFER_SIZE = 1024;
-
-    /** Copies the data from an InputStream object to an OutputStream object.
-     * @param sourceStream The input stream to be read.
-     * @param destinationStream The output stream to be written to.
-     * @return int value of the number of bytes copied.
-     * @exception IOException from java.io calls.
-     */
-    static int copyStream(
-            InputStream sourceStream, OutputStream destinationStream
-            ) throws IOException {
-        int bytesRead = 0;
-        int totalBytes = 0;
-        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
-
-        while(bytesRead >= 0) {
-            bytesRead = sourceStream.read(buffer, 0, buffer.length);
-
-            if(bytesRead > 0) {
-                destinationStream.write(buffer, 0, bytesRead);
-            }
-
-            totalBytes += bytesRead;
-        }
-
-        destinationStream.flush();
-        destinationStream.close();
-        return totalBytes;
+    public MakeCatalinaBase( File baseDir, File sourceWebXml, String shellServletMappingURL )
+    {
+        super();
+        this.baseDir = baseDir;
+        this.sourceWebXml = sourceWebXml;
+        this.shellServletMappingURL = shellServletMappingURL;
     }
 
-    public static void main(String[] args) throws Exception {
-        String baseDir = args[0];
-        String sourceWebXml = args[1];
-        String shellServletMappingURL = args[2];
+    public void setup()
+        throws Exception
+    {
+        baseDir.mkdirs();
 
-        File catalinaBase = new File(baseDir);
-        catalinaBase.mkdirs();
-
-        File conf = new File(catalinaBase, "conf");
+        File conf = new File( baseDir, "conf" );
         conf.mkdirs();
 
-        File gwt = new File(conf, "gwt");
+        File gwt = new File( conf, "gwt" );
         gwt.mkdirs();
 
-        File localhost = new File(gwt, "localhost");
+        File localhost = new File( gwt, "localhost" );
         localhost.mkdirs();
 
-        File webapps = new File(catalinaBase, "webapps");
+        File webapps = new File( baseDir, "webapps" );
         webapps.mkdirs();
 
-        File root = new File(webapps, "ROOT");
+        File root = new File( webapps, "ROOT" );
         root.mkdirs();
 
-        File webinf = new File(root, "WEB-INF");
+        File webinf = new File( root, "WEB-INF" );
         webinf.mkdirs();
-        new File(catalinaBase, "work").mkdirs();
+        new File( baseDir, "work" ).mkdirs();
 
-        FileOutputStream fos = new FileOutputStream( new File( conf, "web.xml") );
-        MakeCatalinaBase.copyStream( MakeCatalinaBase.class.getResourceAsStream("baseWeb.xml"),
-                fos);
-        File mergeWeb = new File( webinf, "web.xml");
-        File sourceWeb = new File( sourceWebXml );
-        if( sourceWeb.exists() ){
-            GwtShellWebProcessor p = new GwtShellWebProcessor( mergeWeb.getAbsolutePath(), sourceWebXml, shellServletMappingURL );
+        FileOutputStream fos = new FileOutputStream( new File( conf, "web.xml" ) );
+        IOUtils.copy( getClass().getResourceAsStream( "baseWeb.xml" ), fos );
+        File mergeWeb = new File( webinf, "web.xml" );
+        if ( sourceWebXml.exists() )
+        {
+            GwtShellWebProcessor p =
+                new GwtShellWebProcessor( mergeWeb.getAbsolutePath(), sourceWebXml, shellServletMappingURL );
             p.process();
-        } else {
+        }
+        else
+        {
             fos = new FileOutputStream( mergeWeb );
-            MakeCatalinaBase.copyStream( MakeCatalinaBase.class.getResourceAsStream("emptyWeb.xml"),
-                    fos);
+            IOUtils.copy( getClass().getResourceAsStream( "emptyWeb.xml" ), fos );
         }
 
     }

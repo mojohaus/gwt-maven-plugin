@@ -53,6 +53,8 @@ public class GWTTestMojo
          return;
       }
 
+      initialize();
+
       this.getLog().info("running GWTTestCase tests (using test name filter -  " + this.getTestFilter() + ")");
 
       FileWriter testResultsWriter = null;
