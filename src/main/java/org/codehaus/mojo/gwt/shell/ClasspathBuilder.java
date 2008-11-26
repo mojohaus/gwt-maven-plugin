@@ -115,14 +115,15 @@ public class ClasspathBuilder
         // add classes dir
         items.add( new File( project.getBuild().getOutputDirectory() ) );
 
-        // if runtime add runtime
-        if ( scope == Artifact.SCOPE_RUNTIME )
-        {
-            for ( Iterator it = project.getRuntimeClasspathElements().iterator(); it.hasNext(); )
-            {
-                items.add( new File( it.next().toString() ) );
-            }
-        }
+        // Note : getCompileClasspathElements allready includes RUNTIME & SYSTEM dependencies
+        // // if runtime add runtime
+        // if ( scope == Artifact.SCOPE_RUNTIME )
+        // {
+        // for ( Iterator it = project.getRuntimeClasspathElements().iterator(); it.hasNext(); )
+        // {
+        // items.add( new File( it.next().toString() ) );
+        // }
+        // }
 
         // if test add test
         if ( scope == Artifact.SCOPE_TEST )
@@ -143,11 +144,11 @@ public class ClasspathBuilder
             items.add( new File( it.next().toString() ) );
         }
 
-        // add system
-        for ( Iterator it = project.getSystemClasspathElements().iterator(); it.hasNext(); )
-        {
-            items.add( new File( it.next().toString() ) );
-        }
+        // // add system
+        // for ( Iterator it = project.getSystemClasspathElements().iterator(); it.hasNext(); )
+        // {
+        // items.add( new File( it.next().toString() ) );
+        // }
 
         getLogger().debug( "SCRIPT INJECTION CLASSPATH LIST" );
         for ( File f : items )
