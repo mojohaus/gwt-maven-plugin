@@ -43,14 +43,31 @@ public class I18NMojo
     implements I18nScriptConfiguration
 {
 
-    /** Creates a new instance of I18NMojo */
-    public I18NMojo() {
-        super();
-    }
+    /**
+     * Location on filesystem to output generated i18n Constants and Messages interfaces.
+     * 
+     * @parameter expression="${basedir}/src/main/java/"
+     */
+    private File i18nOutputDir;
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    /**
+     * List of names of properties files that should be used to generate i18n Messages interfaces.
+     * 
+     * @parameter
+     */
+    private String[] i18nMessagesNames;
 
-        initialize();
+    /**
+     * List of names of properties files that should be used to generate i18n Constants interfaces.
+     * 
+     * @parameter
+     */
+    private String[] i18nConstantsNames;
+
+    public void doExecute()
+        throws MojoExecutionException, MojoFailureException
+    {
+
         if (this.getI18nMessagesNames() == null && this.getI18nConstantsNames() == null) {
             throw new MojoExecutionException(
                     "neither i18nConstantsNames nor i18nMessagesNames present, cannot execute i18n goal");
@@ -68,5 +85,35 @@ public class I18NMojo
 
         // run it
         ScriptUtil.runScript(exec);
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getI18nOutputDir()
+     */
+    public File getI18nOutputDir()
+    {
+        return this.i18nOutputDir;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getI18nMessagesNames()
+     */
+    public String[] getI18nMessagesNames()
+    {
+        return this.i18nMessagesNames;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getI18nConstantsNames()
+     */
+    public String[] getI18nConstantsNames()
+    {
+        return this.i18nConstantsNames;
     }
 }

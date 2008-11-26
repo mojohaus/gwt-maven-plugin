@@ -21,12 +21,10 @@ package org.codehaus.mojo.gwt.shell;
 
 import java.io.File;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
@@ -56,15 +54,6 @@ public abstract class AbstractGwtShellMojo
      */
     protected ClasspathBuilder buildClasspathUtil;
 
-    /**
-     * @parameter expression="${localRepository}"
-     */
-    private ArtifactRepository localRepository;
-
-    /**
-     * @parameter expression="${project.remoteArtifactRepositories}"
-     */
-    private List<ArtifactRepository> remoteRepositories;
 
     // GWT-Maven properties
 
@@ -93,7 +82,7 @@ public abstract class AbstractGwtShellMojo
     /**
      * Location on filesystem where GWT will write output files (-out option to GWTCompiler).
      *
-     * @parameter expression="${project.build.directory}/${project.build.finalName}"
+     * @parameter default-value="${project.build.directory}/${project.build.finalName}"
      */
     private File output;
 
@@ -126,87 +115,12 @@ public abstract class AbstractGwtShellMojo
     private boolean noServer;
 
     /**
-     * Runs the embedded GWT Tomcat server on the specified port.
-     *
-     * @parameter default-value="8888"
-     */
-    private int port;
-
-    /**
-     * Specify the location on the filesystem for the generated embedded Tomcat directory.
-     *
-     * @parameter expression="${project.build.directory}/tomcat"
-     */
-    private File tomcat;
-
-    /**
-     * Port to listen for debugger connection on.
-     *
-     * @parameter default-value="8000"
-     */
-    private int debugPort;
-
-    /**
-     * Source Tomcat context.xml for GWT shell - copied to /gwt/localhost/ROOT.xml (used as the context.xml for the
-     * SHELL - requires Tomcat 5.0.x format - hence no default).
-     *
-     * @parameter
-     */
-    private File contextXml;
-
-    /**
-     * Source web.xml deployment descriptor that is used for GWT shell and for deployment WAR to "merge" servlet
-     * entries.
-     *
-     * @parameter expression="${basedir}/src/main/webapp/WEB-INF/web.xml"
-     */
-    private File webXml;
-
-    /**
-     * Specifies whether or not to add the module name as a prefix to the servlet path when merging web.xml. If you set
-     * this to false the exact path from the GWT module will be used, nothing else will be prepended.
-     *
-     * @parameter default-value="false"
-     */
-    private boolean webXmlServletPathAsIs;
-
-    /**
-     * Whether or not to suspend execution until a debugger connects.
-     *
-     * @parameter default-value="true"
-     */
-    private boolean debugSuspend;
-
-    /**
      * Extra JVM arguments that are passed to the GWT-Maven generated scripts (for compiler, shell, etc - typically use
      * -Xmx512m here, or -XstartOnFirstThread, etc).
-     *
+     * 
      * @parameter expression="${google.webtoolkit.extrajvmargs}"
      */
     private String extraJvmArgs;
-
-    /**
-     * Simple string filter for classes that should be treated as GWTTestCase type (and therefore invoked during gwtTest
-     * goal).
-     *
-     * @parameter default-value="GwtTest*"
-     */
-    private String testFilter;
-
-    /**
-     * Extra JVM arguments that are passed only to the GWT-Maven generated test scripts (in addition to std
-     * extraJvmArgs).
-     *
-     * @parameter default-value=""
-     */
-    private String extraTestArgs;
-
-    /**
-     * Whether or not to skip GWT testing.
-     *
-     * @parameter default-value="false"
-     */
-    private boolean testSkip;
 
     /**
      * Whether or not to add compile source root to classpath.
@@ -236,63 +150,22 @@ public abstract class AbstractGwtShellMojo
      */
     private String shellServletMappingURL;
 
-    /**
-     * Location on filesystem to output generated i18n Constants and Messages interfaces.
-     *
-     * @parameter expression="${basedir}/src/main/java/"
-     */
-    private File i18nOutputDir;
-
-    /**
-     * List of names of properties files that should be used to generate i18n Messages interfaces.
-     *
-     * @parameter
-     */
-    private String[] i18nMessagesNames;
-
-    /**
-     * List of names of properties files that should be used to generate i18n Constants interfaces.
-     *
-     * @parameter
-     */
-    private String[] i18nConstantsNames;
-
-    /**
-     * Top level (root) of classes to begin generation from.
-     *
-     * @parameter property="generatorRootClasses"
-     */
-    private String[] generatorRootClasses;
-
-    /**
-     * Destination package for generated classes.
-     *
-     * @parameter
-     */
-    private String generatorDestinationPackage;
-
-    /**
-     * Whether or not to generate getter/setter methods for generated classes.
-     *
-     * @parameter
-     */
-    private boolean generateGettersAndSetters;
-
-    /**
-     * Whether or not to generate PropertyChangeSupport handling for generated classes.
-     *
-     * @parameter
-     */
-    private boolean generatePropertyChangeSupport;
-
-    /**
-     * Whether or not to overwrite generated classes if they exist.
-     *
-     * @parameter
-     */
-    private boolean overwriteGeneratedClasses;
-
     // methods
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.apache.maven.plugin.Mojo#execute()
+     */
+    public final void execute()
+        throws MojoExecutionException, MojoFailureException
+    {
+        initialize();
+        doExecute();
+    }
+
+    protected abstract void doExecute()
+        throws MojoExecutionException, MojoFailureException;
 
     /**
      * {@inheritDoc}
@@ -323,7 +196,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * Helper hack for classpath problems, used as a fallback.
-     * 
+     *
      * @return
      */
     protected ClassLoader fixThreadClasspath()
@@ -373,15 +246,6 @@ public abstract class AbstractGwtShellMojo
     public String[] getCompileTarget()
     {
         return getModules();
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getContextXml()
-     */
-    public File getContextXml()
-    {
-        return this.contextXml;
     }
 
     /**
@@ -440,56 +304,11 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getPort()
-     */
-    public int getPort()
-    {
-        return this.port;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getProject()
-     */
-    public MavenProject getProject()
-    {
-        return this.project;
-    }
-
-    /**
-     * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getStyle()
      */
     public String getStyle()
     {
         return this.style;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getTomcat()
-     */
-    public File getTomcat()
-    {
-        return this.tomcat;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getWebXml()
-     */
-    public File getWebXml()
-    {
-        return this.webXml;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isWebXmlServletPathAsIs()
-     */
-    public boolean isWebXmlServletPathAsIs()
-    {
-        return this.webXmlServletPathAsIs;
     }
 
     /**
@@ -503,83 +322,11 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getGeneratorRootClasses()
-     */
-    public String[] getGeneratorRootClasses()
-    {
-        return this.generatorRootClasses;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getGeneratorDestinationPackage()
-     */
-    public String getGeneratorDestinationPackage()
-    {
-        return this.generatorDestinationPackage;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isGenerateGettersAndSetters()
-     */
-    public boolean isGenerateGettersAndSetters()
-    {
-        return this.generateGettersAndSetters;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isGeneratePropertyChangeSupport()
-     */
-    public boolean isGeneratePropertyChangeSupport()
-    {
-        return this.generatePropertyChangeSupport;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isOverwriteGeneratedClasses()
-     */
-    public boolean isOverwriteGeneratedClasses()
-    {
-        return this.overwriteGeneratedClasses;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getDebugPort()
-     */
-    public int getDebugPort()
-    {
-        return this.debugPort;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isDebugSuspend()
-     */
-    public boolean isDebugSuspend()
-    {
-        return this.debugSuspend;
-    }
-
-    /**
-     * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getGwtVersion()
      */
     public String getGwtVersion()
     {
         return this.gwtVersion;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getTestFilter()
-     */
-    public String getTestFilter()
-    {
-        return this.testFilter;
     }
 
     /**
@@ -609,67 +356,5 @@ public abstract class AbstractGwtShellMojo
         return this.enableAssertions;
     }
 
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getLocalRepository()
-     */
-    public org.apache.maven.artifact.repository.ArtifactRepository getLocalRepository()
-    {
-        return this.localRepository;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getRemoteRepositories()
-     */
-    public java.util.List getRemoteRepositories()
-    {
-        return this.remoteRepositories;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getI18nOutputDir()
-     */
-    public File getI18nOutputDir()
-    {
-        return this.i18nOutputDir;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getI18nMessagesNames()
-     */
-    public String[] getI18nMessagesNames()
-    {
-        return this.i18nMessagesNames;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getI18nConstantsNames()
-     */
-    public String[] getI18nConstantsNames()
-    {
-        return this.i18nConstantsNames;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getExtraTestArgs()
-     */
-    public String getExtraTestArgs()
-    {
-        return this.extraTestArgs;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isTestSkip()
-     */
-    public boolean isTestSkip()
-    {
-        return this.testSkip;
-    }
 
 }

@@ -28,6 +28,29 @@ public class GWTTestMojo
     implements TestScriptConfiguration
 {
 
+    /**
+     * Simple string filter for classes that should be treated as GWTTestCase type (and therefore invoked during gwtTest
+     * goal).
+     * 
+     * @parameter default-value="GwtTest*"
+     */
+    private String testFilter;
+
+    /**
+     * Extra JVM arguments that are passed only to the GWT-Maven generated test scripts (in addition to std
+     * extraJvmArgs).
+     * 
+     * @parameter default-value=""
+     */
+    private String extraTestArgs;
+
+    /**
+     * Whether or not to skip GWT testing.
+     * 
+     * @parameter default-value="false" expression="${maven.test.skip}"
+     */
+    private boolean testSkip;
+
     /*
      * This is based on the clever work Will Pugh did in the original "gwtTest" stuff. This has been refactored to make
      * it a bit more robust, and to use the same write script approach all the other GWT-Maven mojos use (and those are
@@ -48,12 +71,12 @@ public class GWTTestMojo
      * is the ONLY way to run GWTTestCase based tests from an automated Maven build.
      */
 
-   public void execute() throws MojoExecutionException, MojoFailureException {
+   public void doExecute()
+        throws MojoExecutionException, MojoFailureException
+    {
       if (isTestSkip()) {
          return;
       }
-
-      initialize();
 
       this.getLog().info("running GWTTestCase tests (using test name filter -  " + this.getTestFilter() + ")");
 
@@ -109,4 +132,20 @@ public class GWTTestMojo
          throw new MojoExecutionException("There were GWTTestCase test failures - see results in target/gwtTest");
       }
    }
+
+
+    public String getTestFilter()
+    {
+        return this.testFilter;
+    }
+
+    public String getExtraTestArgs()
+    {
+        return this.extraTestArgs;
+    }
+
+    public boolean isTestSkip()
+    {
+        return this.testSkip;
+    }
 }

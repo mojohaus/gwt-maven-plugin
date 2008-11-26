@@ -26,7 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo;
+import org.codehaus.mojo.gwt.shell.AbstractGwtWebMojo;
 
 /**
  * Merges GWT servlet elements into deployment descriptor (and non GWT servlets into shell).
@@ -38,7 +38,7 @@ import org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo;
  * @author cooper
  */
 public class MergeWebXmlMojo
-    extends AbstractGwtShellMojo
+    extends AbstractGwtWebMojo
 {
 
     /** Creates a new instance of MergeWebXmlMojo */
@@ -46,7 +46,9 @@ public class MergeWebXmlMojo
         super();
     }
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void doExecute()
+        throws MojoExecutionException, MojoFailureException
+    {
 
         try {
             this.getLog().info("copy source web.xml - " + this.getWebXml() + " to build dir (source web.xml required if mergewebxml execution is enabled)");

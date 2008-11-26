@@ -39,7 +39,7 @@ import org.codehaus.plexus.util.FileUtils;
  * @author cooper
  */
 public class RunMojo
-    extends AbstractGwtShellMojo
+    extends AbstractGwtWebMojo
     implements RunScriptConfiguration
 {
 
@@ -51,6 +51,28 @@ public class RunMojo
     private String runTarget;
 
     /**
+     * Runs the embedded GWT Tomcat server on the specified port.
+     * 
+     * @parameter default-value="8888"
+     */
+    private int port;
+
+    /**
+     * Specify the location on the filesystem for the generated embedded Tomcat directory.
+     * 
+     * @parameter default-value="${project.build.directory}/tomcat"
+     */
+    private File tomcat;
+
+    /**
+     * Source Tomcat context.xml for GWT shell - copied to /gwt/localhost/ROOT.xml (used as the context.xml for the
+     * SHELL - requires Tomcat 5.0.x format - hence no default).
+     * 
+     * @parameter
+     */
+    private File contextXml;
+
+    /**
      * {@inheritDoc}
      * 
      * @see org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration#getRunTarget()
@@ -60,10 +82,9 @@ public class RunMojo
         return this.runTarget;
     }
 
-    public void execute()
+    public void doExecute()
         throws MojoExecutionException, MojoFailureException
     {
-        initialize();
         try
         {
             this.makeCatalinaBase();
@@ -114,5 +135,20 @@ public class RunMojo
                                     + " - using it for embedded Tomcat ROOT.xml" );
             FileUtils.copyFile( this.getContextXml(), new File( this.getTomcat(), "conf/gwt/localhost/ROOT.xml" ) );
         }
+    }
+
+    public File getContextXml()
+    {
+        return this.contextXml;
+    }
+
+    public int getPort()
+    {
+        return this.port;
+    }
+
+    public File getTomcat()
+    {
+        return this.tomcat;
     }
 }

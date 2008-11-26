@@ -26,7 +26,7 @@ public interface MavenScriptConfiguration
     /**
      * @return
      */
-    List getRemoteRepositories();
+    List<ArtifactRepository> getRemoteRepositories();
 
     /**
      * @return

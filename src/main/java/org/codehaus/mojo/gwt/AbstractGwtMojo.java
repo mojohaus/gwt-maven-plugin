@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -42,8 +43,24 @@ public abstract class AbstractGwtMojo
     /** GWT artifacts groupId */
     public static final String GWT_GROUP_ID = "com.google.gwt";
 
+
+    /**
+     * @parameter expression="${localRepository}"
+     * @required
+     * @readonly
+     */
+    private ArtifactRepository localRepository;
+
+    /**
+     * @parameter expression="${project.remoteArtifactRepositories}"
+     * @required
+     * @readonly
+     */
+    private List<ArtifactRepository> remoteRepositories;
+
     /**
      * The maven project descriptor
+     * 
      * @parameter expression="${project}"
      * @required
      * @readonly
@@ -201,4 +218,13 @@ public abstract class AbstractGwtMojo
         return startPosition;
     }
 
+    public org.apache.maven.artifact.repository.ArtifactRepository getLocalRepository()
+    {
+        return this.localRepository;
+    }
+
+    public List<ArtifactRepository> getRemoteRepositories()
+    {
+        return this.remoteRepositories;
+    }
 }

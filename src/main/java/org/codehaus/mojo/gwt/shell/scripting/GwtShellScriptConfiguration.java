@@ -18,11 +18,6 @@ public interface GwtShellScriptConfiguration
     /**
      * @return
      */
-    File getTomcat();
-
-    /**
-     * @return
-     */
     File getGen();
 
     /**
@@ -39,11 +34,6 @@ public interface GwtShellScriptConfiguration
      * @return
      */
     File getOutput();
-
-    /**
-     * @return
-     */
-    int getPort();
 
     /**
      * @return
@@ -69,6 +59,5 @@ public interface GwtShellScriptConfiguration
      * @return
      */
     String getGwtVersion();
-
 
 }

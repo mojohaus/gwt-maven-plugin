@@ -50,9 +50,9 @@ public class CompileMojo
         super();
     }
 
-    public void execute() throws MojoExecutionException, MojoFailureException {
-
-        initialize();
+    public void doExecute()
+        throws MojoExecutionException, MojoFailureException
+    {
 
         if (!this.getOutput().exists()) {
             this.getOutput().mkdirs();

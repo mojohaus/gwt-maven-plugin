@@ -24,7 +24,7 @@ import org.apache.maven.plugin.MojoFailureException;
 
 /**
  * Extends the gwt goal and runs the project in the GWTShell with a debugger port hook (optionally suspended).
- * 
+ *
  * @goal debug
  * @description Runs the project with a debugger port hook (optionally suspended).
  * @author cooper
@@ -32,16 +32,48 @@ import org.apache.maven.plugin.MojoFailureException;
 public class DebugMojo
     extends RunMojo
 {
-    public DebugMojo() {
-        super();
-    }
+
+    /**
+     * Port to listen for debugger connection on.
+     * 
+     * @parameter default-value="8000"
+     */
+    private int debugPort;
+
+    /**
+     * Whether or not to suspend execution until a debugger connects.
+     *
+     * @parameter default-value="true"
+     */
+    private boolean debugSuspend;
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void doExecute()
+        throws MojoExecutionException, MojoFailureException
+    {
         if (isDebugSuspend())
             getLog().info("starting debugger on port " + getDebugPort() + " in suspend mode");
         else
             getLog().info("starting debugger on port " + getDebugPort());
         super.execute();
+    }
+
+
+    /**
+     * {@inheritDoc}
+     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getDebugPort()
+     */
+    public int getDebugPort()
+    {
+        return this.debugPort;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isDebugSuspend()
+     */
+    public boolean isDebugSuspend()
+    {
+        return this.debugSuspend;
     }
 }
