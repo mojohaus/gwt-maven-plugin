@@ -74,13 +74,6 @@ public class ClasspathBuilder
         items.add( runtime.getGwtUserJar() );
         items.add( runtime.getGwtDevJar() );
 
-        if ( scope.equals( Artifact.SCOPE_TEST ) )
-        {
-            // add test sources and resources
-            addSourcesWithActiveProjects( project, items, scope );
-            addResourcesWithActiveProjects( project, items, scope );
-        }
-
         // add sources
         if ( sourcesOnPath )
         {
@@ -98,30 +91,37 @@ public class ClasspathBuilder
 
         // Use our own ClasspathElements fitering, as for RUNTIME we need to include PROVIDED artifacts,
         // that is not the default Maven policy, as RUNTIME is used here to build the GWTShell execution classpath
-        for ( Iterator i = project.getArtifacts().iterator(); i.hasNext(); )
-        {
-            Artifact artifact = (Artifact) i.next();
 
-            if ( artifact.getScope().equals( Artifact.SCOPE_TEST ) )
+        if ( scope.equals( Artifact.SCOPE_TEST ) )
+        {
+            // Add all project dependencies in classpath
+            for ( Iterator < Artifact > it = project.getTestClasspathElements().iterator(); it.hasNext(); )
             {
-                // TEST dependencies are only available during .. tests !
-                if ( scope.equals( Artifact.SCOPE_TEST ) )
-                {
-                    items.add( new File( artifact.toString() ) );
-                }
+                items.add( it.next().getFile() );
             }
-            else if ( scope.equals( Artifact.SCOPE_COMPILE ) )
+            // add test sources and resources
+            addSourcesWithActiveProjects( project, items, scope );
+            addResourcesWithActiveProjects( project, items, scope );
+        }
+        else if ( scope.equals( Artifact.SCOPE_COMPILE ) )
+        {
+            // Add all project dependencies in classpath
+            for ( Iterator < Artifact > it = project.getCompileClasspathElements().iterator(); it.hasNext(); )
             {
-                // RUNTIME dependencies must NOT be used in code, so are not includeed in compile scope
-                if ( !artifact.getScope().equals( Artifact.SCOPE_RUNTIME ) )
-                {
-                    items.add( new File( artifact.toString() ) );
-                }
+                items.add( it.next().getFile() );
             }
-            else
+        }
+        else if ( scope.equals( Artifact.SCOPE_RUNTIME ) )
+        {
+            // Add all dependencies BUT "TEST" as we need PROVIDED ones to setup the execution
+            // GWTShell
+            for ( Iterator < Artifact > it = project.getArtifacts().iterator(); it.hasNext(); )
             {
-                // All other scopes are always available
-                items.add( new File( artifact.toString() ) );
+                Artifact artifact = it.next();
+                if ( !artifact.getScope().equals( Artifact.SCOPE_TEST ) )
+                {
+                    items.add( artifact.getFile() );
+                }
             }
         }
 
