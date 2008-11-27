@@ -20,15 +20,11 @@ package org.codehaus.mojo.gwt.shell;
  */
 
 import java.io.File;
-import java.util.Iterator;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.codehaus.classworlds.ClassRealm;
-import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
-import org.codehaus.mojo.gwt.AbstractGwtMojo;
+import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriterFactory;
 
@@ -63,21 +59,6 @@ public abstract class AbstractGwtShellMojo
      * @parameter expression="${project.build.directory}"
      */
     private File buildDir;
-
-    /**
-     * Set the GWT version number - used to build dependency paths, should match the "version" in the Maven repo.
-     *
-     * @parameter
-     */
-    private String gwtVersion;
-
-    /**
-     * Location on filesystem where GWT is installed - for manual mode (existing GWT on machine - not needed for
-     * automatic mode).
-     *
-     * @parameter expression="${google.webtoolkit.home}"
-     */
-    private File gwtHome;
 
     /**
      * Location on filesystem where GWT will write output files (-out option to GWTCompiler).
@@ -127,14 +108,14 @@ public abstract class AbstractGwtShellMojo
      *
      * @parameter default-value="true"
      */
-    private boolean sourcesOnPath;
+    protected boolean sourcesOnPath;
 
     /**
      * Whether or not to add resources root to classpath.
      *
      * @parameter default-value="true"
      */
-    private boolean resourcesOnPath;
+    protected boolean resourcesOnPath;
 
     /**
      * Whether or not to enable assertions in generated scripts (-ea).
@@ -160,75 +141,12 @@ public abstract class AbstractGwtShellMojo
     public final void execute()
         throws MojoExecutionException, MojoFailureException
     {
-        initialize();
-        doExecute();
+        GwtRuntime runtime = getGwtRuntime();
+        doExecute( runtime );
     }
 
-    protected abstract void doExecute()
+    protected abstract void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException;
-
-    /**
-     * {@inheritDoc}
-     */
-    public void initialize()
-        throws MojoExecutionException
-    {
-        if ( gwtVersion == null )
-        {
-            for ( Iterator iterator = project.getArtifacts().iterator(); iterator.hasNext(); )
-            {
-                Artifact artifact = (Artifact) iterator.next();
-                if ( AbstractGwtMojo.GWT_GROUP_ID.equals( artifact.getGroupId() )
-                    && "gwt-user".equals( artifact.getArtifactId() ) )
-                {
-                    gwtVersion = artifact.getVersion();
-                    getLog().info( "GWT version found in project dependencies : " + gwtVersion );
-                    break;
-                }
-            }
-        }
-        if ( gwtVersion == null )
-        {
-            getLog().error( "gwtVersion not set and no com.google.gwt:gwt-user dependency found in project" );
-            throw new MojoExecutionException( "cannot resolve GWT version" );
-        }
-    }
-
-    /**
-     * Helper hack for classpath problems, used as a fallback.
-     *
-     * @return
-     */
-    protected ClassLoader fixThreadClasspath()
-    {
-        try
-        {
-            ClassWorld world = new ClassWorld();
-
-            // use the existing ContextClassLoader in a realm of the classloading space
-            ClassRealm root = world.newRealm( "gwt-plugin", Thread.currentThread().getContextClassLoader() );
-            ClassRealm realm = root.createChildRealm( "gwt-project" );
-
-            for ( Iterator it = buildClasspathUtil.buildClasspathList( this, Artifact.SCOPE_COMPILE ).iterator(); it.hasNext(); )
-            {
-                realm.addConstituent( ( (File) it.next() ).toURI().toURL() );
-            }
-
-            Thread.currentThread().setContextClassLoader( realm.getClassLoader() );
-            // /System.out.println("AbstractGwtMojo realm classloader = " + realm.getClassLoader().toString());
-
-            return realm.getClassLoader();
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-            throw new RuntimeException( e );
-        }
-    }
-
-    //
-    // accessors/mutators
-    //
 
     /**
      * {@inheritDoc}
@@ -264,15 +182,6 @@ public abstract class AbstractGwtShellMojo
     public File getGen()
     {
         return this.gen;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getGwtHome()
-     */
-    public File getGwtHome()
-    {
-        return this.gwtHome;
     }
 
     /**
@@ -318,15 +227,6 @@ public abstract class AbstractGwtShellMojo
     public String getShellServletMappingURL()
     {
         return this.shellServletMappingURL;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getGwtVersion()
-     */
-    public String getGwtVersion()
-    {
-        return this.gwtVersion;
     }
 
     /**

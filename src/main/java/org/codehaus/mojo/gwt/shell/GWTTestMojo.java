@@ -4,10 +4,16 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.apache.commons.io.filefilter.WildcardFileFilter;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.classworlds.ClassRealm;
+import org.codehaus.classworlds.ClassWorld;
+import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptUtil;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 import org.codehaus.mojo.gwt.shell.scripting.TestScriptConfiguration;
@@ -71,7 +77,7 @@ public class GWTTestMojo
      * is the ONLY way to run GWTTestCase based tests from an automated Maven build.
      */
 
-   public void doExecute()
+   public void doExecute(GwtRuntime runtime)
         throws MojoExecutionException, MojoFailureException
     {
       if (isTestSkip()) {
@@ -85,7 +91,7 @@ public class GWTTestMojo
       // build scripts for each test case for the correct platform
       // (note that scripts end up in outputDirectory/gwtTest)
         ScriptWriter writer = scriptWriterFactory.getScriptWriter();
-      writer.writeTestScripts(this);
+      writer.writeTestScripts(this, runtime);
 
       // run the scripts
       boolean testFailure = false;
@@ -147,5 +153,42 @@ public class GWTTestMojo
     public boolean isTestSkip()
     {
         return this.testSkip;
+    }
+
+
+    /**
+     * Helper hack for classpath problems, used as a fallback.
+     * @param runtime TODO
+     *
+     * @return
+     */
+    protected ClassLoader fixThreadClasspath( GwtRuntime runtime )
+    {
+        try
+        {
+            ClassWorld world = new ClassWorld();
+    
+            // use the existing ContextClassLoader in a realm of the classloading space
+            ClassRealm root = world.newRealm( "gwt-plugin", Thread.currentThread().getContextClassLoader() );
+            ClassRealm realm = root.createChildRealm( "gwt-project" );
+    
+            Collection classpath =
+                buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE, runtime, sourcesOnPath,
+                                                       resourcesOnPath );
+            for ( Iterator it = classpath.iterator(); it.hasNext(); )
+            {
+                realm.addConstituent( ( (File) it.next() ).toURI().toURL() );
+            }
+    
+            Thread.currentThread().setContextClassLoader( realm.getClassLoader() );
+            // /System.out.println("AbstractGwtMojo realm classloader = " + realm.getClassLoader().toString());
+    
+            return realm.getClassLoader();
+        }
+        catch ( Exception e )
+        {
+            e.printStackTrace();
+            throw new RuntimeException( e );
+        }
     }
 }

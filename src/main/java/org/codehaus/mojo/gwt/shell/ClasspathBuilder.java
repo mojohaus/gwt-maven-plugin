@@ -19,8 +19,6 @@ package org.codehaus.mojo.gwt.shell;
  * under the License.
  */
 
-import static org.codehaus.mojo.gwt.AbstractGwtMojo.GWT_GROUP_ID;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
@@ -30,20 +28,16 @@ import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.artifact.factory.ArtifactFactory;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.ActiveProjectArtifact;
-import org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration;
+import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
  * Util to consolidate classpath manipulation stuff in one place.
- * 
+ *
  * @author ccollins
  * @plexus.component role="org.codehaus.mojo.gwt.shell.ClasspathBuilder"
  */
@@ -51,35 +45,25 @@ public class ClasspathBuilder
     extends AbstractLogEnabled
 {
     /**
-     * @plexus.requirement
-     */
-    protected ArtifactResolver resolver;
-
-    /**
-     * @plexus.requirement
-     */
-    private ArtifactFactory artifactFactory;
-
-    /**
      * Build classpath list using either gwtHome (if present) or using *project* dependencies. Note that this is ONLY
      * used for the script/cmd writers (so the scopes are not for the compiler, or war plugins, etc). This is required
      * so that the script writers can get the dependencies they need regardless of the Maven scopes (still want to use
      * the Maven scopes for everything else Maven, but for GWT-Maven we need to access deps differently - directly at
      * times).
-     * 
+     *
      * @param mojo
      * @param scope
+     * @param runtime TODO
      * @return file collection for classpath
      * @throws DependencyResolutionRequiredException
      */
-    public Collection<File> buildClasspathList( final GwtShellScriptConfiguration mojo, final String scope )
+    public Collection<File> buildClasspathList( final MavenProject project, final String scope,
+                                                GwtRuntime runtime,
+                                                boolean sourcesOnPath, boolean resourcesOnPath )
         throws DependencyResolutionRequiredException, MojoExecutionException
     {
 
         getLogger().info( "establishing classpath list (buildClaspathList - scope = " + scope + ")" );
-
-        File gwtHome = mojo.getGwtHome();
-        MavenProject project = mojo.getProject();
 
         Set<File> items = new LinkedHashSet<File>();
 
@@ -87,27 +71,18 @@ public class ClasspathBuilder
         // (gwt-user and gwt-dev should be scoped provided to keep them out of
         // other maven stuff - not end up in war, etc - this util is only used for GWT-Maven scripts)
         // TODO filter the rest of the stuff so we don't double add these
-        if ( gwtHome != null )
-        {
-            getLogger().info(
-                              "google.webtoolkit.home (gwtHome) set, using it for GWT dependencies - "
-                                  + gwtHome.getAbsolutePath() );
-            items.addAll( injectGwtDepsFromGwtHome( gwtHome, mojo ) );
-        }
-        else
-        {
-            getLogger().info( "google.webtoolkit.home (gwtHome) *not* set, using project dependencies" );
-            items.addAll( injectGwtDepsFromRepo( mojo ) );
-        }
+
+        items.add( runtime.getGwtUserJar() );
+        items.add( runtime.getGwtDevJar() );
 
         // add sources
-        if ( mojo.getSourcesOnPath() )
+        if ( sourcesOnPath )
         {
             addSourcesWithActiveProjects( project, items, Artifact.SCOPE_COMPILE );
         }
 
         // add resources
-        if ( mojo.getResourcesOnPath() )
+        if ( resourcesOnPath )
         {
             addResourcesWithActiveProjects( project, items, Artifact.SCOPE_COMPILE );
         }
@@ -160,70 +135,9 @@ public class ClasspathBuilder
     }
 
     /**
-     * Helper to inject gwt-user and gwt-dev into classpath from gwtHome, ONLY for compile and run scripts.
-     * 
-     * @param mojo
-     * @return
-     */
-    public Collection<File> injectGwtDepsFromGwtHome( final File gwtHome, final GwtShellScriptConfiguration mojo )
-    {
-        getLogger().debug(
-                           "injecting gwt-user and gwt-dev for script classpath "
-                               + "from google.webtoolkit.home (and expecting relative native libs)" );
-        Collection<File> items = new LinkedHashSet<File>();
-        File userJar = new File( gwtHome, "gwt-user.jar" );
-        File devJar = new File( gwtHome, ArtifactNameUtil.guessDevJarName() );
-        items.add( userJar );
-        items.add( devJar );
-        return items;
-    }
-
-    /**
-     * Helper to inject gwt-user and gwt-dev into classpath from repo, ONLY for compile and run scripts.
-     *
-     * @param config
-     * @return
-     */
-    public Collection<File> injectGwtDepsFromRepo( final GwtShellScriptConfiguration config )
-        throws MojoExecutionException
-    {
-        getLogger().debug(
-                           "injecting gwt-user and gwt-dev for script classpath "
-                               + "from local repository (and expecting relative native libs)" );
-        Collection<File> items = new LinkedHashSet<File>();
-
-        Artifact gwtUser =
-            artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, "gwt-user", config.getGwtVersion(), "jar",
-                                                          null );
-        Artifact gwtDev =
-            artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, "gwt-dev", config.getGwtVersion(), "jar",
-                                                          ArtifactNameUtil.getPlatformName() );
-
-        List remoteRepositories = config.getRemoteRepositories();
-
-        try
-        {
-            resolver.resolve( gwtUser, remoteRepositories, config.getLocalRepository() );
-            resolver.resolve( gwtDev, remoteRepositories, config.getLocalRepository() );
-            items.add( gwtUser.getFile() );
-            items.add( gwtDev.getFile() );
-        }
-        catch ( ArtifactNotFoundException e )
-        {
-            throw new MojoExecutionException( "artifact not found - " + e.getMessage(), e );
-        }
-        catch ( ArtifactResolutionException e )
-        {
-            throw new MojoExecutionException( "artifact resolver problem - " + e.getMessage(), e );
-        }
-
-        return items;
-    }
-
-    /**
      * Add all sources and resources also with active (maven reactor active) referenced project sources and resources.
      * Addresses issue no. 147.
-     * 
+     *
      * @param project
      * @param items
      * @param scope
@@ -252,7 +166,7 @@ public class ClasspathBuilder
     /**
      * Add all sources and resources also with active (maven reactor active) referenced project sources and resources.
      * Addresses issue no. 147.
-     * 
+     *
      * @param project
      * @param items
      * @param scope
@@ -280,7 +194,7 @@ public class ClasspathBuilder
 
     /**
      * Get artifacts for specific scope.
-     * 
+     *
      * @param project
      * @param scope
      * @return
@@ -304,7 +218,7 @@ public class ClasspathBuilder
 
     /**
      * Get source roots for specific scope.
-     * 
+     *
      * @param project
      * @param scope
      * @return
@@ -327,7 +241,7 @@ public class ClasspathBuilder
 
     /**
      * Get resources for specific scope.
-     * 
+     *
      * @param project
      * @param scope
      * @return
@@ -351,7 +265,7 @@ public class ClasspathBuilder
 
     /**
      * Add source path and resource paths of the project to the list of classpath items.
-     * 
+     *
      * @param items Classpath items.
      * @param sourceRoots
      */
@@ -365,7 +279,7 @@ public class ClasspathBuilder
 
     /**
      * Add source path and resource paths of the project to the list of classpath items.
-     * 
+     *
      * @param items Classpath items.
      * @param resources
      */
@@ -380,7 +294,7 @@ public class ClasspathBuilder
 
     /**
      * Cut from MavenProject.java
-     * 
+     *
      * @param groupId
      * @param artifactId
      * @param version

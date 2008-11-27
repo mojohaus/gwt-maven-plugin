@@ -33,6 +33,7 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -53,30 +54,31 @@ public class ScriptWriterUnix
     /**
      * Write debug script.
      */
-    public File writeDebugScript( DebugScriptConfiguration configuration )
+    public File writeDebugScript( DebugScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
-        return writeRunScript( configuration, configuration.getDebugPort(), configuration.isDebugSuspend() );
+        return writeRunScript( configuration, configuration.getDebugPort(), configuration.isDebugSuspend(), runtime );
     }
 
     /**
      * Write run script.
      */
-   public File writeRunScript( RunScriptConfiguration configuration )
+   public File writeRunScript( RunScriptConfiguration configuration, GwtRuntime runtime )
        throws MojoExecutionException
     {
-        return writeRunScript( configuration, -1, false );
+        return writeRunScript( configuration, -1, false, runtime );
     }
 
     /**
      * Write run script.
      */
-    private File writeRunScript( RunScriptConfiguration configuration, int debugPort, boolean debugSuspend )
+    private File writeRunScript( RunScriptConfiguration configuration, int debugPort, boolean debugSuspend,
+                                 GwtRuntime runtime )
         throws MojoExecutionException
     {
       String filename = ( debugPort >= 0 ) ? "debug.sh" : "run.sh";
       File file = new File(configuration.getBuildDir(), filename);
-      PrintWriter writer = this.getPrintWriterWithClasspath(configuration, file, Artifact.SCOPE_RUNTIME);
+      PrintWriter writer = this.getPrintWriterWithClasspath(configuration, file, Artifact.SCOPE_RUNTIME, runtime);
 
       String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
       if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( extra.indexOf( "-XstartOnFirstThread" ) == -1 ) )
@@ -123,11 +125,11 @@ public class ScriptWriterUnix
    /**
     * Write compile script.
     */
-   public File writeCompileScript( CompileScriptConfiguration configuration )
+   public File writeCompileScript( CompileScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
       File file = new File(configuration.getBuildDir(), "compile.sh");
-      PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE );
+      PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE, runtime );
 
       for (String target : configuration.getCompileTarget()) {
 
@@ -167,7 +169,7 @@ public class ScriptWriterUnix
     /**
      * Write i18n script.
      */
-   public File writeI18nScript( I18nScriptConfiguration configuration )
+   public File writeI18nScript( I18nScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
 
@@ -185,7 +187,7 @@ public class ScriptWriterUnix
                      exe);
          }
       }
-      PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE );
+      PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE, runtime );
 
       // constants
       if (configuration.getI18nConstantsNames() != null) {
@@ -238,7 +240,7 @@ public class ScriptWriterUnix
    /**
     * Write test scripts.
     */
-   public void writeTestScripts( TestScriptConfiguration configuration )
+   public void writeTestScripts( TestScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
 
@@ -283,7 +285,7 @@ public class ScriptWriterUnix
 
             // start script inside gwtTest output dir, and name it with test class name
             File file = new File(configuration.getBuildDir() + File.separator + "gwtTest", "gwtTest-" + testName + ".sh");
-            PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_TEST );
+            PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_TEST, runtime );
 
             // build Java command
                 writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " );
@@ -310,11 +312,12 @@ public class ScriptWriterUnix
      *
      * @param mojo
      * @param file
+     * @param runtime TODO
      * @return
      * @throws MojoExecutionException
      */
    private PrintWriter getPrintWriterWithClasspath( final GwtShellScriptConfiguration mojo, File file,
-                                                     final String scope )
+                                                     final String scope, GwtRuntime runtime )
             throws MojoExecutionException {
 
       PrintWriter writer = null;
@@ -337,7 +340,9 @@ public class ScriptWriterUnix
       writer.println();
 
       try {
-         Collection<File> classpath = buildClasspathUtil.buildClasspathList( mojo, scope );
+         Collection<File> classpath =
+                buildClasspathUtil.buildClasspathList( mojo.getProject(), scope, runtime, mojo.getSourcesOnPath(),
+                                                       mojo.getResourcesOnPath() );
          writer.print("export CLASSPATH=");
          Iterator it = classpath.iterator();
          while (it.hasNext()) {

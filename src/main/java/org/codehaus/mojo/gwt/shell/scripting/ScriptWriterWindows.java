@@ -32,6 +32,7 @@ import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -52,30 +53,30 @@ public class ScriptWriterWindows
     /**
      * Write debug script.
      */
-    public File writeDebugScript( DebugScriptConfiguration configuration )
+    public File writeDebugScript( DebugScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
-        return writeRunScript( configuration, configuration.getDebugPort() );
+        return writeRunScript( configuration, configuration.getDebugPort(), runtime );
     }
 
     /**
      * Write run script.
      */
-    public File writeRunScript( RunScriptConfiguration configuration )
+    public File writeRunScript( RunScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
-        return writeRunScript( configuration, -1 );
+        return writeRunScript( configuration, -1, runtime );
     }
 
     /**
      * Write run script.
      */
-    private File writeRunScript( RunScriptConfiguration configuration, int debugPort )
+    private File writeRunScript( RunScriptConfiguration configuration, int debugPort, GwtRuntime runtime )
         throws MojoExecutionException
     {
         String filename = ( debugPort >= 0 ) ? "debug.cmd" : "run.cmd";
         File file = new File(configuration.getBuildDir(), filename);
-        PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_RUNTIME );
+        PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_RUNTIME, runtime );
 
         String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
         writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp %CLASSPATH% " );
@@ -115,11 +116,11 @@ public class ScriptWriterWindows
     /**
      * Write compile script.
      */
-    public File writeCompileScript( CompileScriptConfiguration configuration )
+    public File writeCompileScript( CompileScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
         File file = new File(configuration.getBuildDir(), "compile.cmd");
-        PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE );
+        PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE, runtime );
 
         for (String target : configuration.getCompileTarget()) {
             String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
@@ -153,7 +154,7 @@ public class ScriptWriterWindows
     /**
      * Write i18n script.
      */
-    public File writeI18nScript( I18nScriptConfiguration configuration )
+    public File writeI18nScript( I18nScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
         File file = new File(configuration.getBuildDir(), "i18n.cmd");
@@ -172,7 +173,7 @@ public class ScriptWriterWindows
                                          + exe.getMessage(), exe );
             }
         }
-        PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE );
+        PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE, runtime );
 
         // constants
         if (configuration.getI18nConstantsNames() != null) {
@@ -214,7 +215,7 @@ public class ScriptWriterWindows
     /**
      * Write test scripts.
      */
-    public void writeTestScripts( TestScriptConfiguration configuration )
+    public void writeTestScripts( TestScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
 
@@ -254,7 +255,7 @@ public class ScriptWriterWindows
 
                 // start script inside gwtTest output dir, and name it with test class name
                 File file = new File(configuration.getBuildDir() + File.separator + "gwtTest", "gwtTest-" + testName + ".cmd");
-                PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_TEST );
+                PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_TEST, runtime );
 
                 // build Java command
                 writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " );
@@ -280,11 +281,12 @@ public class ScriptWriterWindows
      * 
      * @param config
      * @param file
+     * @param runtime TODO
      * @return
      * @throws MojoExecutionException
      */
     private PrintWriter getPrintWriterWithClasspath( final GwtShellScriptConfiguration config, File file,
-                                                     final String scope )
+                                                     final String scope, GwtRuntime runtime )
             throws MojoExecutionException {
 
         PrintWriter writer = null;
@@ -296,7 +298,9 @@ public class ScriptWriterWindows
         }
 
         try {
-            Collection<File> classpath = buildClasspathUtil.buildClasspathList( config, scope );
+            Collection<File> classpath =
+                buildClasspathUtil.buildClasspathList( config.getProject(), scope, runtime, config.getSourcesOnPath(),
+                                                       config.getResourcesOnPath() );
             writer.print("set CLASSPATH=");
 
             StringBuffer cpString = new StringBuffer();

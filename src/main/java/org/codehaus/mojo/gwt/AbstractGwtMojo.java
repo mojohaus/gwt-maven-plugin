@@ -22,19 +22,30 @@ package org.codehaus.mojo.gwt;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
+import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
+import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.mojo.gwt.shell.ArtifactNameUtil;
+import org.codehaus.mojo.gwt.shell.ClasspathBuilder;
+import org.codehaus.plexus.archiver.UnArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
 
 /**
+ * Abstract Support class for all GWT-related operations. Provide GWT runtime resolution based on plugin configuration
+ * and/or project dependencies. Creates the runtime dependencies list to be used by GWT tools.
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public abstract class AbstractGwtMojo
@@ -43,73 +54,78 @@ public abstract class AbstractGwtMojo
     /** GWT artifacts groupId */
     public static final String GWT_GROUP_ID = "com.google.gwt";
 
+    // --- Some Maven tools ----------------------------------------------------
+
+    /**
+     * @component
+     */
+    protected ArtifactResolver resolver;
+
+    /**
+     * @component
+     */
+    protected ArtifactFactory artifactFactory;
+
+    /**
+     * @component
+     */
+    protected ArchiverManager archiverManager;
+
+    /**
+     * @component
+     */
+    protected ClasspathBuilder classpathBuilder;
+
+    // --- Some MavenSession related structures --------------------------------
 
     /**
      * @parameter expression="${localRepository}"
      * @required
      * @readonly
      */
-    private ArtifactRepository localRepository;
+    protected ArtifactRepository localRepository;
 
     /**
      * @parameter expression="${project.remoteArtifactRepositories}"
      * @required
      * @readonly
      */
-    private List<ArtifactRepository> remoteRepositories;
+    protected List<ArtifactRepository> remoteRepositories;
 
     /**
      * The maven project descriptor
-     * 
+     *
      * @parameter expression="${project}"
      * @required
      * @readonly
      */
     protected MavenProject project;
 
+    // --- Plugin parameters ---------------------------------------------------
+
+    /**
+     * GWT version used to build dependency paths, should match the "version" in the Maven repo. If not set, will be
+     * autodetected from project com.google.gwt:gwt-user dependency
+     *
+     * @parameter
+     */
+    private String gwtVersion;
+
+    /**
+     * Location on filesystem where GWT is installed - for manual mode (existing GWT on machine). Setting this parameter
+     * will disable gwtVersion.
+     *
+     * @parameter expression="${google.webtoolkit.home}"
+     */
+    private File gwtHome;
+
     /**
      * Folder where generated-source will be created (automatically added to compile classpath).
-     * 
+     *
      * @parameter default-value="${project.build.directory}/generated-sources/gwt
      * @required
      */
     protected File generateDirectory;
-
-    /**
-     * @return the project classloader
-     * @throws DependencyResolutionRequiredException failed to resolve project dependencies
-     * @throws MalformedURLException configuration issue ?
-     */
-    protected ClassLoader getProjectClassLoader()
-        throws DependencyResolutionRequiredException, MalformedURLException
-    {
-        getLog().debug( "AbstractMojo#getProjectClassLoader()" );
-
-        List < ? > compile = project.getCompileClasspathElements();
-        URL[] urls = new URL[compile.size()];
-        int i = 0;
-        for ( Object object : compile )
-        {
-            if ( object instanceof Artifact )
-            {
-                urls[i] = ( (Artifact) object ).getFile().toURI().toURL();
-            }
-            else
-            {
-                urls[i] = new File( (String) object ).toURI().toURL();
-            }
-            i++;
-        }
-        return new URLClassLoader( urls, ClassLoader.getSystemClassLoader() );
-    }
-
-    /**
-     * @param path file to add to the project compile directories
-     */
-    protected void addCompileSourceRoot( File path )
-    {
-        project.addCompileSourceRoot( path.getAbsolutePath() );
-    }
 
     /**
      * @return the project
@@ -120,75 +136,15 @@ public abstract class AbstractGwtMojo
     }
 
     /**
-     * Need this to run both pre- and post- PLX-220 fix.
-     * 
-     * @return a ClassLoader including plugin dependencies and project source foler
-     * @throws MojoExecutionException failed to configure ClassLoader
-     */
-    protected ClassLoader getClassLoader()
-        throws MojoExecutionException
-    {
-        URLClassLoader myClassLoader = (URLClassLoader) getClass().getClassLoader();
-
-        URL[] originalUrls = myClassLoader.getURLs();
-        URL[] urls = addProjectClasspathElements( originalUrls );
-        System.arraycopy( originalUrls, 0, urls, 0, originalUrls.length );
-
-        if ( getLog().isDebugEnabled() )
-        {
-            for ( int i = 0; i < urls.length; i++ )
-            {
-                getLog().debug( "  URL:" + urls[i] );
-            }
-        }
-
-        return new URLClassLoader( urls, myClassLoader.getParent() );
-    }
-
-    /**
-     * Add project classpath element to a classpath URL set
-     * 
-     * @param originalUrls the initial URL set
-     * @return full classpath URL set
-     * @throws MojoExecutionException some error occured
-     */
-    protected URL[] addProjectClasspathElements( URL[] originalUrls )
-        throws MojoExecutionException
-    {
-        Collection < ? > sources = project.getCompileSourceRoots();
-        Collection < ? > resources = project.getResources();
-        Collection < ? > dependencies = project.getArtifacts();
-        URL[] urls = new URL[originalUrls.length + sources.size() + resources.size() + dependencies.size() + 2];
-
-        int i = originalUrls.length;
-        getLog().debug( "add compile source roots to GWTCompiler classpath " + sources.size() );
-        i = addClasspathElements( sources, urls, i );
-        getLog().debug( "add resources to GWTCompiler classpath " + resources.size() );
-        i = addClasspathElements( resources, urls, i );
-        getLog().debug( "add project dependencies to GWTCompiler  classpath " + dependencies.size() );
-        i = addClasspathElements( dependencies, urls, i );
-        try
-        {
-            urls[i++] = generateDirectory.toURL();
-            urls[i] = new File( project.getBuild().getOutputDirectory() ).toURL();
-        }
-        catch ( MalformedURLException e )
-        {
-            throw new MojoExecutionException( "Failed to convert project.build.outputDirectory to URL", e );
-        }
-        return urls;
-    }
-
-    /**
      * Add classpath elements to a classpath URL set
-     * 
+     *
      * @param elements the initial URL set
      * @param urls the urls to add
      * @param startPosition the position to insert URLS
      * @return full classpath URL set
      * @throws MojoExecutionException some error occured
      */
-    protected int addClasspathElements( Collection < ? > elements, URL[] urls, int startPosition )
+    protected int addClasspathElements( Collection<?> elements, URL[] urls, int startPosition )
         throws MojoExecutionException
     {
         for ( Object object : elements )
@@ -211,14 +167,15 @@ public abstract class AbstractGwtMojo
             catch ( MalformedURLException e )
             {
                 throw new MojoExecutionException(
-                    "Failed to convert original classpath element " + object + " to URL.", e );
+                                                  "Failed to convert original classpath element " + object + " to URL.",
+                                                  e );
             }
             startPosition++;
         }
         return startPosition;
     }
 
-    public org.apache.maven.artifact.repository.ArtifactRepository getLocalRepository()
+    public ArtifactRepository getLocalRepository()
     {
         return this.localRepository;
     }
@@ -226,5 +183,126 @@ public abstract class AbstractGwtMojo
     public List<ArtifactRepository> getRemoteRepositories()
     {
         return this.remoteRepositories;
+    }
+
+    /**
+     * Build the GWT classpath for the specified scope
+     *
+     * @param scope Artifact.SCOPE_COMPILE or Artifact.SCOPE_TEST
+     * @param runtime the GwtRuntime used by this plugin execution
+     * @return a collection of dependencies as Files for the specified scope.
+     */
+    public Collection<File> getClasspath( String scope, GwtRuntime runtime )
+        throws MojoExecutionException, DependencyResolutionRequiredException
+    {
+        return classpathBuilder.buildClasspathList( project, scope, runtime, true, true );
+    }
+
+    /**
+     * Build a GwtRuntime based on plugin configuration or the mavenProject dependencies.
+     *
+     * @return The GWT Runtime
+     * @throws MojoExecutionException some error occured
+     */
+    public GwtRuntime getGwtRuntime()
+        throws MojoExecutionException
+    {
+        if ( gwtHome != null )
+        {
+            getLog().info( "using GWT jars from local installation " + gwtHome );
+            if ( !gwtHome.exists() )
+            {
+                throw new MojoExecutionException( "Invalid gwtHome : " + gwtHome );
+            }
+            File userJar = new File( gwtHome, "gwt-user.jar" );
+            File devJar = new File( gwtHome, ArtifactNameUtil.guessDevJarName() );
+            return new GwtRuntime( userJar, devJar );
+        }
+
+        if ( gwtVersion != null )
+        {
+            getLog().info( "using GWT jars for specified version " + gwtVersion );
+            return getGwtRuntimeForVersion( gwtVersion );
+        }
+
+        // Autodetect
+        for ( Iterator iterator = project.getArtifacts().iterator(); iterator.hasNext(); )
+        {
+            Artifact artifact = (Artifact) iterator.next();
+            if ( AbstractGwtMojo.GWT_GROUP_ID.equals( artifact.getGroupId() )
+                && "gwt-user".equals( artifact.getArtifactId() ) )
+            {
+                gwtVersion = artifact.getVersion();
+                getLog().info( "using GWT jars from project dependencies : " + gwtVersion );
+                break;
+            }
+        }
+        if ( gwtVersion == null )
+        {
+            getLog().error( "no gwtHome, gwtVersion or com.google.gwt:gwt-user dependency set" );
+            throw new MojoExecutionException( "Cannot resolve GWT version" );
+        }
+        return getGwtRuntimeForVersion( gwtVersion );
+
+    }
+
+    /**
+     * @param version The GWT version to retrieve from repository
+     * @return The GWT Runtime
+     * @throws MojoExecutionException some error occured
+     */
+    private GwtRuntime getGwtRuntimeForVersion( String version )
+        throws MojoExecutionException
+    {
+        Artifact gwtUser =
+            artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, "gwt-user", version, "jar", null );
+        Artifact gwtDev =
+            artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, "gwt-dev", version, "jar",
+                                                          ArtifactNameUtil.getPlatformName() );
+        Artifact gwtNatives =
+            artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, "gwt-dev", version, "zip",
+                                                          ArtifactNameUtil.getPlatformName() + "-libs" );
+
+        try
+        {
+            resolver.resolve( gwtUser, remoteRepositories, localRepository );
+            resolver.resolve( gwtDev, remoteRepositories, localRepository );
+            resolver.resolve( gwtNatives, remoteRepositories, localRepository );
+            unpackNativeLibraries( gwtNatives.getFile() );
+        }
+        catch ( ArtifactNotFoundException e )
+        {
+            throw new MojoExecutionException( "artifact not found - " + e.getMessage(), e );
+        }
+        catch ( ArtifactResolutionException e )
+        {
+            throw new MojoExecutionException( "artifact resolver problem - " + e.getMessage(), e );
+        }
+        return new GwtRuntime( gwtUser.getFile(), gwtDev.getFile() );
+    }
+
+    /**
+     * Unpack the GWT native libraries in the repository so that Hosted mode browser can be executed without requirement
+     * to install GWT on computer.
+     *
+     * @throws MojoExecutionException some error occured
+     */
+    private void unpackNativeLibraries( File zip )
+        throws MojoExecutionException
+    {
+        try
+        {
+            UnArchiver unArchiver = archiverManager.getUnArchiver( zip );
+            unArchiver.setSourceFile( zip );
+            unArchiver.setDestDirectory( zip.getParentFile() );
+            unArchiver.extract();
+            unArchiver.setOverwrite( false );
+            getLog().info( "Unpack native libraries required to run GWT" );
+        }
+        catch ( Exception e )
+        {
+            getLog().error( "Failed to unpack native libraries required to run hosted browser" );
+            throw new MojoExecutionException( "GWT setup failed" );
+        }
     }
 }

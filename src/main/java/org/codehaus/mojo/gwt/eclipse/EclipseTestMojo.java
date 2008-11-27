@@ -29,8 +29,8 @@ import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.test.TestTemplate;
-import org.codehaus.mojo.gwt.test.TestTemplate.CallBack;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -55,13 +55,15 @@ public class EclipseTestMojo
     private File testOutputDirectory;
 
     /**
-     * Comma separated list of ant-style inclusion patterns for GWT integration tests   
+     * Comma separated list of ant-style inclusion patterns for GWT integration tests
+     * 
      * @parameter default-value="**\/*GwtTest.java" expression="${gwt.tests.includes}"
      */
     private String includes;
 
     /**
-     * Comma separated list of ant-style exclusion patterns for GWT integration tests   
+     * Comma separated list of ant-style exclusion patterns for GWT integration tests
+     * 
      * @parameter expression="${gwt.tests.excludes}"
      */
     private String excludes;
@@ -75,14 +77,14 @@ public class EclipseTestMojo
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
-        unpackNativeLibraries();
+        final GwtRuntime runtime = getGwtRuntime();
 
         new TestTemplate( getProject(), includes, excludes, new TestTemplate.CallBack()
         {
             public void doWithTest( File sourceDir, String test )
                 throws MojoExecutionException
             {
-                createLaunchConfigurationForGwtTestCase( sourceDir, test );
+                createLaunchConfigurationForGwtTestCase( runtime, sourceDir, test );
             }
         } );
     }
@@ -93,7 +95,7 @@ public class EclipseTestMojo
      * @param testSrc the source directory where the test lives
      * @throws MojoExecutionException some error occured
      */
-    private void createLaunchConfigurationForGwtTestCase( File testSrc, String test )
+    private void createLaunchConfigurationForGwtTestCase( GwtRuntime runtime, File testSrc, String test )
         throws MojoExecutionException
     {
         File testFile = new File( testSrc, test );
@@ -116,7 +118,7 @@ public class EclipseTestMojo
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", testOutputDirectory.getAbsolutePath().substring( basedir + 1 ) );
         context.put( "project", getProjectName() );
-        context.put( "gwtDevJarPath", getPlatformDependentGWTDevJar().getAbsolutePath() );
+        context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath() );
 
         try
         {

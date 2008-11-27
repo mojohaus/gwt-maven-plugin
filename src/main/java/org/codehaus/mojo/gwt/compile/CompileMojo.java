@@ -32,6 +32,7 @@ import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
+import org.codehaus.mojo.gwt.GwtRuntime;
 
 /**
  * Goal which compiles a GWT file.
@@ -83,7 +84,7 @@ public class CompileMojo
     {
         getLog().debug( "CompileMojo#execute()" );
 
-        Object compiler = getGwtCompilerInstance();
+        Object compiler = getGwtCompilerInstance( getGwtRuntime() );
 
         // Replace ContextClassLoader with the classloader used to build the
         // GWTCompiler instance
@@ -197,7 +198,7 @@ public class CompileMojo
      * @return a GWTCompiler instante
      * @throws MojoExecutionException failed to retrieve an instante
      */
-    protected Object getGwtCompilerInstance()
+    protected Object getGwtCompilerInstance( GwtRuntime runtime )
         throws MojoExecutionException
     {
         // TODO : getting and invoking the main should be a more common
@@ -208,7 +209,7 @@ public class CompileMojo
         ClassLoader loader = null;
         try
         {
-            loader = getClassLoader();
+            loader = getClassLoader( runtime );
             compiler = loader.loadClass( compilerClassName ).newInstance();
         }
         catch ( Exception e )

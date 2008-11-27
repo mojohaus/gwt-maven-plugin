@@ -43,21 +43,11 @@ public interface GwtShellScriptConfiguration
     /**
      * @return
      */
-    File getGwtHome();
-
-    /**
-     * @return
-     */
     boolean getSourcesOnPath();
 
     /**
      * @return
      */
     boolean getResourcesOnPath();
-
-    /**
-     * @return
-     */
-    String getGwtVersion();
 
 }

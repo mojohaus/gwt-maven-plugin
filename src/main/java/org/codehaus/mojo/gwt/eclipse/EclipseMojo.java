@@ -24,8 +24,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +32,7 @@ import java.util.Map;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
-import org.codehaus.plexus.archiver.UnArchiver;
+import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
@@ -79,15 +77,15 @@ public class EclipseMojo
     /** path to the gwt-dev JAR */
     private File gwtDevJarPath;
 
-    /** 
+    /**
      * @param parameters additional parameter for module URL
-     */      
+     */
     public void setAdditionalPageParameters( String parameters )
     {
         // escape the '&' char used for multiple parameters as the result must be XML compliant
         this.additionalPageParameters = StringUtils.replace( parameters, "&", "&amp;" );
     }
-    
+
     /**
      * {@inheritDoc}
      *
@@ -96,53 +94,19 @@ public class EclipseMojo
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
-        unpackNativeLibraries();
-
+        GwtRuntime runtime = getGwtRuntime();
         for ( String module : getModules() )
         {
-            createLaunchConfigurationForHostedModeBrowser( module );
+            createLaunchConfigurationForHostedModeBrowser( runtime, module );
         }
     }
 
     /**
-     * unpack the GWT runtime native dependencies in the local repository
-     * @throws MojoFailureException some error occured
-     */
-    protected void unpackNativeLibraries()
-        throws MojoFailureException
-    {
-        // How to access the plugin MavenProject -> getCompileClasspathElements()
-        URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
-        URL[] urls = cl.getURLs();
-        for ( int i = 0; i < urls.length; i++ )
-        {
-            if ( urls[i].getFile().endsWith( ".zip" ) )
-            {
-                File file = new File( urls[i].getFile() );
-                try
-                {
-                    UnArchiver unArchiver = archiverManager.getUnArchiver( file );
-                    unArchiver.setSourceFile( file );
-                    unArchiver.setDestDirectory( file.getParentFile() );
-                    unArchiver.extract();
-                    unArchiver.setOverwrite( false );
-                    getLog().info( "Unpack native libraries required to run hosted browser" );
-                }
-                catch ( Exception e )
-                {
-                    getLog().error( "Failed to unpack native libraries required to run hosted browser" );
-                }
-                break;
-            }
-        }
-    }
-
-    /** 
      * create an Eclipse launch configuration file to Eclipse to run the module in hosted browser
      * @param module the GWT module
      * @throws MojoExecutionException some error occured
      */
-    private void createLaunchConfigurationForHostedModeBrowser( String module )
+    private void createLaunchConfigurationForHostedModeBrowser( GwtRuntime runtime, String module )
         throws MojoExecutionException
     {
 
@@ -169,8 +133,7 @@ public class EclipseMojo
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", outputDirectory.getAbsolutePath().substring( basedir + 1 ) );
         context.put( "project", getProjectName() );
-        File path = getPlatformDependentGWTDevJar();
-        context.put( "gwtDevJarPath", path.getAbsolutePath() );
+        context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath() );
 
         try
         {
@@ -192,8 +155,8 @@ public class EclipseMojo
     }
 
     /**
-     * getProject().getCompileSourceRoots(); is not adequate as we can't assume the mojo is
-     * running as part of a phase-based build (user may execute 'mvn gwt:eclipse').
+     * getProject().getCompileSourceRoots(); is not adequate as we can't assume the mojo is running as part of a
+     * phase-based build (user may execute 'mvn gwt:eclipse').
      * 
      * @return project source directories
      */
@@ -225,34 +188,5 @@ public class EclipseMojo
             getLog().warn( "Failed to read the .project file" );
             return getProject().getArtifactId();
         }
-    }
-
-    /**
-     * @return gwt-dev JAR path
-     */
-    protected File getPlatformDependentGWTDevJar()
-    {
-        if ( gwtDevJarPath == null )
-        {
-            URLClassLoader cl = (URLClassLoader) getClass().getClassLoader();
-            URL[] urls = cl.getURLs();
-            for ( int i = 0; i < urls.length; i++ )
-            {
-                if ( urls[i].getFile().indexOf( "gwt-dev" ) >= 0 && urls[i].getFile().endsWith( ".jar" ) )
-                {
-                    gwtDevJarPath = new File( urls[i].getFile() );
-                    break;
-                }
-            }
-            if ( gwtDevJarPath == null )
-            {
-                getLog().error( "Failed to retrieve the path of gwt-dev-XX.jar" );
-            }
-            else
-            {
-                getLog().info( "gwt-dev-XX.jar found at " + gwtDevJarPath.getAbsolutePath() );
-            }
-        }
-        return gwtDevJarPath;
     }
 }

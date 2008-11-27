@@ -22,25 +22,26 @@ package org.codehaus.mojo.gwt.shell.scripting;
 import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.mojo.gwt.GwtRuntime;
 
 /**
  * @author ccollins
  */
 public interface ScriptWriter
 {
-    File writeRunScript( RunScriptConfiguration configuration )
+    File writeRunScript( RunScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException;
 
-    File writeDebugScript( DebugScriptConfiguration configuration )
+    File writeDebugScript( DebugScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException;
 
-    File writeCompileScript( CompileScriptConfiguration configuration )
+    File writeCompileScript( CompileScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException;
 
-    File writeI18nScript( I18nScriptConfiguration configuration )
+    File writeI18nScript( I18nScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException;
 
-    void writeTestScripts( TestScriptConfiguration configuration )
+    void writeTestScripts( TestScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException;
 
 
