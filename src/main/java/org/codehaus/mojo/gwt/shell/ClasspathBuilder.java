@@ -90,16 +90,6 @@ public class ClasspathBuilder
         // add classes dir
         items.add( new File( project.getBuild().getOutputDirectory() ) );
 
-        // Note : getCompileClasspathElements allready includes RUNTIME & SYSTEM dependencies
-        // // if runtime add runtime
-        // if ( scope == Artifact.SCOPE_RUNTIME )
-        // {
-        // for ( Iterator it = project.getRuntimeClasspathElements().iterator(); it.hasNext(); )
-        // {
-        // items.add( new File( it.next().toString() ) );
-        // }
-        // }
-
         // if test add test
         if ( scope == Artifact.SCOPE_TEST )
         {
@@ -112,13 +102,26 @@ public class ClasspathBuilder
             addSourcesWithActiveProjects( project, items, scope );
             addResourcesWithActiveProjects( project, items, scope );
         }
-
-        // add compile (even when scope is other than)
-        for ( Iterator it = project.getCompileClasspathElements().iterator(); it.hasNext(); )
+        else
         {
-            items.add( new File( it.next().toString() ) );
+            // if runtime add runtime
+            if ( scope == Artifact.SCOPE_RUNTIME )
+            {
+                for ( Iterator it = project.getRuntimeClasspathElements().iterator(); it.hasNext(); )
+                {
+                    items.add( new File( it.next().toString() ) );
+                }
+            }
+            // add compile (even when scope is other than)
+            for ( Iterator it = project.getCompileClasspathElements().iterator(); it.hasNext(); )
+            {
+                items.add( new File( it.next().toString() ) );
+            }
+            // --> have both compile (including provided) and runtime dependencies
         }
 
+
+        // Both TEST and COMPILE allready include system dependencies
         // // add system
         // for ( Iterator it = project.getSystemClasspathElements().iterator(); it.hasNext(); )
         // {
