@@ -57,8 +57,7 @@ public class ClasspathBuilder
      * @return file collection for classpath
      * @throws DependencyResolutionRequiredException
      */
-    public Collection<File> buildClasspathList( final MavenProject project, final String scope,
-                                                GwtRuntime runtime,
+    public Collection<File> buildClasspathList( final MavenProject project, final String scope, GwtRuntime runtime,
                                                 boolean sourcesOnPath, boolean resourcesOnPath )
         throws DependencyResolutionRequiredException, MojoExecutionException
     {
@@ -75,6 +74,13 @@ public class ClasspathBuilder
         items.add( runtime.getGwtUserJar() );
         items.add( runtime.getGwtDevJar() );
 
+        if ( scope.equals( Artifact.SCOPE_TEST ) )
+        {
+            // add test sources and resources
+            addSourcesWithActiveProjects( project, items, scope );
+            addResourcesWithActiveProjects( project, items, scope );
+        }
+
         // add sources
         if ( sourcesOnPath )
         {
@@ -90,43 +96,34 @@ public class ClasspathBuilder
         // add classes dir
         items.add( new File( project.getBuild().getOutputDirectory() ) );
 
-        // if test add test
-        if ( scope == Artifact.SCOPE_TEST )
+        // Use our own ClasspathElements fitering, as for RUNTIME we need to include PROVIDED artifacts,
+        // that is not the default Maven policy, as RUNTIME is used here to build the GWTShell execution classpath
+        for ( Iterator i = project.getArtifacts().iterator(); i.hasNext(); )
         {
-            for ( Iterator it = project.getTestClasspathElements().iterator(); it.hasNext(); )
-            {
-                items.add( new File( it.next().toString() ) );
-            }
+            Artifact artifact = (Artifact) i.next();
 
-            // add test sources and resources
-            addSourcesWithActiveProjects( project, items, scope );
-            addResourcesWithActiveProjects( project, items, scope );
-        }
-        else
-        {
-            // if runtime add runtime
-            if ( scope == Artifact.SCOPE_RUNTIME )
+            if ( artifact.getScope().equals( Artifact.SCOPE_TEST ) )
             {
-                for ( Iterator it = project.getRuntimeClasspathElements().iterator(); it.hasNext(); )
+                // TEST dependencies are only available during .. tests !
+                if ( scope.equals( Artifact.SCOPE_TEST ) )
                 {
-                    items.add( new File( it.next().toString() ) );
+                    items.add( new File( artifact.toString() ) );
                 }
             }
-            // add compile (even when scope is other than)
-            for ( Iterator it = project.getCompileClasspathElements().iterator(); it.hasNext(); )
+            else if ( scope.equals( Artifact.SCOPE_COMPILE ) )
             {
-                items.add( new File( it.next().toString() ) );
+                // RUNTIME dependencies must NOT be used in code, so are not includeed in compile scope
+                if ( !artifact.getScope().equals( Artifact.SCOPE_RUNTIME ) )
+                {
+                    items.add( new File( artifact.toString() ) );
+                }
             }
-            // --> have both compile (including provided) and runtime dependencies
+            else
+            {
+                // All other scopes are always available
+                items.add( new File( artifact.toString() ) );
+            }
         }
-
-
-        // Both TEST and COMPILE allready include system dependencies
-        // // add system
-        // for ( Iterator it = project.getSystemClasspathElements().iterator(); it.hasNext(); )
-        // {
-        // items.add( new File( it.next().toString() ) );
-        // }
 
         getLogger().debug( "SCRIPT INJECTION CLASSPATH LIST" );
         for ( File f : items )
