@@ -47,272 +47,16 @@ import org.codehaus.plexus.util.StringUtils;
 public class ScriptWriterUnix
     extends AbstractScriptWriter
 {
-   /** Creates a new instance of ScriptWriterUnix */
-   public ScriptWriterUnix() {
-   }
-
-    /**
-     * Write debug script.
-     */
-    public File writeDebugScript( DebugScriptConfiguration configuration, GwtRuntime runtime )
-        throws MojoExecutionException
+    @Override
+    protected String getExtraJvmArgs( GwtShellScriptConfiguration configuration )
     {
-        return writeRunScript( configuration, configuration.getDebugPort(), configuration.isDebugSuspend(), runtime );
-    }
-
-    /**
-     * Write run script.
-     */
-   public File writeRunScript( RunScriptConfiguration configuration, GwtRuntime runtime )
-       throws MojoExecutionException
-    {
-        return writeRunScript( configuration, -1, false, runtime );
-    }
-
-    /**
-     * Write run script.
-     */
-    private File writeRunScript( RunScriptConfiguration configuration, int debugPort, boolean debugSuspend,
-                                 GwtRuntime runtime )
-        throws MojoExecutionException
-    {
-      String filename = ( debugPort >= 0 ) ? "debug.sh" : "run.sh";
-      File file = new File(configuration.getBuildDir(), filename);
-      PrintWriter writer = this.getPrintWriterWithClasspath(configuration, file, Artifact.SCOPE_RUNTIME, runtime);
-
-      String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
-      if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( extra.indexOf( "-XstartOnFirstThread" ) == -1 ) )
-      {
-         extra = "-XstartOnFirstThread " + extra;
-      }
-
-      writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp $CLASSPATH " );
-
-      if ( debugPort >= 0 )
-      {
-         writer.print(" -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,address=");
-         writer.print( debugPort );
-         writer.print( debugSuspend ? ",suspend=y " : ",suspend=n " );
-      }
-
-      writer.print( " -Dcatalina.base=\"" + configuration.getTomcat().getAbsolutePath() + "\" " );
-      writer.print(" com.google.gwt.dev.GWTShell");
-      writer.print(" -gen \"");
-      writer.print(configuration.getGen().getAbsolutePath());
-      writer.print("\" -logLevel ");
-      writer.print(configuration.getLogLevel());
-      writer.print(" -style ");
-      writer.print(configuration.getStyle());
-      writer.print(" -out ");
-      writer.print("\"" + configuration.getOutput().getAbsolutePath() + "\"");
-      writer.print(" -port ");
-      writer.print(Integer.toString(configuration.getPort()));
-
-      if (configuration.isNoServer()) {
-         writer.print(" -noserver ");
-      }
-
-      writer.print(" " + configuration.getRunTarget());
-      writer.println();
-
-      writer.flush();
-      writer.close();
-
-      this.chmodUnixFile(file);
-      return file;
-   }
-
-   /**
-    * Write compile script.
-    */
-   public File writeCompileScript( CompileScriptConfiguration configuration, GwtRuntime runtime )
-        throws MojoExecutionException
-    {
-      File file = new File(configuration.getBuildDir(), "compile.sh");
-      PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE, runtime );
-
-      for (String target : configuration.getModules()) {
-
-         String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
-         if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( extra.indexOf( "-XstartOnFirstThread" ) == -1 ) )
-            {
+        String extra = ( configuration.getExtraJvmArgs() != null ) ? configuration.getExtraJvmArgs() : "";
+        if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( extra.indexOf( "-XstartOnFirstThread" ) == -1 ) )
+        {
             extra = "-XstartOnFirstThread " + extra;
-         }
-
-         writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp $CLASSPATH " );
-         writer.print(" com.google.gwt.dev.GWTCompiler ");
-         writer.print(" -gen ");
-         writer.print(configuration.getGen().getAbsolutePath());
-         writer.print(" -logLevel ");
-         writer.print(configuration.getLogLevel());
-         writer.print(" -style ");
-         writer.print(configuration.getStyle());
-         writer.print(" -out ");
-
-         if (configuration.isEnableAssertions()) {
-            writer.print(" -ea ");
-         }
-
-         writer.print(configuration.getOutput().getAbsolutePath());
-         writer.print(" ");
-         writer.print(target);
-         writer.println();
-      }
-
-      writer.flush();
-      writer.close();
-
-      this.chmodUnixFile(file);
-      return file;
-   }
-
-    /**
-     * Write i18n script.
-     */
-   public File writeI18nScript( I18nScriptConfiguration configuration, GwtRuntime runtime )
-        throws MojoExecutionException
-    {
-
-      File file = new File(configuration.getBuildDir(), "i18n.sh");
-      if (!file.exists()) {
-         getLogger().debug( "File '" + file.getAbsolutePath() + "' does not exsists, trying to create." );
-         try {
-            file.getParentFile().mkdirs();
-            file.createNewFile();
-            getLogger().debug( "New file '" + file.getAbsolutePath() + "' created." );
-         }
-         catch (Exception exe) {
-            getLogger().error(
-                                   "Couldn't create file '" + file.getAbsolutePath() + "'. Reason: " + exe.getMessage(),
-                     exe);
-         }
-      }
-      PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE, runtime );
-
-      // constants
-        if ( configuration.getI18nConstantsBundles() != null )
-        {
-            for ( String target : configuration.getI18nConstantsBundles() )
-            {
-            String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
-            if ( PlatformUtil.OS_NAME.startsWith( "mac" )
-                    && ( extra.indexOf( "-XstartOnFirstThread" ) == -1 ) )
-                {
-               extra = "-XstartOnFirstThread " + extra;
-            }
-
-            writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp $CLASSPATH" );
-            writer.print(" com.google.gwt.i18n.tools.I18NSync");
-            writer.print(" -out ");
-            writer.print( configuration.getGenerateDirectory() );
-            writer.print(" ");
-            writer.print(target);
-            writer.println();
-         }
-      }
-
-      // messages
-        if ( configuration.getI18nMessagesBundles() != null )
-        {
-            for ( String target : configuration.getI18nMessagesBundles() )
-            {
-            String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
-            if ( PlatformUtil.OS_NAME.startsWith( "mac" )
-                    && ( extra.indexOf( "-XstartOnFirstThread" ) == -1 ) )
-                {
-               extra = "-XstartOnFirstThread " + extra;
-            }
-
-            writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp $CLASSPATH" );
-            writer.print(" com.google.gwt.i18n.tools.I18NSync");
-            writer.print(" -createMessages ");
-            writer.print(" -out ");
-            writer.print( configuration.getGenerateDirectory() );
-            writer.print(" ");
-            writer.print(target);
-            writer.println();
-         }
-      }
-
-      // TODO support getI18nConstantsWithLookupBundles
-
-
-      writer.flush();
-      writer.close();
-
-      this.chmodUnixFile(file);
-      return file;
-   }
-
-   /**
-    * Write test scripts.
-    */
-   public void writeTestScripts( TestScriptConfiguration configuration, GwtRuntime runtime )
-        throws MojoExecutionException
-    {
-
-      // get extras
-      String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
-      if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( extra.indexOf( "-XstartOnFirstThread" ) == -1 ) )
-        {
-         extra = "-XstartOnFirstThread " + extra;
-      }
-      String testExtra = configuration.getExtraTestArgs() != null ? configuration.getExtraTestArgs() : "";
-
-      // make sure output dir is present
-      File outputDir = new File(configuration.getBuildDir(), "gwtTest");
-      outputDir.mkdirs();
-      outputDir.mkdir();
-
-      // for each test compile source root, build a test script
-      List<String> testCompileRoots = configuration.getProject().getTestCompileSourceRoots();
-      for (String currRoot : testCompileRoots) {
-
-         // TODO better file filter here
-         Collection<File> coll = FileUtils.listFiles(new File(currRoot), new WildcardFileFilter(configuration.getTestFilter()),
-                  HiddenFileFilter.VISIBLE);
-
-         for (File currFile : coll) {
-
-            String testName = currFile.toString();
-            getLogger().debug( ( "gwtTest test match found (after filter applied) - " + testName ) );
-
-            // parse off the extension
-            if (testName.lastIndexOf('.') > testName.lastIndexOf(File.separatorChar)) {
-               testName = testName.substring(0, testName.lastIndexOf('.'));
-            }
-            if (testName.startsWith(currRoot)) {
-               testName = testName.substring(currRoot.length());
-            }
-            if (testName.startsWith(File.separator)) {
-               testName = testName.substring(1);
-            }
-            testName = StringUtils.replace(testName, File.separatorChar, '.');
-            getLogger().debug( "testName after parsing - " + testName );
-
-            // start script inside gwtTest output dir, and name it with test class name
-            File file = new File(configuration.getBuildDir() + File.separator + "gwtTest", "gwtTest-" + testName + ".sh");
-            PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_TEST, runtime );
-
-            // build Java command
-                writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " );
-            if (extra.length() > 0) {
-               writer.print(" " + extra + " ");
-            }
-            if (testExtra.length() > 0) {
-               writer.print(" " + testExtra + " ");
-            }
-            writer.print(" -cp $CLASSPATH ");
-            writer.print("junit.textui.TestRunner ");
-            writer.print(testName);
-
-            // write script out
-            writer.flush();
-            writer.close();
-            this.chmodUnixFile(file);
-         }
-      }
-   }
+        }
+        return extra;
+    }
 
     /**
      * Util to get a PrintWriter with Unix preamble and classpath.
@@ -323,64 +67,90 @@ public class ScriptWriterUnix
      * @return
      * @throws MojoExecutionException
      */
-   private PrintWriter getPrintWriterWithClasspath( final GwtShellScriptConfiguration mojo, File file,
+    protected PrintWriter createScript( final GwtShellScriptConfiguration mojo, File file,
                                                      final String scope, GwtRuntime runtime )
-            throws MojoExecutionException {
+        throws MojoExecutionException
+    {
 
-      PrintWriter writer = null;
-      try {
-         writer = new PrintWriter(new FileWriter(file));
-      }
-      catch (IOException e) {
-         throw new MojoExecutionException("Error creating script - " + file, e);
-      }
-      File sh = new File("/bin/bash");
+        PrintWriter writer = null;
+        try
+        {
+            writer = new PrintWriter( new FileWriter( file ) );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "Error creating script - " + file, e );
+        }
+        File sh = new File( "/bin/bash" );
 
-      if (!sh.exists()) {
-         sh = new File("/usr/bin/bash");
-      }
+        if ( !sh.exists() )
+        {
+            sh = new File( "/usr/bin/bash" );
+        }
 
-      if (!sh.exists()) {
-         sh = new File("/bin/sh");
-      }
-      writer.println("#!" + sh.getAbsolutePath());
-      writer.println();
+        if ( !sh.exists() )
+        {
+            sh = new File( "/bin/sh" );
+        }
+        writer.println( "#!" + sh.getAbsolutePath() );
+        writer.println();
 
-      try {
-         Collection<File> classpath =
+        try
+        {
+            Collection<File> classpath =
                 buildClasspathUtil.buildClasspathList( mojo.getProject(), scope, runtime, mojo.getSourcesOnPath(),
                                                        mojo.getResourcesOnPath() );
-         writer.print("export CLASSPATH=");
-         Iterator it = classpath.iterator();
-         while (it.hasNext()) {
-            File f = (File) it.next();
-            if (it.hasNext())
-               writer.print("\"" + f.getAbsolutePath() + "\":");
-            else
-               writer.print("\"" + f.getAbsolutePath() + "\"");
-         }
-      }
-      catch (DependencyResolutionRequiredException e) {
-         throw new MojoExecutionException("Error creating script - " + file, e);
-      }
-      writer.println();
-      writer.println();
-      return writer;
-   }
+            writer.print( "export CLASSPATH=" );
+            Iterator it = classpath.iterator();
+            while ( it.hasNext() )
+            {
+                File f = (File) it.next();
+                if ( it.hasNext() )
+                    writer.print( "\"" + f.getAbsolutePath() + "\":" );
+                else
+                    writer.print( "\"" + f.getAbsolutePath() + "\"" );
+            }
+        }
+        catch ( DependencyResolutionRequiredException e )
+        {
+            throw new MojoExecutionException( "Error creating script - " + file, e );
+        }
+        writer.println();
+        writer.println();
+        return writer;
+    }
 
     /**
      * Util to chmod Unix file.
      *
      * @param file
      */
-   private void chmodUnixFile(File file) {
-      try {
-         ProcessWatcher pw = new ProcessWatcher("chmod +x " + file.getAbsolutePath());
-         pw.startProcess(System.out, System.err);
-         pw.waitFor();
-      }
-      catch (Exception e) {
-         throw new RuntimeException(e);
-      }
-   }
+    private void chmodUnixFile( File file )
+    {
+        try
+        {
+            ProcessWatcher pw = new ProcessWatcher( "chmod +x " + file.getAbsolutePath() );
+            pw.startProcess( System.out, System.err );
+            pw.waitFor();
+        }
+        catch ( Exception e )
+        {
+            throw new RuntimeException( e );
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see org.codehaus.mojo.gwt.shell.scripting.AbstractScriptWriter#getScriptExtension()
+     */
+    protected String getScriptExtension()
+    {
+        return ".sh";
+    }
+
+    protected String getPlatformClasspathVariable()
+    {
+        return "$CLASSPATH";
+    }
+
 }
