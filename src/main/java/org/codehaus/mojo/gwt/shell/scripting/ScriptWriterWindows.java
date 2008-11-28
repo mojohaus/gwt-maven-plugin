@@ -122,7 +122,7 @@ public class ScriptWriterWindows
         File file = new File(configuration.getBuildDir(), "compile.cmd");
         PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE, runtime );
 
-        for (String target : configuration.getCompileTarget()) {
+        for (String target : configuration.getModules()) {
             String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
             writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp %CLASSPATH% " );
             writer.print(" com.google.gwt.dev.GWTCompiler ");

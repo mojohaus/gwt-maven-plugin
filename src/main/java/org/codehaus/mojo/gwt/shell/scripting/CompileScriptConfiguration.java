@@ -11,7 +11,7 @@ public interface CompileScriptConfiguration
     /**
      * @return
      */
-    String[] getCompileTarget();
+    String[] getModules();
 
     /**
      * @return

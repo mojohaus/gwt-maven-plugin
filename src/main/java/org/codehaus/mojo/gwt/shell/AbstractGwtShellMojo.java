@@ -62,46 +62,71 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * Location on filesystem where GWT will write output files (-out option to GWTCompiler).
-     *
+     * 
      * @parameter default-value="${project.build.directory}/${project.build.finalName}"
+     * @alias outputDirectory
      */
     private File output;
 
     /**
      * Location on filesystem where GWT will write generated content for review (-gen option to GWTCompiler).
-     *
-     * @parameter expression="${project.build.directory}/.generated"
+     * <p>
+     * Can be set from command line using '-Dgwt.gen=...'
+     * 
+     * @parameter default-value="${project.build.directory}/.generated" expression="${gwt.gen}"
      */
     private File gen;
 
     /**
      * GWT logging level (-logLevel ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL).
-     *
-     * @parameter default-value="INFO"
+     * <p>
+     * Can be set from command line using '-Dgwt.logLevel=...'
+     * 
+     * @parameter default-value="INFO" expression="${gwt.logLevel}"
      */
     private String logLevel;
 
     /**
      * GWT JavaScript compiler output style (-style OBF[USCATED], PRETTY, or DETAILED).
-     *
-     * @parameter default-value="OBF"
+     * <p>
+     * Can be set from command line using '-Dgwt.style=...'
+     * 
+     * @parameter default-value="OBF" expression="${gwt.style}"
      */
     private String style;
 
     /**
      * Prevents the embedded GWT Tomcat server from running (even if a port is specified).
-     *
-     * @parameter default-value="false"
+     * <p>
+     * Can be set from command line using '-Dgwt.noserver=...'
+     * 
+     * @parameter default-value="false" expression="${gwt.noserver}"
      */
     private boolean noServer;
 
     /**
      * Extra JVM arguments that are passed to the GWT-Maven generated scripts (for compiler, shell, etc - typically use
      * -Xmx512m here, or -XstartOnFirstThread, etc).
+     * <p>
+     * Can be set from command line using '-Dgwt.extraJvmArgs=...'
      * 
-     * @parameter expression="${google.webtoolkit.extrajvmargs}"
+     * @parameter expression="${gwt.extraJvmArgs}"
      */
     private String extraJvmArgs;
+
+    /**
+     * For backward compatibility with googlecode gwt-maven, support the command line argument
+     * '-Dgoogle.webtoolkit.extrajvmargs=...'.
+     * 
+     * @deprecated use extraJvmArgs
+     * @parameter expression="${google.webtoolkit.extrajvmargs}"
+     */
+    private String extraArgs;
+
+    public void setExtraArgs( String extraArgs )
+    {
+        this.extraJvmArgs = extraArgs;
+    }
 
     /**
      * Whether or not to add compile source root to classpath.
@@ -155,15 +180,6 @@ public abstract class AbstractGwtShellMojo
     public File getBuildDir()
     {
         return this.buildDir;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getCompileTarget()
-     */
-    public String[] getCompileTarget()
-    {
-        return getModules();
     }
 
     /**

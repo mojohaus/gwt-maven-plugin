@@ -20,11 +20,9 @@ package org.codehaus.mojo.gwt.eclipse;
  */
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +33,6 @@ import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -46,12 +42,16 @@ import freemarker.template.TemplateException;
  * Goal which install GWT artifacts in local repository.
  * 
  * @goal eclipse
- * @phase validate
+ * @execute phase=generate-resources
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class EclipseMojo
     extends AbstractGwtModuleMojo
 {
+    /**
+     * @component
+     */
+    private EclipseUtil eclipseUtil;
 
     /**
      * Location of the file.
@@ -120,7 +120,7 @@ public class EclipseMojo
         cfg.setClassForTemplateLoading( EclipseMojo.class, "" );
 
         Map < String, Object > context = new HashMap < String, Object > ();
-        List < String > sources = getProjectSourceDirectories();
+        List<String> sources = getProject().getCompileSourceRoots();
         context.put( "sources", sources );
         context.put( "module", module );
         int idx = module.lastIndexOf( '.' );
@@ -132,7 +132,7 @@ public class EclipseMojo
         context.put( "page", page );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", outputDirectory.getAbsolutePath().substring( basedir + 1 ) );
-        context.put( "project", getProjectName() );
+        context.put( "project", eclipseUtil.getProjectName( getProject() ) );
         context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath() );
 
         try
@@ -151,42 +151,6 @@ public class EclipseMojo
         catch ( TemplateException te )
         {
             throw new MojoExecutionException( "Unable to merge freemarker template", te );
-        }
-    }
-
-    /**
-     * getProject().getCompileSourceRoots(); is not adequate as we can't assume the mojo is running as part of a
-     * phase-based build (user may execute 'mvn gwt:eclipse').
-     * 
-     * @return project source directories
-     */
-    protected List < String > getProjectSourceDirectories()
-    {
-        List < String > sources = new ArrayList < String > ();
-        sources.add( getProject().getBuild().getSourceDirectory() );
-        if ( generateDirectory.exists() )
-        {
-            sources.add( generateDirectory.getAbsolutePath() );
-        }
-        return sources;
-    }
-
-    /**
-     * Read the Eclipse project name for .project file. Fall back to artifactId on error
-     * @return project name in eclipse workspace
-     */
-    protected String getProjectName()
-    {
-        File dotProject = new File( getProject().getBasedir(), ".project" );
-        try
-        {
-            Xpp3Dom dom = Xpp3DomBuilder.build( new FileReader( dotProject ) );
-            return dom.getChild( "name" ).getValue();
-        }
-        catch ( Exception e )
-        {
-            getLog().warn( "Failed to read the .project file" );
-            return getProject().getArtifactId();
         }
     }
 }

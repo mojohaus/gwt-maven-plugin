@@ -24,12 +24,14 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
+import org.codehaus.mojo.gwt.test.TestMojo;
 import org.codehaus.mojo.gwt.test.TestTemplate;
 
 import freemarker.template.Configuration;
@@ -38,35 +40,25 @@ import freemarker.template.TemplateException;
 
 /**
  * Goal which install GWT artifacts in local repository.
- * 
+ *
  * @goal eclipseTest
- * @phase process-test-sources
+ * @execute phase=generate-test-resources
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class EclipseTestMojo
-    extends EclipseMojo
+    extends TestMojo
 {
+    /**
+     * @component
+     */
+    private EclipseUtil eclipseUtil;
 
     /**
      * Location of the file.
-     * 
+     *
      * @parameter default-value="${project.build.directory}/www-test"
      */
     private File testOutputDirectory;
-
-    /**
-     * Comma separated list of ant-style inclusion patterns for GWT integration tests
-     * 
-     * @parameter default-value="**\/*GwtTest.java" expression="${gwt.tests.includes}"
-     */
-    private String includes;
-
-    /**
-     * Comma separated list of ant-style exclusion patterns for GWT integration tests
-     * 
-     * @parameter expression="${gwt.tests.excludes}"
-     */
-    private String excludes;
 
     /**
      * {@inheritDoc}
@@ -111,13 +103,14 @@ public class EclipseTestMojo
         cfg.setClassForTemplateLoading( EclipseTestMojo.class, "" );
 
         Map < String, Object > context = new HashMap < String, Object > ();
-        List < String > sources = getProjectSourceDirectories();
-        sources.add( 0, testSrc.getAbsolutePath() );
+        List < String > sources = new LinkedList < String >();
+        sources.addAll( getProject().getTestCompileSourceRoots() );
+        sources.addAll( getProject().getCompileSourceRoots() );
         context.put( "sources", sources );
         context.put( "test", fqcn );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", testOutputDirectory.getAbsolutePath().substring( basedir + 1 ) );
-        context.put( "project", getProjectName() );
+        context.put( "project", eclipseUtil.getProjectName( getProject() ) );
         context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath() );
 
         try

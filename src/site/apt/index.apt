@@ -2,25 +2,30 @@
  Introduction
  ------
  ------
- 
+
 Google Web Toolkit Maven Plugin
 
- Provides support for using {{{http://http://code.google.com/webtoolkit/}GWT}} with Maven 2
+ Provides support for using {{{http://code.google.com/webtoolkit/}GWT}} with Maven 2
  and integration with Eclispe IDE.
- 
 
 * Goals Overview
 
  * {{{eclipse-mojo.html}gwt:eclipse}}: Setup eclipse for GWT modules.
- 
+
  * {{{compile-mojo.html}gwt:compile}}: Compile GWT modules into JavaScript.
- 
+
  * {{{generateAsync-mojo.html}gwt:generateAsync}}: Generate asynchronous interfaces for RPC services.
 
  * {{{i18n-mojo.html}gwt:i18n}}: Run the i18nCreator tool to generation message bundle interfaces.
 
  * {{{test-mojo.html}gwt:test}}: Run GWTTestCase integration tests.
- 
+
  * {{{eclipseTest-mojo.html}gwt:eclipseTest}}: Setup eclipse for GWTTestCases.
- 
+
  []
+
+* History
+
+
+
+  {{{http://code.google.com/p/gwt-maven/}Gwt-maven}} has merged with this plugin since version 1.1

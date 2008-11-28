@@ -92,16 +92,18 @@ public class TestMojo
     private int timeOut;
 
     /**
-     * Comma separated list of ant-style inclusion patterns for GWT integration tests   
+     * Comma separated list of ant-style inclusion patterns for GWT integration tests
+     * 
      * @parameter default-value="**\/*GwtTest.java"
      */
-    private String includes;
+    protected String includes;
 
     /**
-     * Comma separated list of ant-style exclusion patterns for GWT integration tests   
+     * Comma separated list of ant-style exclusion patterns for GWT integration tests
+     * 
      * @parameter
      */
-    private String excludes;
+    protected String excludes;
 
     /**
      * Directory for test reports, defaults to surefire one to match the surefire-report plugin
@@ -235,7 +237,7 @@ public class TestMojo
         throws DependencyResolutionRequiredException, MalformedURLException
     {
         getLog().debug( "AbstractMojo#getProjectClassLoader()" );
-    
+
         List<?> compile = project.getCompileClasspathElements();
         URL[] urls = new URL[compile.size()];
         int i = 0;
@@ -276,7 +278,7 @@ public class TestMojo
         Collection<?> resources = project.getResources();
         Collection<?> dependencies = project.getArtifacts();
         URL[] urls = new URL[originalUrls.length + sources.size() + resources.size() + dependencies.size() + 2];
-    
+
         int i = originalUrls.length;
         getLog().debug( "add compile source roots to GWTCompiler classpath " + sources.size() );
         i = addClasspathElements( sources, urls, i );

@@ -131,7 +131,7 @@ public class ScriptWriterUnix
       File file = new File(configuration.getBuildDir(), "compile.sh");
       PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE, runtime );
 
-      for (String target : configuration.getCompileTarget()) {
+      for (String target : configuration.getModules()) {
 
          String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
          if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( extra.indexOf( "-XstartOnFirstThread" ) == -1 ) )

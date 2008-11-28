@@ -65,11 +65,11 @@ public class MergeWebXmlMojo
 
             FileUtils.copyFile( this.getWebXml(), destination );
 
-            for (int i = 0; i < this.getCompileTarget().length; i++) {
+            for (int i = 0; i < this.getModules().length; i++) {
                 File moduleFile = null;
                 for (Iterator it = this.getProject().getCompileSourceRoots().iterator(); it.hasNext()
                         && moduleFile == null;) {
-                    File check = new File(it.next().toString() + "/" + this.getCompileTarget()[i].replace('.', '/')
+                    File check = new File(it.next().toString() + "/" + this.getModules()[i].replace('.', '/')
                             + ".gwt.xml");
                     getLog().debug("Looking for file: " + check.getAbsolutePath());
                     if (check.exists()) {
@@ -78,7 +78,7 @@ public class MergeWebXmlMojo
                 }
                 for (Iterator it = this.getProject().getResources().iterator(); it.hasNext();) {
                     Resource r = (Resource) it.next();
-                    File check = new File(r.getDirectory() + "/" + this.getCompileTarget()[i].replace('.', '/')
+                    File check = new File(r.getDirectory() + "/" + this.getModules()[i].replace('.', '/')
                             + ".gwt.xml");
                     getLog().debug("Looking for file: " + check.getAbsolutePath());
                     if (check.exists()) {
@@ -92,7 +92,7 @@ public class MergeWebXmlMojo
                 try {
                     if (moduleFile != null) {
                         getLog().info("Module file: " + moduleFile.getAbsolutePath());
-                        processor = new GwtWebInfProcessor(this.getCompileTarget()[i], moduleFile, destination
+                        processor = new GwtWebInfProcessor(this.getModules()[i], moduleFile, destination
                                 .getAbsolutePath(), destination.getAbsolutePath(), this.isWebXmlServletPathAsIs());
                     } else {
                         throw new MojoExecutionException("module file null");
