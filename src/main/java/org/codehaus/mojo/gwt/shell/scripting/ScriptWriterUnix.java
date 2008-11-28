@@ -190,8 +190,10 @@ public class ScriptWriterUnix
       PrintWriter writer = this.getPrintWriterWithClasspath( configuration, file, Artifact.SCOPE_COMPILE, runtime );
 
       // constants
-      if (configuration.getI18nConstantsNames() != null) {
-         for (String target : configuration.getI18nConstantsNames()) {
+        if ( configuration.getI18nConstantsBundles() != null )
+        {
+            for ( String target : configuration.getI18nConstantsBundles() )
+            {
             String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
             if ( PlatformUtil.OS_NAME.startsWith( "mac" )
                     && ( extra.indexOf( "-XstartOnFirstThread" ) == -1 ) )
@@ -202,7 +204,7 @@ public class ScriptWriterUnix
             writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp $CLASSPATH" );
             writer.print(" com.google.gwt.i18n.tools.I18NSync");
             writer.print(" -out ");
-            writer.print(configuration.getI18nOutputDir());
+            writer.print( configuration.getGenerateDirectory() );
             writer.print(" ");
             writer.print(target);
             writer.println();
@@ -210,8 +212,10 @@ public class ScriptWriterUnix
       }
 
       // messages
-      if (configuration.getI18nMessagesNames() != null) {
-         for (String target : configuration.getI18nMessagesNames()) {
+        if ( configuration.getI18nMessagesBundles() != null )
+        {
+            for ( String target : configuration.getI18nMessagesBundles() )
+            {
             String extra = (configuration.getExtraJvmArgs() != null) ? configuration.getExtraJvmArgs() : "";
             if ( PlatformUtil.OS_NAME.startsWith( "mac" )
                     && ( extra.indexOf( "-XstartOnFirstThread" ) == -1 ) )
@@ -223,12 +227,15 @@ public class ScriptWriterUnix
             writer.print(" com.google.gwt.i18n.tools.I18NSync");
             writer.print(" -createMessages ");
             writer.print(" -out ");
-            writer.print(configuration.getI18nOutputDir());
+            writer.print( configuration.getGenerateDirectory() );
             writer.print(" ");
             writer.print(target);
             writer.println();
          }
       }
+
+      // TODO support getI18nConstantsWithLookupBundles
+
 
       writer.flush();
       writer.close();

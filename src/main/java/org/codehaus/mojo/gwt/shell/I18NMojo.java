@@ -48,41 +48,83 @@ public class I18NMojo
     extends AbstractGwtShellMojo
     implements I18nScriptConfiguration
 {
-
     /**
-     * Location on filesystem to output generated i18n Constants and Messages interfaces.
+     * List of resourceBundles that should be used to generate i18n Messages interfaces.
      * 
-     * @parameter expression="${basedir}/src/main/java/"
+     * @parameter
+     * @alias i18nMessagesNames
      */
-    private File i18nOutputDir;
+    private String[] i18nMessagesBundles;
 
     /**
-     * List of names of properties files that should be used to generate i18n Messages interfaces.
+     * Shortcut for a single i18nMessagesBundle
      * 
      * @parameter
      */
-    private String[] i18nMessagesNames;
+    @SuppressWarnings( "unused" )
+    private String i18nMessagesBundle;
+
+    public void setI18nMessagesBundle( String i18nMessagesBundle )
+   {
+       this.i18nMessagesBundles = new String[] { i18nMessagesBundle };
+   }
 
     /**
-     * List of names of properties files that should be used to generate i18n Constants interfaces.
+     * List of resourceBundles that should be used to generate i18n Constants interfaces.
+     * 
+     * @parameter
+     * @alias i18nConstantsNames
+     */
+    private String[] i18nConstantsBundles;
+
+    /**
+     * Shortcut for a single i18nConstantsBundle
      * 
      * @parameter
      */
-    private String[] i18nConstantsNames;
+    @SuppressWarnings( "unused" )
+    private String i18nConstantsBundle;
+
+    public void setI18ConstantsBundle( String i18nConstantsBundle )
+    {
+        this.i18nConstantsBundles = new String[] { i18nConstantsBundle };
+    }
+
+    /**
+     * List of resourceBundles that should be used to generate i18n ConstantsWithLookup interfaces.
+     * 
+     * @parameter
+     */
+    private String[] i18nConstantsWithLookupBundles;
+
+    /**
+     * Shortcut for a single i18nConstantsWithLookupBundle
+     * 
+     * @parameter
+     */
+    @SuppressWarnings( "unused" )
+    private String i18nConstantsWithLookupBundle;
+
+    public void setI18nConstantsWithLookupBundle( String i18nConstantsWithLookupBundle )
+    {
+        this.i18nConstantsWithLookupBundles = new String[] { i18nConstantsWithLookupBundle };
+    }
+
 
     public void doExecute(GwtRuntime runtime)
         throws MojoExecutionException, MojoFailureException
     {
 
-        if (this.getI18nMessagesNames() == null && this.getI18nConstantsNames() == null) {
+        if ( i18nMessagesBundles == null && i18nConstantsBundles == null && i18nConstantsWithLookupBundles == null )
+        {
             throw new MojoExecutionException(
-                    "neither i18nConstantsNames nor i18nMessagesNames present, cannot execute i18n goal");
+                    "neither i18nConstantsBundles, i18nMessagesBundles nor i18nConstantsWithLookupBundles present, cannot execute i18n goal" );
         }
 
-        if (!this.getI18nOutputDir().exists()) {
-            if (getLog().isInfoEnabled())
-                getLog().info("I18NModule is creating target directory " + getI18nOutputDir().getAbsolutePath());
-            this.getI18nOutputDir().mkdirs();
+        if ( !generateDirectory.exists() )
+        {
+            getLog().debug( "Creating target directory " + generateDirectory.getAbsolutePath() );
+            generateDirectory.mkdirs();
         }
 
         // build it for the correct platform
@@ -94,39 +136,9 @@ public class I18NMojo
     }
 
     /**
-     * {@inheritDoc}
-     * 
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getI18nOutputDir()
-     */
-    public File getI18nOutputDir()
-    {
-        return this.i18nOutputDir;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getI18nMessagesNames()
-     */
-    public String[] getI18nMessagesNames()
-    {
-        return this.i18nMessagesNames;
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getI18nConstantsNames()
-     */
-    public String[] getI18nConstantsNames()
-    {
-        return this.i18nConstantsNames;
-    }
-
-    /**
      * Helper hack for classpath problems, used as a fallback.
+     * 
      * @param runtime TODO
-     *
      * @return
      */
     protected ClassLoader fixThreadClasspath( GwtRuntime runtime )
@@ -134,11 +146,11 @@ public class I18NMojo
         try
         {
             ClassWorld world = new ClassWorld();
-    
+
             // use the existing ContextClassLoader in a realm of the classloading space
             ClassRealm root = world.newRealm( "gwt-plugin", Thread.currentThread().getContextClassLoader() );
             ClassRealm realm = root.createChildRealm( "gwt-project" );
-    
+
             Collection classpath =
                 buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE, runtime, sourcesOnPath,
                                                        resourcesOnPath );
@@ -146,10 +158,10 @@ public class I18NMojo
             {
                 realm.addConstituent( ( (File) it.next() ).toURI().toURL() );
             }
-    
+
             Thread.currentThread().setContextClassLoader( realm.getClassLoader() );
             // /System.out.println("AbstractGwtMojo realm classloader = " + realm.getClassLoader().toString());
-    
+
             return realm.getClassLoader();
         }
         catch ( Exception e )
@@ -157,5 +169,21 @@ public class I18NMojo
             e.printStackTrace();
             throw new RuntimeException( e );
         }
+    }
+
+
+        public String[] getI18nMessagesBundles()
+    {
+        return i18nMessagesBundles;
+    }
+
+    public String[] getI18nConstantsBundles()
+    {
+        return i18nConstantsBundles;
+    }
+
+    public String[] getI18nConstantsWithLookupBundles()
+    {
+        return i18nConstantsWithLookupBundles;
     }
 }

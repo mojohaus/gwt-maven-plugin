@@ -40,7 +40,8 @@ import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Execute the i18nCreator tool
- *
+ * 
+ * @deprecated will be replaced with gw-maven I18NMojo
  * @goal i18n
  * @phase generate-sources
  * @see http://code.google.com/webtoolkit/documentation/com.google.gwt.doc.DeveloperGuide.Fundamentals.html#i18nCreator
@@ -181,7 +182,7 @@ public class I18NCreatorMojo
         throws DependencyResolutionRequiredException, MalformedURLException
     {
         getLog().debug( "AbstractMojo#getProjectClassLoader()" );
-    
+
         List<?> compile = project.getCompileClasspathElements();
         URL[] urls = new URL[compile.size()];
         int i = 0;
@@ -222,7 +223,7 @@ public class I18NCreatorMojo
         Collection<?> resources = project.getResources();
         Collection<?> dependencies = project.getArtifacts();
         URL[] urls = new URL[originalUrls.length + sources.size() + resources.size() + dependencies.size() + 2];
-    
+
         int i = originalUrls.length;
         getLog().debug( "add compile source roots to GWTCompiler classpath " + sources.size() );
         i = addClasspathElements( sources, urls, i );

@@ -10,19 +10,12 @@ public interface I18nScriptConfiguration
     extends GwtShellScriptConfiguration
 {
 
-    /**
-     * @return
-     */
-    String[] getI18nConstantsNames();
+    public String[] getI18nMessagesBundles();
 
-    /**
-     * @return
-     */
-    File getI18nOutputDir();
+    public String[] getI18nConstantsBundles();
 
-    /**
-     * @return
-     */
-    String[] getI18nMessagesNames();
+    public String[] getI18nConstantsWithLookupBundles();
+
+    public File getGenerateDirectory();
 
 }

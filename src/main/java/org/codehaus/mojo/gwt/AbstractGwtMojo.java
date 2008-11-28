@@ -305,4 +305,9 @@ public abstract class AbstractGwtMojo
             throw new MojoExecutionException( "GWT setup failed" );
         }
     }
+
+    public File getGenerateDirectory()
+    {
+        return generateDirectory;
+    }
 }

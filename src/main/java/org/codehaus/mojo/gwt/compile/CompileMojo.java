@@ -37,6 +37,7 @@ import org.codehaus.mojo.gwt.GwtRuntime;
 /**
  * Goal which compiles a GWT file.
  * 
+ * @deprecated will be replaced by gwt-maven CompileMojo
  * @goal compile
  * @phase process-classes
  * @author Shinobu Kawai
