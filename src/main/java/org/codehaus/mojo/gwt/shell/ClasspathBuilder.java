@@ -95,9 +95,9 @@ public class ClasspathBuilder
         if ( scope.equals( Artifact.SCOPE_TEST ) )
         {
             // Add all project dependencies in classpath
-            for ( Iterator < Artifact > it = project.getTestClasspathElements().iterator(); it.hasNext(); )
+            for ( Iterator it = project.getTestClasspathElements().iterator(); it.hasNext(); )
             {
-                items.add( it.next().getFile() );
+                items.add( new File( it.next().toString() ) );
             }
             // add test sources and resources
             addSourcesWithActiveProjects( project, items, scope );
@@ -106,9 +106,9 @@ public class ClasspathBuilder
         else if ( scope.equals( Artifact.SCOPE_COMPILE ) )
         {
             // Add all project dependencies in classpath
-            for ( Iterator < Artifact > it = project.getCompileClasspathElements().iterator(); it.hasNext(); )
+            for ( Iterator it = project.getCompileClasspathElements().iterator(); it.hasNext(); )
             {
-                items.add( it.next().getFile() );
+                items.add( new File( it.next().toString() ) );
             }
         }
         else if ( scope.equals( Artifact.SCOPE_RUNTIME ) )
