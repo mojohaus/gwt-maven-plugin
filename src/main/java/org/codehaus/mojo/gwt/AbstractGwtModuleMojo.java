@@ -207,7 +207,7 @@ public abstract class AbstractGwtModuleMojo
             int i = 0;
             for ( File file : classpath )
             {
-                urls[i++] = file.toURL();
+                urls[i++] = file.toURI().toURL();
             }
             ClassLoader parent = getClass().getClassLoader();
             return new URLClassLoader( urls, parent.getParent() );
