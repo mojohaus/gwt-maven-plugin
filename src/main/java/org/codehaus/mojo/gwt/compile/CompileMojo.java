@@ -130,13 +130,14 @@ public class CompileMojo
             if ( e.getTargetException() instanceof SystemExitSecurityException )
             {
                 SystemExitSecurityException sse = (SystemExitSecurityException) e.getTargetException();
-                if ( sse.getStatus() == 0 )
+                int status = sse.getStatus();
+                if ( status == 0 )
                 {
                     getLog().debug( "System.exit(0) has been intercepted --> ignored" );
                 }
                 else
                 {
-                    throw new MojoExecutionException( "GWTCompiler failed" );
+                    throw new MojoExecutionException( "GWTCompiler failed Status " + status );
                 }
             }
             else
