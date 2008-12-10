@@ -39,233 +39,298 @@ public class ProcessWatcher {
    StreamSucker out;
    StreamSucker err;
 
-   private ProcessWatcher(Object command, String[] envirionment, File dir) {
-      this.command = command;
-      this.envirionment = envirionment;
-      this.dir = dir;
-   }
+   private ProcessWatcher( Object command, String[] envirionment, File dir )
+    {
+        this.command = command;
+        this.envirionment = envirionment;
+        this.dir = dir;
+    }
 
-   public ProcessWatcher(String command, String[] envirionment, File dir) {
-      this((Object) command, envirionment, dir);
-   }
+    public ProcessWatcher( String command, String[] envirionment, File dir )
+    {
+        this( (Object) command, envirionment, dir );
+    }
 
-   public ProcessWatcher(String[] command, String[] envirionment, File dir) {
-      this((Object) command, envirionment, dir);
-   }
+    public ProcessWatcher( String[] command, String[] envirionment, File dir )
+    {
+        this( (Object) command, envirionment, dir );
+    }
 
-   public ProcessWatcher(String command, String[] envirionment) {
-      this((Object) command, envirionment, null);
-   }
+    public ProcessWatcher( String command, String[] envirionment )
+    {
+        this( (Object) command, envirionment, null );
+    }
 
-   public ProcessWatcher(String[] command, String[] envirionment) {
-      this((Object) command, envirionment, null);
-   }
+    public ProcessWatcher( String[] command, String[] envirionment )
+    {
+        this( (Object) command, envirionment, null );
+    }
 
-   public ProcessWatcher(String command) {
-      this((Object) command, null, null);
-   }
+    public ProcessWatcher( String command )
+    {
+        this( (Object) command, null, null );
+    }
 
-   public ProcessWatcher(String[] command) {
-      this((Object) command, null, null);
-   }
+    public ProcessWatcher( String[] command )
+    {
+        this( (Object) command, null, null );
+    }
 
-   public void startProcess() throws IOException {
+    public void startProcess()
+        throws IOException
+    {
 
-      //First start the process
-      if (command instanceof String[]) {
-         process = Runtime.getRuntime().exec((String[]) command, envirionment, dir);
-      }
-      else {
-         process = Runtime.getRuntime().exec((String) command, envirionment, dir);
-      }
+        //First start the process
+        if ( command instanceof String[] )
+        {
+            process = Runtime.getRuntime().exec( (String[]) command, envirionment, dir );
+        }
+        else
+        {
+            process = Runtime.getRuntime().exec( (String) command, envirionment, dir );
+        }
 
-      //Now start the suckers
-      if (out == null) {
-         out = new StreamSucker(new NulStream());
-      }
+        //Now start the suckers
+        if ( out == null )
+        {
+            out = new StreamSucker( new NulStream() );
+        }
 
-      if (err == null) {
-         err = new StreamSucker(new NulStream());
-      }
+        if ( err == null )
+        {
+            err = new StreamSucker( new NulStream() );
+        }
 
-      out.setIn(process.getInputStream());
-      err.setIn(process.getErrorStream());
+        out.setIn( process.getInputStream() );
+        err.setIn( process.getErrorStream() );
 
-      out.start();
-      err.start();
-   }
+        out.start();
+        err.start();
+    }
 
-   public void startProcess(OutputStream stdout, OutputStream stderr) throws IOException {
-      if (stdout != null)
-         out = new StreamSucker(stdout);
+    public void startProcess( OutputStream stdout, OutputStream stderr )
+        throws IOException
+    {
+        if ( stdout != null )
+            out = new StreamSucker( stdout );
 
-      if (stderr != null)
-         err = new StreamSucker(stderr);
+        if ( stderr != null )
+            err = new StreamSucker( stderr );
 
-      startProcess();
-   }
+        startProcess();
+    }
 
-   public void startProcess(StringBuffer stdout, StringBuffer stderr) throws IOException {
-      if (stdout != null)
-         out = new StreamSucker(new StringBufferStream(stdout));
+    public void startProcess( StringBuffer stdout, StringBuffer stderr )
+        throws IOException
+    {
+        if ( stdout != null )
+            out = new StreamSucker( new StringBufferStream( stdout ) );
 
-      if (stderr != null)
-         err = new StreamSucker(new StringBufferStream(stderr));
+        if ( stderr != null )
+            err = new StreamSucker( new StringBufferStream( stderr ) );
 
-      startProcess();
-   }
+        startProcess();
+    }
 
-   public void startProcess(StringBuilder stdout, StringBuilder stderr) throws IOException {
-      if (stdout != null)
-         out = new StreamSucker(new StringBuilderStream(stdout));
+    public void startProcess( StringBuilder stdout, StringBuilder stderr )
+        throws IOException
+    {
+        if ( stdout != null )
+            out = new StreamSucker( new StringBuilderStream( stdout ) );
 
-      if (stderr != null)
-         err = new StreamSucker(new StringBuilderStream(stderr));
+        if ( stderr != null )
+            err = new StreamSucker( new StringBuilderStream( stderr ) );
 
-      startProcess();
-   }
+        startProcess();
+    }
 
-   public OutputStream getStdIn() {
-      return process.getOutputStream();
-   }
+    public OutputStream getStdIn()
+    {
+        return process.getOutputStream();
+    }
 
-   public int exitValue() {
-      return process.exitValue();
-   }
+    public int exitValue()
+    {
+        return process.exitValue();
+    }
 
-   public void destroy() {
-      process.destroy();
-   }
+    public void destroy()
+    {
+        process.destroy();
+    }
 
-   public int waitFor() throws InterruptedException {
-      try {
-         process.waitFor();
-      }
-      finally {
-         out.shutdown();
-         err.shutdown();
-      }
+    public int waitFor()
+        throws InterruptedException
+    {
+        try
+        {
+            process.waitFor();
+        }
+        finally
+        {
+            out.shutdown();
+            err.shutdown();
+        }
 
-      out.join();
-      err.join();
+        out.join();
+        err.join();
 
-      return process.exitValue();
-   }
+        return process.exitValue();
+    }
 
-   static public class StreamSucker extends Thread {
+    static public class StreamSucker
+        extends Thread
+    {
 
-      private final long sleeptime;
-      private final OutputStream out;
-      private InputStream in;
-      volatile boolean allDone = false;
+        private final long sleeptime;
 
-      public StreamSucker(OutputStream out, long sleeptime) {
-         this.sleeptime = sleeptime;
-         if (out == null)
-            this.out = new NulStream();
-         else
-            this.out = out;
-      }
+        private final OutputStream out;
 
-      public StreamSucker(OutputStream out) {
-         this(out, DEFAULT_SLEEP);
-      }
+        private InputStream in;
 
-      public StreamSucker() {
-         this(null, DEFAULT_SLEEP);
-      }
+        volatile boolean allDone = false;
 
-      public void shutdown() {
-         allDone = true;
-      }
+        public StreamSucker( OutputStream out, long sleeptime )
+        {
+            this.sleeptime = sleeptime;
+            if ( out == null )
+                this.out = new NulStream();
+            else
+                this.out = out;
+        }
 
-      public void siphonAvailableBytes(byte[] buf) throws IOException {
-         int available = getIn().available();
-         while (available > 0) {
-            available = getIn().read(buf);
-            getOut().write(buf, 0, available);
-            available = getIn().available();
-         }
-      }
+        public StreamSucker( OutputStream out )
+        {
+            this( out, DEFAULT_SLEEP );
+        }
 
-      public void run() {
-         byte[] buf = new byte[4096];
+        public StreamSucker()
+        {
+            this( null, DEFAULT_SLEEP );
+        }
 
-         try {
+        public void shutdown()
+        {
+            allDone = true;
+        }
 
-            while (!allDone) {
-               synchronized (this) {
-                  this.wait(getSleeptime());
-               }
-               siphonAvailableBytes(buf);
+        public void siphonAvailableBytes( byte[] buf )
+            throws IOException
+        {
+            int available = getIn().available();
+            while ( available > 0 )
+            {
+                available = getIn().read( buf );
+                getOut().write( buf, 0, available );
+                available = getIn().available();
+            }
+        }
+
+        public void run()
+        {
+            byte[] buf = new byte[4096];
+
+            try
+            {
+
+                while ( !allDone )
+                {
+                    synchronized ( this )
+                    {
+                        this.wait( getSleeptime() );
+                    }
+                    siphonAvailableBytes( buf );
+                }
+
+                //One last siphoning to make sure we got everything
+                siphonAvailableBytes( buf );
+
+            }
+            catch ( InterruptedException e )
+            {
+                //We got interupted, time to go. . .
+            }
+            catch ( IOException e )
+            {
+
+            }
+            finally
+            {
+                try
+                {
+                    out.flush();
+                }
+                catch ( IOException e )
+                {
+                    e.printStackTrace();
+                }
             }
 
-            //One last siphoning to make sure we got everything
-            siphonAvailableBytes(buf);
+        }
 
-         }
-         catch (InterruptedException e) {
-            //We got interupted, time to go. . .
-         }
-         catch (IOException e) {
+        public long getSleeptime()
+        {
+            return sleeptime;
+        }
 
-         }
-         finally {
-            try {
-               out.flush();
-            }
-            catch (IOException e) {
-               e.printStackTrace();
-            }
-         }
+        public OutputStream getOut()
+        {
+            return out;
+        }
 
-      }
+        public InputStream getIn()
+        {
+            return in;
+        }
 
-      public long getSleeptime() {
-         return sleeptime;
-      }
+        public void setIn( InputStream in )
+        {
+            this.in = in;
+        }
+    }
 
-      public OutputStream getOut() {
-         return out;
-      }
+    static public class NulStream
+        extends OutputStream
+    {
+        public void write( int i )
+            throws IOException
+        {
+            //Null Op
+        }
+    }
 
-      public InputStream getIn() {
-         return in;
-      }
+    static public class StringBufferStream
+        extends OutputStream
+    {
+        final StringBuffer buf;
 
-      public void setIn(InputStream in) {
-         this.in = in;
-      }
-   }
+        public StringBufferStream( StringBuffer buf )
+        {
+            this.buf = buf;
+        }
 
-   static public class NulStream extends OutputStream {
-      public void write(int i) throws IOException {
-         //Null Op
-      }
-   }
+        public void write( int i )
+            throws IOException
+        {
+            buf.append( (char) i );
+        }
+    }
 
-   static public class StringBufferStream extends OutputStream {
-      final StringBuffer buf;
+    static public class StringBuilderStream
+        extends OutputStream
+    {
+        final StringBuilder buf;
 
-      public StringBufferStream(StringBuffer buf) {
-         this.buf = buf;
-      }
+        public StringBuilderStream( StringBuilder buf )
+        {
+            this.buf = buf;
+        }
 
-      public void write(int i) throws IOException {
-         buf.append((char) i);
-      }
-   }
-
-   static public class StringBuilderStream extends OutputStream {
-      final StringBuilder buf;
-
-      public StringBuilderStream(StringBuilder buf) {
-         this.buf = buf;
-      }
-
-      public void write(int i) throws IOException {
-         buf.append((char) i);
-      }
-   }
+        public void write( int i )
+            throws IOException
+        {
+            buf.append( (char) i );
+        }
+    }
 
 }

@@ -48,14 +48,22 @@ public class DebugMojo
      */
     private boolean debugSuspend;
 
+    /**
+     * @see org.codehaus.mojo.gwt.shell.RunMojo#doExecute(org.codehaus.mojo.gwt.GwtRuntime)
+     */
     @Override
     public void doExecute(GwtRuntime runtime)
         throws MojoExecutionException, MojoFailureException
     {
         if (isDebugSuspend())
+        {
             getLog().info("starting debugger on port " + getDebugPort() + " in suspend mode");
+        }
         else
-            getLog().info("starting debugger on port " + getDebugPort());
+        {
+            getLog().info( "starting debugger on port " + getDebugPort() );
+        }
+            
         super.execute();
     }
 

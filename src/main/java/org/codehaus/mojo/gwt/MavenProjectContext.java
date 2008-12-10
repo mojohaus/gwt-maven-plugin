@@ -1,11 +1,5 @@
 package org.codehaus.mojo.gwt;
 
-import java.io.File;
-import java.util.List;
-
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.project.MavenProject;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -25,6 +19,11 @@ import org.apache.maven.project.MavenProject;
  * under the License.
  */
 
+import java.io.File;
+import java.util.List;
+
+import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.project.MavenProject;
 
 /**
  * @author ndeloof

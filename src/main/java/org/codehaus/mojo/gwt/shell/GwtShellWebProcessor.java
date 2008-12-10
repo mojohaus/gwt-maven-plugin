@@ -29,7 +29,9 @@ import org.codehaus.mojo.gwt.webxml.ServletDescriptor;
  *
  * @author cooper
  */
-public class GwtShellWebProcessor extends GwtWebInfProcessor {
+public class GwtShellWebProcessor
+    extends GwtWebInfProcessor
+{
 
     /** Creates a new instance of GwtShellWebProcessor */
     public GwtShellWebProcessor( String targetWebXml, File sourceWebXml, String shellServletMappingURL )
@@ -40,19 +42,13 @@ public class GwtShellWebProcessor extends GwtWebInfProcessor {
 
         if ( !sourceWebXml.exists() || !sourceWebXml.canRead() )
         {
-            throw new Exception("Unable to locate source web.xml");
+            throw new Exception( "Unable to locate source web.xml" );
         }
 
-        this.destination = new File(targetWebXml);
+        this.destination = new File( targetWebXml );
         this.servletDescriptors = new ArrayList();
-        ServletDescriptor d = new ServletDescriptor(
-                shellServletMappingURL,
-                "com.google.gwt.dev.shell.GWTShellServlet");
-        d.setName("shell");
+        ServletDescriptor d = new ServletDescriptor( shellServletMappingURL, "com.google.gwt.dev.shell.GWTShellServlet" );
+        d.setName( "shell" );
         this.servletDescriptors.add( d );
     }
-
-
-
-
 }

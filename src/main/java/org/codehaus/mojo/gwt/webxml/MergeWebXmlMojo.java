@@ -47,71 +47,90 @@ public class MergeWebXmlMojo
 {
 
     /** Creates a new instance of MergeWebXmlMojo */
-    public MergeWebXmlMojo() {
+    public MergeWebXmlMojo()
+    {
         super();
     }
 
-    public void doExecute(GwtRuntime runtime)
+    public void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
     {
 
-        try {
-            this.getLog().info("copy source web.xml - " + this.getWebXml() + " to build dir (source web.xml required if mergewebxml execution is enabled)");
-            File destination = new File(this.getBuildDir(), "web.xml");
-            if (!destination.exists()) {
+        try
+        {
+            this.getLog().info(
+                                "copy source web.xml - " + this.getWebXml()
+                                    + " to build dir (source web.xml required if mergewebxml execution is enabled)" );
+            File destination = new File( this.getBuildDir(), "web.xml" );
+            if ( !destination.exists() )
+            {
                 destination.getParentFile().mkdirs();
                 destination.createNewFile();
             }
 
             FileUtils.copyFile( this.getWebXml(), destination );
 
-            for (int i = 0; i < this.getModules().length; i++) {
+            for ( int i = 0; i < this.getModules().length; i++ )
+            {
                 File moduleFile = null;
-                for (Iterator it = this.getProject().getCompileSourceRoots().iterator(); it.hasNext()
-                        && moduleFile == null;) {
-                    File check = new File(it.next().toString() + "/" + this.getModules()[i].replace('.', '/')
-                            + ".gwt.xml");
-                    getLog().debug("Looking for file: " + check.getAbsolutePath());
-                    if (check.exists()) {
+                for ( Iterator it = this.getProject().getCompileSourceRoots().iterator(); it.hasNext()
+                    && moduleFile == null; )
+                {
+                    File check = new File( it.next().toString() + "/" + this.getModules()[i].replace( '.', '/' )
+                        + ".gwt.xml" );
+                    getLog().debug( "Looking for file: " + check.getAbsolutePath() );
+                    if ( check.exists() )
+                    {
                         moduleFile = check;
                     }
                 }
-                for (Iterator it = this.getProject().getResources().iterator(); it.hasNext();) {
+                for ( Iterator it = this.getProject().getResources().iterator(); it.hasNext(); )
+                {
                     Resource r = (Resource) it.next();
-                    File check = new File(r.getDirectory() + "/" + this.getModules()[i].replace('.', '/')
-                            + ".gwt.xml");
-                    getLog().debug("Looking for file: " + check.getAbsolutePath());
-                    if (check.exists()) {
+                    File check = new File( r.getDirectory() + "/" + this.getModules()[i].replace( '.', '/' )
+                        + ".gwt.xml" );
+                    getLog().debug( "Looking for file: " + check.getAbsolutePath() );
+                    if ( check.exists() )
+                    {
                         moduleFile = check;
                     }
                 }
 
-                this.fixThreadClasspath(runtime);
+                this.fixThreadClasspath( runtime );
 
                 GwtWebInfProcessor processor = null;
-                try {
-                    if (moduleFile != null) {
-                        getLog().info("Module file: " + moduleFile.getAbsolutePath());
-                        processor = new GwtWebInfProcessor(this.getModules()[i], moduleFile, destination
-                                .getAbsolutePath(), destination.getAbsolutePath(), this.isWebXmlServletPathAsIs());
-                    } else {
-                        throw new MojoExecutionException("module file null");
+                try
+                {
+                    if ( moduleFile != null )
+                    {
+                        getLog().info( "Module file: " + moduleFile.getAbsolutePath() );
+                        processor = new GwtWebInfProcessor( this.getModules()[i], moduleFile, destination
+                            .getAbsolutePath(), destination.getAbsolutePath(), this.isWebXmlServletPathAsIs() );
                     }
-                } catch (ExitException e) {
-                    this.getLog().warn(e.getMessage());
+                    else
+                    {
+                        throw new MojoExecutionException( "module file null" );
+                    }
+                }
+                catch ( ExitException e )
+                {
+                    this.getLog().warn( e.getMessage() );
                     return;
                 }
                 processor.process();
             }
-        } catch (Exception e) {
-            throw new MojoExecutionException("Unable to merge web.xml", e);
+        }
+        catch ( Exception e )
+        {
+            throw new MojoExecutionException( "Unable to merge web.xml", e );
         }
     }
 
     /**
      * Helper hack for classpath problems, used as a fallback.
+     * 
      * @param runtime TODO
-     *
+     * 
      * @return
      */
     protected ClassLoader fixThreadClasspath( GwtRuntime runtime )
@@ -119,22 +138,21 @@ public class MergeWebXmlMojo
         try
         {
             ClassWorld world = new ClassWorld();
-    
+
             // use the existing ContextClassLoader in a realm of the classloading space
             ClassRealm root = world.newRealm( "gwt-plugin", Thread.currentThread().getContextClassLoader() );
             ClassRealm realm = root.createChildRealm( "gwt-project" );
-    
-            Collection classpath =
-                buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE, runtime, sourcesOnPath,
-                                                       resourcesOnPath );
+
+            Collection classpath = buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE,
+                                                                          runtime, sourcesOnPath, resourcesOnPath );
             for ( Iterator it = classpath.iterator(); it.hasNext(); )
             {
                 realm.addConstituent( ( (File) it.next() ).toURI().toURL() );
             }
-    
+
             Thread.currentThread().setContextClassLoader( realm.getClassLoader() );
             // /System.out.println("AbstractGwtMojo realm classloader = " + realm.getClassLoader().toString());
-    
+
             return realm.getClassLoader();
         }
         catch ( Exception e )

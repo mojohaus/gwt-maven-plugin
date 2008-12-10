@@ -1,5 +1,24 @@
 package org.codehaus.mojo.gwt.shell;
 
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileWriter;
@@ -76,69 +95,73 @@ public class GWTTestMojo
      * http://jira.codehaus.org/browse/SUREFIRE-508. Hopefully we can kill this someday, it's a hack, but for now, this
      * is the ONLY way to run GWTTestCase based tests from an automated Maven build.
      */
-
-   public void doExecute(GwtRuntime runtime)
+   public void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
     {
-      if (isTestSkip()) {
-         return;
-      }
+        if ( isTestSkip() )
+        {
+            return;
+        }
 
-      this.getLog().info("running GWTTestCase tests (using test name filter -  " + this.getTestFilter() + ")");
+        this.getLog().info( "running GWTTestCase tests (using test name filter -  " + this.getTestFilter() + ")" );
 
-      FileWriter testResultsWriter = null;
+        FileWriter testResultsWriter = null;
 
-      // build scripts for each test case for the correct platform
-      // (note that scripts end up in outputDirectory/gwtTest)
+        // build scripts for each test case for the correct platform
+        // (note that scripts end up in outputDirectory/gwtTest)
         ScriptWriter writer = scriptWriterFactory.getScriptWriter();
-      writer.writeTestScripts(this, runtime);
+        writer.writeTestScripts( this, runtime );
 
-      // run the scripts
-      boolean testFailure = false;
-      File testDir = new File(this.getBuildDir(), "gwtTest");
-      FileFilter fileFilter = new WildcardFileFilter("gwtTest-*");
-      File[] files = testDir.listFiles(fileFilter);
-      for (int i = 0; i < files.length; i++) {
-         File test = files[i];
+        // run the scripts
+        boolean testFailure = false;
+        File testDir = new File( this.getBuildDir(), "gwtTest" );
+        FileFilter fileFilter = new WildcardFileFilter( "gwtTest-*" );
+        File[] files = testDir.listFiles( fileFilter );
+        for ( int i = 0; i < files.length; i++ )
+        {
+            File test = files[i];
 
-         // create results writer
-         try {
-            String outTestName = test.getName();
-            outTestName = outTestName.substring(0, test.getName().lastIndexOf(".")); // strip end .sh/cmd
-            outTestName = outTestName.substring(8, outTestName.length()); // strip start gwtTest-
-            testResultsWriter = new FileWriter(new File(testDir, "TEST-" + outTestName + ".txt"));
+            // create results writer
+            try
+            {
+                String outTestName = test.getName();
+                outTestName = outTestName.substring( 0, test.getName().lastIndexOf( "." ) ); // strip end .sh/cmd
+                outTestName = outTestName.substring( 8, outTestName.length() ); // strip start gwtTest-
+                testResultsWriter = new FileWriter( new File( testDir, "TEST-" + outTestName + ".txt" ) );
 
-            // run test script and capture output
-            org.codehaus.mojo.gwt.shell.scripting.TestResult testResult = ScriptUtil.runTestScript(test);
+                // run test script and capture output
+                org.codehaus.mojo.gwt.shell.scripting.TestResult testResult = ScriptUtil.runTestScript( test );
 
-            // if testCode not success, overall must fail build
-            if (testResult.code == TestCode.ERROR || testResult.code == TestCode.FAILURE) {
-               testFailure = true;
+                // if testCode not success, overall must fail build
+                if ( testResult.code == TestCode.ERROR || testResult.code == TestCode.FAILURE )
+                {
+                    testFailure = true;
+                }
+
+                // write results to result file
+                testResultsWriter.write( "Test Code - " + testResult.code + "\n" );
+                testResultsWriter.write( "Test Output: \n" + testResult.message + "\n" );
+                testResultsWriter.flush();
+                testResultsWriter.close();
+
+                this.getLog().info( outTestName + " completed, GWTTestCase result: " + testResult.lastLine );
             }
-
-            // write results to result file
-            testResultsWriter.write("Test Code - " + testResult.code + "\n");
-            testResultsWriter.write("Test Output: \n" + testResult.message + "\n");
-            testResultsWriter.flush();
-            testResultsWriter.close();
-
-            this.getLog().info(outTestName + " completed, GWTTestCase result: " + testResult.lastLine);
-         }
-         catch (IOException e) {
-            throw new MojoExecutionException("unable to create test results output file", e);
-         }
-      }
+            catch ( IOException e )
+            {
+                throw new MojoExecutionException( "unable to create test results output file", e );
+            }
+        }
 
       // after the loop show output and or handle overall failure
         // TODO add up results and show X runs - X successes, X failures, etc
 
-      this.getLog().info("all tests completed - ran " + files.length + " tests - see results in target/gwtTest");
+        this.getLog().info( "all tests completed - ran " + files.length + " tests - see results in target/gwtTest" );
 
-      if (testFailure) {
-         throw new MojoExecutionException("There were GWTTestCase test failures - see results in target/gwtTest");
-      }
-   }
-
+        if ( testFailure )
+        {
+            throw new MojoExecutionException( "There were GWTTestCase test failures - see results in target/gwtTest" );
+        }
+    }
 
     public String getTestFilter()
     {
@@ -155,11 +178,11 @@ public class GWTTestMojo
         return this.testSkip;
     }
 
-
     /**
      * Helper hack for classpath problems, used as a fallback.
+     * 
      * @param runtime TODO
-     *
+     * 
      * @return
      */
     protected ClassLoader fixThreadClasspath( GwtRuntime runtime )
@@ -167,22 +190,21 @@ public class GWTTestMojo
         try
         {
             ClassWorld world = new ClassWorld();
-    
+
             // use the existing ContextClassLoader in a realm of the classloading space
             ClassRealm root = world.newRealm( "gwt-plugin", Thread.currentThread().getContextClassLoader() );
             ClassRealm realm = root.createChildRealm( "gwt-project" );
-    
-            Collection classpath =
-                buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE, runtime, sourcesOnPath,
-                                                       resourcesOnPath );
+
+            Collection classpath = buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE,
+                                                                          runtime, sourcesOnPath, resourcesOnPath );
             for ( Iterator it = classpath.iterator(); it.hasNext(); )
             {
                 realm.addConstituent( ( (File) it.next() ).toURI().toURL() );
             }
-    
+
             Thread.currentThread().setContextClassLoader( realm.getClassLoader() );
             // /System.out.println("AbstractGwtMojo realm classloader = " + realm.getClassLoader().toString());
-    
+
             return realm.getClassLoader();
         }
         catch ( Exception e )

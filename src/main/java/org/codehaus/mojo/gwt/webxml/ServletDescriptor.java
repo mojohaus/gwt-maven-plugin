@@ -23,10 +23,12 @@ public class ServletDescriptor
 {
 
     private String className;
+
     private String path;
+
     private String name;
 
-    public ServletDescriptor(String path, String className)
+    public ServletDescriptor( String path, String className )
     {
         this.path = path;
         this.className = className;
@@ -37,7 +39,7 @@ public class ServletDescriptor
         return className;
     }
 
-    public void setClassName(String className)
+    public void setClassName( String className )
     {
         this.className = className;
     }
@@ -47,7 +49,7 @@ public class ServletDescriptor
         return path;
     }
 
-    public void setPath(String path)
+    public void setPath( String path )
     {
         this.path = path;
     }
@@ -57,11 +59,13 @@ public class ServletDescriptor
         return "Path:" + this.path + " Class:" + this.className;
     }
 
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName( String name )
+    {
         this.name = name;
     }
 }

@@ -88,7 +88,7 @@ public class RunMojo
         return this.runTarget;
     }
 
-    public void doExecute(GwtRuntime runtime)
+    public void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
     {
         try

@@ -1,13 +1,5 @@
 package org.codehaus.mojo.gwt.eclipse;
 
-import java.io.File;
-import java.io.FileReader;
-
-import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.logging.AbstractLogEnabled;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -26,6 +18,14 @@ import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import java.io.File;
+import java.io.FileReader;
+
+import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
 /**
  * @author ndeloof

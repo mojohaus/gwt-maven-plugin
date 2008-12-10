@@ -111,14 +111,14 @@ public class I18NMojo
     }
 
 
-    public void doExecute(GwtRuntime runtime)
+    public void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
     {
 
         if ( i18nMessagesBundles == null && i18nConstantsBundles == null && i18nConstantsWithLookupBundles == null )
         {
             throw new MojoExecutionException(
-                    "neither i18nConstantsBundles, i18nMessagesBundles nor i18nConstantsWithLookupBundles present, cannot execute i18n goal" );
+                                              "neither i18nConstantsBundles, i18nMessagesBundles nor i18nConstantsWithLookupBundles present, cannot execute i18n goal" );
         }
 
         if ( !generateDirectory.exists() )
@@ -132,7 +132,7 @@ public class I18NMojo
         File exec = writer.writeI18nScript( this, runtime );
 
         // run it
-        ScriptUtil.runScript(exec);
+        ScriptUtil.runScript( exec );
     }
 
     /**
@@ -151,9 +151,8 @@ public class I18NMojo
             ClassRealm root = world.newRealm( "gwt-plugin", Thread.currentThread().getContextClassLoader() );
             ClassRealm realm = root.createChildRealm( "gwt-project" );
 
-            Collection classpath =
-                buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE, runtime, sourcesOnPath,
-                                                       resourcesOnPath );
+            Collection classpath = buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE,
+                                                                          runtime, sourcesOnPath, resourcesOnPath );
             for ( Iterator it = classpath.iterator(); it.hasNext(); )
             {
                 realm.addConstituent( ( (File) it.next() ).toURI().toURL() );
@@ -171,8 +170,7 @@ public class I18NMojo
         }
     }
 
-
-        public String[] getI18nMessagesBundles()
+    public String[] getI18nMessagesBundles()
     {
         return i18nMessagesBundles;
     }

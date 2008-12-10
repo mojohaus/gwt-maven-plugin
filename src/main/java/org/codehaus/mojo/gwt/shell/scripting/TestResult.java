@@ -22,10 +22,12 @@ package org.codehaus.mojo.gwt.shell.scripting;
 public class TestResult {
 
    public enum TestCode {
-      SUCCESS, FAILURE, ERROR
-   }
+        SUCCESS, FAILURE, ERROR
+    }
 
-   public TestCode code;
-   public String message;
-   public String lastLine;
+    public TestCode code;
+
+    public String message;
+
+    public String lastLine;
 }
