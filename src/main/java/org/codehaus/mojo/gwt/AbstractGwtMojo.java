@@ -39,8 +39,14 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.gwt.shell.ArtifactNameUtil;
 import org.codehaus.mojo.gwt.shell.ClasspathBuilder;
+import org.codehaus.plexus.PlexusConstants;
+import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
+import org.codehaus.plexus.context.Context;
+import org.codehaus.plexus.context.ContextException;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 
 /**
  * Abstract Support class for all GWT-related operations. Provide GWT runtime resolution based on plugin configuration
@@ -50,6 +56,7 @@ import org.codehaus.plexus.archiver.manager.ArchiverManager;
  */
 public abstract class AbstractGwtMojo
     extends AbstractMojo
+    implements Contextualizable
 {
     /** GWT artifacts groupId */
     public static final String GWT_GROUP_ID = "com.google.gwt";
@@ -133,6 +140,23 @@ public abstract class AbstractGwtMojo
     public MavenProject getProject()
     {
         return project;
+    }
+    
+    //------------------------------
+    // Plexus Lifecycle
+    //------------------------------
+    public final void contextualize( Context context )
+        throws ContextException
+    {
+        PlexusContainer plexusContainer = (PlexusContainer) context.get( PlexusConstants.PLEXUS_KEY );
+        try
+        {
+            archiverManager = (ArchiverManager) plexusContainer.lookup( ArchiverManager.ROLE );
+        }
+        catch ( ComponentLookupException e )
+        {
+            throw new ContextException( e.getMessage(), e );
+        }
     }
 
     /**
@@ -292,7 +316,7 @@ public abstract class AbstractGwtMojo
     {
         try
         {
-            UnArchiver unArchiver = archiverManager.getUnArchiver( zip );
+            UnArchiver unArchiver = getArchiverManager().getUnArchiver( zip );
             unArchiver.setSourceFile( zip );
             unArchiver.setDestDirectory( zip.getParentFile() );
             unArchiver.extract();
@@ -309,5 +333,10 @@ public abstract class AbstractGwtMojo
     public File getGenerateDirectory()
     {
         return generateDirectory;
+    }
+    
+    protected ArchiverManager getArchiverManager()
+    {
+        return archiverManager;
     }
 }

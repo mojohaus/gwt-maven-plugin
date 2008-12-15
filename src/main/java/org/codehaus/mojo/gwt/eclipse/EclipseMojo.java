@@ -31,7 +31,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.util.StringUtils;
 
 import freemarker.template.Configuration;
@@ -66,13 +65,6 @@ public class EclipseMojo
      * @parameter
      */
     private String additionalPageParameters;
-
-    /**
-     * To look up Archiver/UnArchiver implementations
-     *
-     * @component
-     */
-    protected ArchiverManager archiverManager;
 
     /** path to the gwt-dev JAR */
     private File gwtDevJarPath;
@@ -153,4 +145,5 @@ public class EclipseMojo
             throw new MojoExecutionException( "Unable to merge freemarker template", te );
         }
     }
+    
 }
