@@ -301,7 +301,7 @@ public abstract class AbstractGwtMojo
         }
         catch ( Exception e )
         {
-            getLog().error( "Failed to unpack native libraries required to run hosted browser" );
+            getLog().error( "Failed to unpack native libraries required to run hosted browser", e );
             throw new MojoExecutionException( "GWT setup failed" );
         }
     }
