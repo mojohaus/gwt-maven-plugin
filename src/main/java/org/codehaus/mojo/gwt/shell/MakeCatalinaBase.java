@@ -21,6 +21,7 @@ package org.codehaus.mojo.gwt.shell;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 
@@ -74,7 +75,11 @@ public class MakeCatalinaBase
         new File( baseDir, "work" ).mkdirs();
 
         FileOutputStream fos = new FileOutputStream( new File( conf, "web.xml" ) );
-        IOUtils.copy( getClass().getResourceAsStream( "baseWeb.xml" ), fos );
+        InputStream baseWebXml = getClass().getResourceAsStream( "baseWeb.xml" );
+        if (baseWebXml != null)
+        {
+            IOUtils.copy( baseWebXml, fos );
+        }
         File mergeWeb = new File( webinf, "web.xml" );
         if ( sourceWebXml.exists() )
         {
