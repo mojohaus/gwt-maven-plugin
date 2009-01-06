@@ -42,6 +42,7 @@ import freemarker.template.TemplateException;
  * 
  * @goal eclipse
  * @execute phase=generate-resources
+ * @requiresDependencyResolution compile
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class EclipseMojo
@@ -145,5 +146,5 @@ public class EclipseMojo
             throw new MojoExecutionException( "Unable to merge freemarker template", te );
         }
     }
-    
+
 }
