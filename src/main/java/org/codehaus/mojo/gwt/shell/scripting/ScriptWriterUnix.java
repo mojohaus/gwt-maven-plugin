@@ -65,10 +65,11 @@ public class ScriptWriterUnix
                                                      final String scope, GwtRuntime runtime )
         throws MojoExecutionException
     {
-
         PrintWriter writer = null;
         try
         {
+            file.createNewFile();
+            chmodUnixFile( file );
             writer = new PrintWriter( new FileWriter( file ) );
         }
         catch ( IOException e )
