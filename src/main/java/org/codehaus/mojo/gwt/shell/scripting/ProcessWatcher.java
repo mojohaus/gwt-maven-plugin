@@ -26,8 +26,9 @@ import java.io.OutputStream;
 
 /**
  * This class executes a commandline and watches it's output.
- *
+ * 
  * @author willpugh
+ * @deprecated MGWT-11
  */
 public class ProcessWatcher {
    public static final long DEFAULT_SLEEP = 200;

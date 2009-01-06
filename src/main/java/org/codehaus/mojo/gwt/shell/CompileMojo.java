@@ -33,7 +33,6 @@ import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.scripting.CompileScriptConfiguration;
-import org.codehaus.mojo.gwt.shell.scripting.ScriptUtil;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 
 /**
@@ -69,7 +68,7 @@ public class CompileMojo
         File exec = writer.writeCompileScript( this, runtime );
 
         // run it
-        ScriptUtil.runScript(exec);
+        runScript( exec );
     }
 
     /**

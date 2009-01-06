@@ -30,7 +30,6 @@ import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration;
-import org.codehaus.mojo.gwt.shell.scripting.ScriptUtil;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -109,7 +108,7 @@ public class RunMojo
         File exec = writer.writeRunScript( this, runtime );
 
         // run it
-        ScriptUtil.runScript( exec );
+        runScript( exec );
     }
 
     /**
@@ -169,11 +168,11 @@ public class RunMojo
         try
         {
             ClassWorld world = new ClassWorld();
-    
+
             // use the existing ContextClassLoader in a realm of the classloading space
             ClassRealm root = world.newRealm( "gwt-plugin", Thread.currentThread().getContextClassLoader() );
             ClassRealm realm = root.createChildRealm( "gwt-project" );
-    
+
             Collection classpath =
                 buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE, runtime, sourcesOnPath,
                                                        resourcesOnPath );
@@ -181,10 +180,10 @@ public class RunMojo
             {
                 realm.addConstituent( ( (File) it.next() ).toURI().toURL() );
             }
-    
+
             Thread.currentThread().setContextClassLoader( realm.getClassLoader() );
             // /System.out.println("AbstractGwtMojo realm classloader = " + realm.getClassLoader().toString());
-    
+
             return realm.getClassLoader();
         }
         catch ( Exception e )

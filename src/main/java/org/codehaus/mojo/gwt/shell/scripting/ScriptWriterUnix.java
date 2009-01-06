@@ -30,6 +30,9 @@ import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.PlatformUtil;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.codehaus.plexus.util.cli.Commandline;
+import org.codehaus.plexus.util.cli.StreamConsumer;
 
 /**
  * Handler for writing shell scripts for the mac and linux platforms.
@@ -61,8 +64,8 @@ public class ScriptWriterUnix
      * @return
      * @throws MojoExecutionException
      */
-    protected PrintWriter createScript( final GwtShellScriptConfiguration mojo, File file,
-                                                     final String scope, GwtRuntime runtime )
+    protected PrintWriter createScript( final GwtShellScriptConfiguration mojo, File file, final String scope,
+                                        GwtRuntime runtime )
         throws MojoExecutionException
     {
         PrintWriter writer = null;
@@ -124,9 +127,13 @@ public class ScriptWriterUnix
     {
         try
         {
-            ProcessWatcher pw = new ProcessWatcher( "chmod +x " + file.getAbsolutePath() );
-            pw.startProcess( System.out, System.err );
-            pw.waitFor();
+            Commandline cmd = new Commandline( "chmod +x \"" + file.getAbsolutePath() + "\"" );
+            StreamConsumer consumer = new CommandLineUtils.StringStreamConsumer();
+            int status = CommandLineUtils.executeCommandLine( cmd, consumer, consumer );
+            if ( status != 0 )
+            {
+                throw new IllegalStateException( "Failed to chmod script file as executable" );
+            }
         }
         catch ( Exception e )
         {
@@ -136,6 +143,7 @@ public class ScriptWriterUnix
 
     /**
      * {@inheritDoc}
+     * 
      * @see org.codehaus.mojo.gwt.shell.scripting.AbstractScriptWriter#getScriptExtension()
      */
     protected String getScriptExtension()

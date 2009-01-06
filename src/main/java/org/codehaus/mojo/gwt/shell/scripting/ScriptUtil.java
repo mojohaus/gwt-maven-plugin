@@ -24,53 +24,12 @@ import java.io.File;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.mojo.gwt.shell.scripting.TestResult.TestCode;
-import org.codehaus.plexus.util.cli.CommandLineException;
-import org.codehaus.plexus.util.cli.CommandLineUtils;
-import org.codehaus.plexus.util.cli.Commandline;
-import org.codehaus.plexus.util.cli.StreamConsumer;
 
 public final class ScriptUtil
 {
 
     private ScriptUtil()
     {
-    }
-
-    public static void runScript( final File exec )
-        throws MojoExecutionException
-    {
-
-        // TODO use plexus-util Commandline
-
-        ProcessWatcher pw = null;
-        if ( PlatformUtil.OS_NAME.startsWith( PlatformUtil.WINDOWS ) )
-        {
-            pw = new ProcessWatcher( "\"" + exec.getAbsolutePath() + "\"" );
-        }
-        else
-        {
-            pw = new ProcessWatcher( exec.getAbsolutePath().replaceAll( " ", "\\ " ) );
-        }
-
-         try
-        {
-            pw.startProcess( System.out, System.err );
-            int retVal = pw.waitFor();
-            if ( retVal != 0 )
-            {
-                throw new MojoExecutionException( exec.getName() + " script exited abnormally with code - " + retVal );
-            }
-        }
-        catch ( Exception e )
-        {
-            throw new MojoExecutionException( "Exception attempting to run script - " + exec.getName(), e );
-        }
-    }
-
-    protected static int executeCommandLine( Commandline commandLine, StreamConsumer stream1, StreamConsumer stream2 )
-        throws CommandLineException
-    {
-        return CommandLineUtils.executeCommandLine( commandLine, stream1, stream2 );
     }
 
     public static TestResult runTestScript( final File exec )

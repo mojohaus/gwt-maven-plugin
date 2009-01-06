@@ -43,7 +43,6 @@ public abstract class AbstractScriptWriter
     extends AbstractLogEnabled
     implements ScriptWriter
 {
-
     /**
      * @plexus.requirement
      */
@@ -321,5 +320,4 @@ public abstract class AbstractScriptWriter
             }
         }
     }
-
 }

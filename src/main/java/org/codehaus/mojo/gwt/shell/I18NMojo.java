@@ -31,7 +31,6 @@ import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.scripting.I18nScriptConfiguration;
-import org.codehaus.mojo.gwt.shell.scripting.ScriptUtil;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 
 /**
@@ -132,7 +131,7 @@ public class I18NMojo
         File exec = writer.writeI18nScript( this, runtime );
 
         // run it
-        ScriptUtil.runScript( exec );
+        runScript( exec );
     }
 
     /**

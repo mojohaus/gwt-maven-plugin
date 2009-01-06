@@ -27,6 +27,10 @@ import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriterFactory;
+import org.codehaus.plexus.util.cli.CommandLineException;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
+import org.codehaus.plexus.util.cli.Commandline;
+import org.codehaus.plexus.util.cli.StreamConsumer;
 
 /**
  * Abstract Mojo for GWT-Maven.
@@ -39,6 +43,28 @@ public abstract class AbstractGwtShellMojo
     extends AbstractGwtModuleMojo
     implements GwtShellScriptConfiguration
 {
+
+    /**
+     * A plexus-util StreamConsumer to redirect messages to plugin log
+     */
+    protected StreamConsumer out = new StreamConsumer()
+    {
+        public void consumeLine( String line )
+        {
+            getLog().info( line );
+        }
+    };
+
+    /**
+     * A plexus-util StreamConsumer to redirect errors to plugin log
+     */
+    protected StreamConsumer err = new StreamConsumer()
+    {
+        public void consumeLine( String line )
+        {
+            getLog().error( line );
+        }
+    };
 
     /**
      * @component
@@ -272,5 +298,22 @@ public abstract class AbstractGwtShellMojo
         return this.enableAssertions;
     }
 
+    protected void runScript( final File exec )
+        throws MojoExecutionException
+    {
+        try
+        {
+            Commandline cmd = new Commandline( exec.getAbsolutePath() );
+            int retVal = CommandLineUtils.executeCommandLine( cmd, out, err );
+            if ( retVal != 0 )
+            {
+                throw new MojoExecutionException( exec.getName() + " script exited abnormally with code - " + retVal );
+            }
+        }
+        catch ( CommandLineException e )
+        {
+            throw new MojoExecutionException( "Exception attempting to run script - " + exec.getName(), e );
+        }
+    }
 
 }
