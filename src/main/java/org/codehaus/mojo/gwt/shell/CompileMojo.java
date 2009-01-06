@@ -39,7 +39,7 @@ import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 /**
  * Invokes the GWTCompiler for the project source.
  * 
- * @goal gwtcompile
+ * @goal compile
  * @phase process-classes
  * @requiresDependencyResolution compile
  * @description Invokes the GWTCompiler for the project source.
@@ -83,11 +83,11 @@ public class CompileMojo
         try
         {
             ClassWorld world = new ClassWorld();
-    
+
             // use the existing ContextClassLoader in a realm of the classloading space
             ClassRealm root = world.newRealm( "gwt-plugin", Thread.currentThread().getContextClassLoader() );
             ClassRealm realm = root.createChildRealm( "gwt-project" );
-    
+
             Collection classpath =
                 buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE, runtime, sourcesOnPath,
                                                        resourcesOnPath );
@@ -95,10 +95,10 @@ public class CompileMojo
             {
                 realm.addConstituent( ( (File) it.next() ).toURI().toURL() );
             }
-    
+
             Thread.currentThread().setContextClassLoader( realm.getClassLoader() );
             // /System.out.println("AbstractGwtMojo realm classloader = " + realm.getClassLoader().toString());
-    
+
             return realm.getClassLoader();
         }
         catch ( Exception e )
