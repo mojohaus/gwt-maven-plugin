@@ -60,7 +60,8 @@ public class MergeWebXmlMojo
         {
             this.getLog().info(
                                 "copy source web.xml - " + this.getWebXml()
-                                    + " to build dir (source web.xml required if mergewebxml execution is enabled)" );
+                                    + " to build dir (source web.xml required if mergewebxml execution is enabled)"
+                                    + this.getBuildDir().getAbsolutePath() );
             File destination = new File( this.getBuildDir(), "web.xml" );
             if ( !destination.exists() )
             {
