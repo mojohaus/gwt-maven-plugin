@@ -98,6 +98,11 @@ public abstract class AbstractGwtModuleMojo
             Collection < Resource > resources = ( Collection < Resource > ) project.getResources();
             for ( Resource resource : resources )
             {
+                File resourceDirectoryFile = new File( resource.getDirectory() );
+                if ( !resourceDirectoryFile.exists() )
+                {
+                    continue;
+                }
                 scanner = new DirectoryScanner();
                 scanner.setBasedir( resource.getDirectory() );
                 scanner.setIncludes( new String[] { "**/*" + GWT_MODULE_EXTENSION } );

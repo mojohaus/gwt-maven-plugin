@@ -11,32 +11,34 @@
   			<version>2.0.2</version>
   			<configuration>
   				<source>1.5</source>
-          		<target>1.5</target>
+          <target>1.5</target>
   			</configuration>
   		</plugin>
   		<plugin>
-        	<groupId>org.codehaus.mojo</groupId>
-	        <artifactId>gwt-maven-plugin</artifactId>
-	        <version>1.0</version>
-	        <executions>
-	          <execution>
-	            <goals>
-	              <goal>generateAsync</goal>
-	            </goals>
-	          </execution>
-	        </executions>
-	        <configuration/><dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>1.0-beta-1</version>
-      <scope>test</scope>
-    </dependency><dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>1.0-beta-1</version>
-      <scope>test</scope>
-    </dependency>
-	      </plugin>
+        <groupId>org.codehaus.mojo</groupId>
+	      <artifactId>gwt-maven-plugin</artifactId>
+	      <version>1.0</version>
+	      <executions>
+	        <execution>
+	          <goals>
+	            <goal>generateAsync</goal>
+	          </goals>
+	        </execution>
+	      </executions>
+	    <configuration/>
+        <dependency>
+          <groupId>org.apache.maven.shared</groupId>
+          <artifactId>maven-plugin-testing-harness</artifactId>
+          <version>1.0-beta-1</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.maven.shared</groupId>
+          <artifactId>maven-plugin-testing-harness</artifactId>
+          <version>1.0-beta-1</version>
+          <scope>test</scope>
+        </dependency>
+	    </plugin>
   	</plugins>
   </build>
 </project>
