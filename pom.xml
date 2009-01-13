@@ -47,6 +47,11 @@
       <email>charlie.collins@gmail.com</email>
     </developer>
   </developers>
+  <contributors>
+  	<contributor>
+  		<name>Robert Scholte</name>
+  	</contributor>
+  </contributors>
   <scm>
     <connection>scm:svn:http://svn.codehaus.org/mojo/trunk/mojo/gwt-maven-plugin</connection>
     <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo/gwt-maven-plugin</developerConnection>
@@ -83,7 +88,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>1.4.6</version>
+      <version>1.5.1</version>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
@@ -95,7 +100,7 @@
     <dependency>
       <groupId>com.thoughtworks.qdox</groupId>
       <artifactId>qdox</artifactId>
-      <version>1.6.3</version>
+      <version>1.8-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>freemarker</groupId>
@@ -156,6 +161,12 @@
       <artifactId>jdom</artifactId>
       <version>1.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-plugin-testing-harness</artifactId>
+      <version>1.0-beta-1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <profiles>
     <profile>
@@ -206,25 +217,25 @@
 
   <build>
     <plugins>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <configuration>
-            <source>1.5</source>
-            <target>1.5</target>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.plexus</groupId>
-          <artifactId>plexus-component-metadata</artifactId>
-          <version>1.0-beta-1</version>
-          <executions>
-            <execution>
-              <goals>
-                <goal>generate-metadata</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-component-metadata</artifactId>
+        <version>1.0-beta-1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-metadata</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 
@@ -248,4 +259,19 @@
       </plugin>
     </plugins>
   </reporting>
+  
+  <repositories>
+    <!-- TODO remove when qdox 1.8 is released --> 
+    <repository>
+      <id>snapshots.codehaus</id>
+      <url>http://snapshots.repository.codehaus.org/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    
+  </repositories>
 </project>

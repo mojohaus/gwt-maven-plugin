@@ -197,7 +197,7 @@ public class GenerateAsyncMojo
                 {
                     writer.print( ", " );
                 }
-                writer.print( param.getType().getJavaClass().getName() + " " + param.getName() );
+                writer.print( param.getType().getGenericValue() + " " + param.getName() );
             }
             if ( params.length > 0 )
             {
@@ -209,7 +209,7 @@ public class GenerateAsyncMojo
             }
             else
             {
-                writer.println( "AsyncCallback<" + method.getReturns().getJavaClass().getName() + "> callback );" );
+                writer.println( "AsyncCallback<" + method.getReturns().getGenericValue() + "> callback );" );
             }
             writer.println();
         }
