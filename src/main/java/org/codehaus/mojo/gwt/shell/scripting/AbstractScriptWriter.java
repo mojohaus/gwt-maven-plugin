@@ -146,14 +146,38 @@ public abstract class AbstractScriptWriter
     public File writeCompileScript( CompileScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
+        File classpath = new File( configuration.getBuildDir(), "gwt.classpath" );
+        try
+        {
+            Collection<File> files =
+                buildClasspathUtil.buildClasspathList( configuration.getProject(), Artifact.SCOPE_COMPILE, runtime,
+                                                       configuration.getSourcesOnPath(),
+                                                       configuration.getResourcesOnPath() );
+            PrintWriter writer = new PrintWriter( classpath );
+            for ( File f : files )
+            {
+                writer.println( f.getAbsolutePath() );
+            }
+            writer.close();
+        }
+        catch ( Exception e )
+        {
+            throw new MojoExecutionException( "Error creating classpath script - " + classpath, e );
+        }
+
+        // TODO build classpath and create classpath file based on it
+
         File file = new File( configuration.getBuildDir(), "compile" + getScriptExtension() );
         PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_COMPILE, runtime );
 
         for ( String target : configuration.getModules() )
         {
+            // TODO how to get current plugin jar path ??
             String extra = getExtraJvmArgs( configuration );
-            writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp " + getPlatformClasspathVariable()
-                + " " );
+            writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra );
+            writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
+            writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
+            writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
             writer.print( " com.google.gwt.dev.GWTCompiler " );
             writer.print( " -gen \"" );
             writer.print( configuration.getGen().getAbsolutePath() );

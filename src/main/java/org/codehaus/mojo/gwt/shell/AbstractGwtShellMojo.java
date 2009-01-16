@@ -21,6 +21,7 @@ package org.codehaus.mojo.gwt.shell;
 
 import java.io.File;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
@@ -76,8 +77,14 @@ public abstract class AbstractGwtShellMojo
      */
     protected ClasspathBuilder buildClasspathUtil;
 
-
-    // GWT-Maven properties
+    /**
+     * Map of of plugin artifacts.
+     * 
+     * @parameter expression="${plugin.version}"
+     * @required
+     * @readonly
+     */
+    private String version;
 
     /**
      * Location on filesystem where project should be built.
@@ -314,6 +321,18 @@ public abstract class AbstractGwtShellMojo
         {
             throw new MojoExecutionException( "Exception attempting to run script - " + exec.getName(), e );
         }
+    }
+
+    /**
+     * @return The File path to the plugin JAR artifact in the local repository
+     */
+    public File getPluginJar()
+    {
+        Artifact plugin =
+            artifactFactory.createArtifact( "org.codehaus.mojo", "gwt-maven-plugin", version, Artifact.SCOPE_COMPILE,
+                                            "maven-plugin" );
+        String localPath = localRepository.pathOf( plugin );
+        return new File( localRepository.getBasedir(), localPath );
     }
 
 }

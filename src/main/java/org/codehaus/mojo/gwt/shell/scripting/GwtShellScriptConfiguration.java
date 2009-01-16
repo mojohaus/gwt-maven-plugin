@@ -69,4 +69,9 @@ public interface GwtShellScriptConfiguration
      */
     boolean getResourcesOnPath();
 
+    /**
+     * @return The File path to the plugin JAR artifact in the local repository
+     */
+    File getPluginJar();
+
 }

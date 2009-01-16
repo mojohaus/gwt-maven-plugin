@@ -23,9 +23,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
 
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.gwt.GwtRuntime;
 
@@ -70,6 +68,7 @@ public class ScriptWriterWindows
             throw new MojoExecutionException( "Error creating script - " + file, e );
         }
 
+        /*
         try
         {
             Collection<File> classpath =
@@ -97,7 +96,7 @@ public class ScriptWriterWindows
         {
             throw new MojoExecutionException( "Error creating script - " + file, e );
         }
-
+        */
         writer.println();
         return writer;
     }
