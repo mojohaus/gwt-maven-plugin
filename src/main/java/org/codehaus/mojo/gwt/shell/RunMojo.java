@@ -142,21 +142,6 @@ public class RunMojo
         }
     }
 
-    public File getContextXml()
-    {
-        return this.contextXml;
-    }
-
-    public int getPort()
-    {
-        return this.port;
-    }
-
-    public File getTomcat()
-    {
-        return this.tomcat;
-    }
-
     /**
      * Helper hack for classpath problems, used as a fallback.
      * @param runtime TODO
@@ -192,4 +177,19 @@ public class RunMojo
             throw new RuntimeException( e );
         }
     }
+    
+    public File getContextXml()
+    {
+        return this.contextXml;
+    }
+
+    public int getPort()
+    {
+        return this.port;
+    }
+
+    public File getTomcat()
+    {
+        return this.tomcat;
+    }    
 }

@@ -111,6 +111,10 @@ public class TestMojo
      */
     private File reportsDirectory;
 
+
+    /** failures counter */
+    private int failures;    
+    
     /**
      * {@inheritDoc}
      *
@@ -155,8 +159,6 @@ public class TestMojo
         }
     }
 
-    /** failures counter */
-    private int failures;
 
     /**
      * @param classpath the test execution classpath

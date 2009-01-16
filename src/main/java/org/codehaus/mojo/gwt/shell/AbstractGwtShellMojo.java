@@ -46,28 +46,6 @@ public abstract class AbstractGwtShellMojo
 {
 
     /**
-     * A plexus-util StreamConsumer to redirect messages to plugin log
-     */
-    protected StreamConsumer out = new StreamConsumer()
-    {
-        public void consumeLine( String line )
-        {
-            getLog().info( line );
-        }
-    };
-
-    /**
-     * A plexus-util StreamConsumer to redirect errors to plugin log
-     */
-    protected StreamConsumer err = new StreamConsumer()
-    {
-        public void consumeLine( String line )
-        {
-            getLog().error( line );
-        }
-    };
-
-    /**
      * @component
      */
     protected ScriptWriterFactory scriptWriterFactory;
@@ -155,12 +133,7 @@ public abstract class AbstractGwtShellMojo
      * @parameter expression="${google.webtoolkit.extrajvmargs}"
      */
     private String extraArgs;
-
-    public void setExtraArgs( String extraArgs )
-    {
-        this.extraJvmArgs = extraArgs;
-    }
-
+    
     /**
      * Whether or not to add compile source root to classpath.
      *
@@ -205,6 +178,51 @@ public abstract class AbstractGwtShellMojo
 
     protected abstract void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException;
+
+
+    protected void runScript( final File exec )
+        throws MojoExecutionException
+    {
+        try
+        {
+            Commandline cmd = new Commandline( exec.getAbsolutePath() );
+            int retVal = CommandLineUtils.executeCommandLine( cmd, out, err );
+            if ( retVal != 0 )
+            {
+                throw new MojoExecutionException( exec.getName() + " script exited abnormally with code - " + retVal );
+            }
+        }
+        catch ( CommandLineException e )
+        {
+            throw new MojoExecutionException( "Exception attempting to run script - " + exec.getName(), e );
+        }
+    }
+
+    /**
+     * @return The File path to the plugin JAR artifact in the local repository
+     */
+    public File getPluginJar()
+    {
+        Artifact plugin =
+            artifactFactory.createArtifact( "org.codehaus.mojo", "gwt-maven-plugin", version, Artifact.SCOPE_COMPILE,
+                                            "maven-plugin" );
+        String localPath = localRepository.pathOf( plugin );
+        return new File( localRepository.getBasedir(), localPath );
+    }
+    
+    public void setExtraArgs( String extraArgs )
+    {
+        this.extraJvmArgs = extraArgs;
+    }
+   
+    /**
+     * {@inheritDoc}
+     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isEnableAssertions()
+     */
+    public boolean isEnableAssertions()
+    {
+        return this.enableAssertions;
+    }    
 
     /**
      * {@inheritDoc}
@@ -294,45 +312,28 @@ public abstract class AbstractGwtShellMojo
     public boolean getResourcesOnPath()
     {
         return resourcesOnPath;
-    }
+    }    
+    
+    /**
+     * A plexus-util StreamConsumer to redirect messages to plugin log
+     */
+    protected StreamConsumer out = new StreamConsumer()
+    {
+        public void consumeLine( String line )
+        {
+            getLog().info( line );
+        }
+    };
 
     /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isEnableAssertions()
+     * A plexus-util StreamConsumer to redirect errors to plugin log
      */
-    public boolean isEnableAssertions()
+    protected StreamConsumer err = new StreamConsumer()
     {
-        return this.enableAssertions;
-    }
-
-    protected void runScript( final File exec )
-        throws MojoExecutionException
-    {
-        try
+        public void consumeLine( String line )
         {
-            Commandline cmd = new Commandline( exec.getAbsolutePath() );
-            int retVal = CommandLineUtils.executeCommandLine( cmd, out, err );
-            if ( retVal != 0 )
-            {
-                throw new MojoExecutionException( exec.getName() + " script exited abnormally with code - " + retVal );
-            }
+            getLog().error( line );
         }
-        catch ( CommandLineException e )
-        {
-            throw new MojoExecutionException( "Exception attempting to run script - " + exec.getName(), e );
-        }
-    }
-
-    /**
-     * @return The File path to the plugin JAR artifact in the local repository
-     */
-    public File getPluginJar()
-    {
-        Artifact plugin =
-            artifactFactory.createArtifact( "org.codehaus.mojo", "gwt-maven-plugin", version, Artifact.SCOPE_COMPILE,
-                                            "maven-plugin" );
-        String localPath = localRepository.pathOf( plugin );
-        return new File( localRepository.getBasedir(), localPath );
-    }
+    };      
 
 }

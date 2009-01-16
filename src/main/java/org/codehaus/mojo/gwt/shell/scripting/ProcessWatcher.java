@@ -30,6 +30,7 @@ import java.io.OutputStream;
  * @author willpugh
  * @deprecated MGWT-11
  */
+@Deprecated
 public class ProcessWatcher {
    public static final long DEFAULT_SLEEP = 200;
 

@@ -25,6 +25,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.mojo.gwt.shell.scripting.TestResult.TestCode;
 
+@Deprecated
 public final class ScriptUtil
 {
 

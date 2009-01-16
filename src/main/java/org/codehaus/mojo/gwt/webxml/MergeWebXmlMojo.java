@@ -161,6 +161,6 @@ public class MergeWebXmlMojo
             e.printStackTrace();
             throw new RuntimeException( e );
         }
-    }
-
+    }    
+    
 }

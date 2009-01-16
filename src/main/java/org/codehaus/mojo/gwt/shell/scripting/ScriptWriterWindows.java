@@ -67,36 +67,6 @@ public class ScriptWriterWindows
         {
             throw new MojoExecutionException( "Error creating script - " + file, e );
         }
-
-        /*
-        try
-        {
-            Collection<File> classpath =
-                buildClasspathUtil.buildClasspathList( config.getProject(), scope, runtime, config.getSourcesOnPath(),
-                                                       config.getResourcesOnPath() );
-            writer.print( "set CLASSPATH=" );
-
-            StringBuffer cpString = new StringBuffer();
-
-            for ( File f : classpath )
-            {
-                cpString.append( "\"" + f.getAbsolutePath() + "\";" );
-                // break the line at 4000 characters to try to avoid max size
-                if ( cpString.length() > 4000 )
-                {
-                    writer.println( cpString );
-                    cpString = new StringBuffer();
-                    writer.print( "set CLASSPATH=%CLASSPATH%;" );
-                }
-            }
-            writer.println( cpString );
-            writer.println();
-        }
-        catch ( DependencyResolutionRequiredException e )
-        {
-            throw new MojoExecutionException( "Error creating script - " + file, e );
-        }
-        */
         writer.println();
         return writer;
     }

@@ -67,9 +67,6 @@ public class EclipseMojo
      */
     private String additionalPageParameters;
 
-    /** path to the gwt-dev JAR */
-    private File gwtDevJarPath;
-
     /**
      * @param parameters additional parameter for module URL
      */

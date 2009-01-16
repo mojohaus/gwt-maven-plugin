@@ -47,13 +47,6 @@ public abstract class AbstractGwtModuleMojo
     private static final String GWT_MODULE_EXTENSION = ".gwt.xml";
 
     /**
-     * A single GWT module (Shortcut for modules)
-     * 
-     * @parameter expression="${gwt.module}"
-     */
-    private String module; // NOPMD
-
-    /**
      * The project GWT modules. If not set, the plugin will scan the project for <code>.gwt.xml</code> files.
      * 
      * @parameter
@@ -194,37 +187,6 @@ public abstract class AbstractGwtModuleMojo
             throw new MojoExecutionException( "Failed to convert project.build.outputDirectory to URL", e );
         }
         return urls;
-    }
-
-    /**
-     * Need this to run both pre- and post- PLX-220 fix.
-     *
-     * @return a ClassLoader including plugin dependencies and project source foler
-     * @throws MojoExecutionException failed to configure ClassLoader
-     */
-    protected ClassLoader getClassLoader( GwtRuntime runtime )
-        throws MojoExecutionException
-    {
-        try
-        {
-            Collection<File> classpath = getClasspath( Artifact.SCOPE_COMPILE, runtime );
-            URL[] urls = new URL[classpath.size()];
-            int i = 0;
-            for ( File file : classpath )
-            {
-                urls[i++] = file.toURI().toURL();
-            }
-            ClassLoader parent = getClass().getClassLoader();
-            return new URLClassLoader( urls, parent.getParent() );
-        }
-        catch ( DependencyResolutionRequiredException e )
-        {
-            throw new MojoExecutionException( "Failed to resolve project dependencies" );
-        }
-        catch ( MalformedURLException e )
-        {
-            throw new MojoExecutionException( "Unexpecetd internal error" );
-        }
     }
 
 }

@@ -60,13 +60,8 @@ public class I18NMojo
      * 
      * @parameter
      */
-    @SuppressWarnings( "unused" )
+    @SuppressWarnings("unused")
     private String i18nMessagesBundle;
-
-    public void setI18nMessagesBundle( String i18nMessagesBundle )
-   {
-       this.i18nMessagesBundles = new String[] { i18nMessagesBundle };
-   }
 
     /**
      * List of resourceBundles that should be used to generate i18n Constants interfaces.
@@ -81,13 +76,8 @@ public class I18NMojo
      * 
      * @parameter
      */
-    @SuppressWarnings( "unused" )
+    @SuppressWarnings("unused")
     private String i18nConstantsBundle;
-
-    public void setI18ConstantsBundle( String i18nConstantsBundle )
-    {
-        this.i18nConstantsBundles = new String[] { i18nConstantsBundle };
-    }
 
     /**
      * List of resourceBundles that should be used to generate i18n ConstantsWithLookup interfaces.
@@ -101,14 +91,8 @@ public class I18NMojo
      * 
      * @parameter
      */
-    @SuppressWarnings( "unused" )
+    @SuppressWarnings("unused")
     private String i18nConstantsWithLookupBundle;
-
-    public void setI18nConstantsWithLookupBundle( String i18nConstantsWithLookupBundle )
-    {
-        this.i18nConstantsWithLookupBundles = new String[] { i18nConstantsWithLookupBundle };
-    }
-
 
     public void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
@@ -167,6 +151,21 @@ public class I18NMojo
             e.printStackTrace();
             throw new RuntimeException( e );
         }
+    }
+
+    public void setI18nConstantsWithLookupBundle( String i18nConstantsWithLookupBundle )
+    {
+        this.i18nConstantsWithLookupBundles = new String[] { i18nConstantsWithLookupBundle };
+    }
+
+    public void setI18ConstantsBundle( String i18nConstantsBundle )
+    {
+        this.i18nConstantsBundles = new String[] { i18nConstantsBundle };
+    }
+
+    public void setI18nMessagesBundle( String i18nMessagesBundle )
+    {
+        this.i18nMessagesBundles = new String[] { i18nMessagesBundle };
     }
 
     public String[] getI18nMessagesBundles()

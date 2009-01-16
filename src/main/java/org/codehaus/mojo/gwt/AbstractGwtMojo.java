@@ -133,14 +133,6 @@ public abstract class AbstractGwtMojo
      * @required
      */
     protected File generateDirectory;
-
-    /**
-     * @return the project
-     */
-    public MavenProject getProject()
-    {
-        return project;
-    }
     
     //------------------------------
     // Plexus Lifecycle
@@ -197,16 +189,6 @@ public abstract class AbstractGwtMojo
             startPosition++;
         }
         return startPosition;
-    }
-
-    public ArtifactRepository getLocalRepository()
-    {
-        return this.localRepository;
-    }
-
-    public List<ArtifactRepository> getRemoteRepositories()
-    {
-        return this.remoteRepositories;
     }
 
     /**
@@ -330,6 +312,33 @@ public abstract class AbstractGwtMojo
         }
     }
 
+    /**
+     * @param path file to add to the project compile directories
+     */
+    protected void addCompileSourceRoot( File path )
+    {
+        project.addCompileSourceRoot( path.getAbsolutePath() );
+    }    
+    
+    /**
+     * @return the project
+     */
+    public MavenProject getProject()
+    {
+        return project;
+    }
+    
+
+    public ArtifactRepository getLocalRepository()
+    {
+        return this.localRepository;
+    }
+
+    public List<ArtifactRepository> getRemoteRepositories()
+    {
+        return this.remoteRepositories;
+    }      
+    
     public File getGenerateDirectory()
     {
         return generateDirectory;
