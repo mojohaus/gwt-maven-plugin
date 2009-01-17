@@ -25,7 +25,7 @@ import java.util.Locale;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
- * @deprecated use stuff from plexus-utils
+ * @TODO use stuff from plexus-utils
  * @author ndeloof
  * @version $Id$
  * 
@@ -42,10 +42,6 @@ public final class PlatformUtil
     public static final String MAC = "mac";
 
     public static final String LEOPARD = "leopard";
-
-    public static final String JAVA_COMMAND =
-    ( System.getProperty( "java.home" ) != null ) ? FileUtils.normalize( System.getProperty( "java.home" )
-        + File.separator + "bin" + File.separator + "java" ) : "java";
 
     /**
      * Utility class

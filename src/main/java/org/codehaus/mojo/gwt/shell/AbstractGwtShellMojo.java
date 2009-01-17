@@ -162,6 +162,15 @@ public abstract class AbstractGwtShellMojo
      * @parameter default-value="/*"
      */
     private String shellServletMappingURL;
+    
+    /**
+     * Option to specify the jvm (or path to the java executable) to use with the forking scripts. 
+     * For the default, the jvm will be the same as the one used to run Maven.
+     *
+     * @parameter expression="${gwt.jvm}"
+     * @since 1.1
+     */    
+    private String jvm;
 
     // methods
 
@@ -335,6 +344,16 @@ public abstract class AbstractGwtShellMojo
         {
             getLog().error( line );
         }
-    };      
+    };
+
+    public String getJvm()
+    {
+        return jvm;
+    }
+
+    public void setJvm( String jvm )
+    {
+        this.jvm = jvm;
+    }      
 
 }

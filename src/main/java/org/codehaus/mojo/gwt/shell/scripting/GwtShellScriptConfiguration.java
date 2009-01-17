@@ -71,7 +71,14 @@ public interface GwtShellScriptConfiguration
 
     /**
      * @return The File path to the plugin JAR artifact in the local repository
+     * @since 1.1
      */
     File getPluginJar();
+    
+    /**
+     * @return the path to the java executable to use with the forked script
+     * @since 1.1
+     */
+    String getJvm();
 
 }

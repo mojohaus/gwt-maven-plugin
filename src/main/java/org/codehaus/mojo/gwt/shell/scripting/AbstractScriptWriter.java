@@ -104,7 +104,8 @@ public abstract class AbstractScriptWriter
         File classpath = this.buildClasspathUtil.writeClassPathFile( configuration, runtime );
         
         String extra = getExtraJvmArgs( configuration );
-        writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp \"" + configuration.getPluginJar() + "\" " );
+        writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra + " -cp \"" + configuration.getPluginJar()
+            + "\" " );
 
         if ( debugPort >= 0 )
         {
@@ -160,7 +161,7 @@ public abstract class AbstractScriptWriter
         {
             // TODO how to get current plugin jar path ??
             String extra = getExtraJvmArgs( configuration );
-            writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra );
+            writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
             writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
             writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
             writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
@@ -222,7 +223,7 @@ public abstract class AbstractScriptWriter
             for ( String target : configuration.getI18nConstantsBundles() )
             {
                 String extra = getExtraJvmArgs( configuration );
-                writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp "
+                writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra + " -cp "
                     + getPlatformClasspathVariable() );
                 writer.print( " com.google.gwt.i18n.tools.I18NSync" );
                 writer.print( " -out " );
@@ -240,7 +241,7 @@ public abstract class AbstractScriptWriter
             {
                 String extra = ( configuration.getExtraJvmArgs() != null ) ? configuration.getExtraJvmArgs() : "";
 
-                writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp %CLASSPATH%" );
+                writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra + " -cp %CLASSPATH%" );
                 writer.print( " com.google.gwt.i18n.tools.I18NSync" );
                 writer.print( " -createMessages " );
                 writer.print( " -out " );
@@ -311,7 +312,7 @@ public abstract class AbstractScriptWriter
                     this.createScript( configuration, file, Artifact.SCOPE_TEST, runtime );
 
                 // build Java command
-                writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " );
+                writer.print( "\"" + getJavaCommand( configuration ) + "\" " );
                 if ( extra.length() > 0 )
                 {
                     writer.print( " " + extra + " " );
@@ -329,6 +330,31 @@ public abstract class AbstractScriptWriter
                 writer.close();
             }
         }
+    }
+    
+    protected String getJavaCommand( GwtShellScriptConfiguration configuration )
+        throws MojoExecutionException
+    {
+        String jvm = configuration.getJvm();
+        if ( !StringUtils.isEmpty( jvm ) )
+        {
+            // does-it exists ? is-it a directory or a path to a java executable ?
+            File jvmFile = new File( jvm );
+            if ( !jvmFile.exists() )
+            {
+                throw new MojoExecutionException( "the configured jvm " + jvm
+                    + " doesn't exists please check your environnement" );
+            }
+            if ( jvmFile.isDirectory() )
+            {
+                // it's a directory we construct the path to the java executable
+                return jvmFile.getAbsolutePath() + File.separator + "bin" + File.separator + "java";
+            }
+            return jvm;
+
+        }
+        // use the same JVM as the one used to run Maven (the "java.home" one)
+        return System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + "java";
     }
     
     
