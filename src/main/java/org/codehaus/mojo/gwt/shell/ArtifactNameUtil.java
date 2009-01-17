@@ -20,6 +20,10 @@ package org.codehaus.mojo.gwt.shell;
  */
 
 
+/**
+ *
+ * @version $Id$
+ */
 public class ArtifactNameUtil
 {
 

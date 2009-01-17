@@ -48,6 +48,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @phase integration-test
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @requiresDependencyResolution test
+ * @version $Id$
  */
 public class TestMojo
     extends AbstractGwtMojo

@@ -43,6 +43,7 @@ import org.apache.maven.surefire.report.XMLReporter;
  * Mostly a copy/paste of surefire TestListenerInvocationHandler
  * 
  * @author ndeloof
+ * @version $Id$
  */
 public class MavenTestRunner
     extends TestRunner

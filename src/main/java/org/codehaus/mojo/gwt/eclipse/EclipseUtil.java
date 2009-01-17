@@ -29,6 +29,7 @@ import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
 /**
  * @author ndeloof
+ * @version $Id$
  * @plexus.component role="org.codehaus.mojo.gwt.eclipse.EclipseUtil"
  */
 public class EclipseUtil

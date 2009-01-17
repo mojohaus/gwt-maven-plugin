@@ -19,6 +19,10 @@ package org.codehaus.mojo.gwt.shell.scripting;
  * under the License.
  */
 
+/**
+ * 
+ * @version $Id$
+ */
 public class TestResult {
 
    public enum TestCode {

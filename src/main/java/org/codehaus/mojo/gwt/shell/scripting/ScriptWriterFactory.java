@@ -25,6 +25,7 @@ import org.codehaus.mojo.gwt.shell.PlatformUtil;
  * Plexus component to select a ScriptWriter depending on the Platform.
  * 
  * @todo can Plexus automagically handle this using role-hints ?
+ * @version $Id$
  * @plexus.component role="org.codehaus.mojo.gwt.shell.scripting.ScriptWriterFactory"
  */
 public final class ScriptWriterFactory

@@ -25,7 +25,10 @@ import java.util.Locale;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
+ * @deprecated use stuff from plexus-utils
  * @author ndeloof
+ * @version $Id$
+ * 
  */
 public final class PlatformUtil
 {

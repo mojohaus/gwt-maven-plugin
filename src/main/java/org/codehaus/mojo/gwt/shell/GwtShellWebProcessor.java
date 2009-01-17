@@ -28,6 +28,7 @@ import org.codehaus.mojo.gwt.webxml.ServletDescriptor;
 /**
  *
  * @author cooper
+ * @version $Id$
  */
 public class GwtShellWebProcessor
     extends GwtWebInfProcessor

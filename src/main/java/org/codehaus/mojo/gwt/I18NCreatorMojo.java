@@ -42,6 +42,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @phase generate-sources
  * @see http://code.google.com/webtoolkit/documentation/com.google.gwt.doc.DeveloperGuide.Fundamentals.html#i18nCreator
  * @author ndeloof
+ * @version $Id$
  */
 public class I18NCreatorMojo
     extends AbstractGwtMojo

@@ -42,6 +42,7 @@ import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
  * @description Creates I18N interfaces for constants and messages files.
  * @author Sascha-Matthias Kulawik <sascha@kulawik.de>
  * @author ccollins
+ * @version $Id$
  */
 public class I18NMojo
     extends AbstractGwtShellMojo

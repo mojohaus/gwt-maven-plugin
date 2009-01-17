@@ -35,6 +35,9 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
+/**
+ * @version $Id$
+ */
 public class GwtWebInfProcessor {
 
    private Document webXml;

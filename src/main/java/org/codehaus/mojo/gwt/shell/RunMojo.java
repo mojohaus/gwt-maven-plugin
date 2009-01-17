@@ -37,6 +37,7 @@ import org.codehaus.plexus.util.FileUtils;
  * @description Runs the the project in the GWTShell for development.
  * @author ccollins
  * @author cooper
+ * @version $Id$
  */
 public class RunMojo
     extends AbstractGwtWebMojo

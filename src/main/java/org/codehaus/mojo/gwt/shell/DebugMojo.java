@@ -29,6 +29,7 @@ import org.codehaus.mojo.gwt.GwtRuntime;
  * @goal debug
  * @description Runs the project with a debugger port hook (optionally suspended).
  * @author cooper
+ * @version $Id$
  */
 public class DebugMojo
     extends RunMojo

@@ -37,6 +37,7 @@ import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
  * @phase process-classes
  * @requiresDependencyResolution compile
  * @description Invokes the GWTCompiler for the project source.
+ * @version $Id$
  * @author cooper
  * @author ccollins
  */

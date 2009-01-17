@@ -47,6 +47,7 @@ import org.codehaus.mojo.gwt.shell.scripting.TestResult.TestCode;
  * @requiresDependencyResolution test
  * @description Runs special (non surefire) test phase for GWTTestCase derived tests.
  * @author ccollins
+ * @version $Id$
  * @todo compare with TestMojo and maybe deprecate both if SUREFIRE-508 has a workaround
  */
 public class GWTTestMojo

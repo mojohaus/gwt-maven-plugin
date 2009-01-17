@@ -22,6 +22,7 @@ package org.codehaus.mojo.gwt.webxml;
 /**
  *
  * @author cooper
+ * @version $Id$
  */
 public class ExitException
     extends Exception

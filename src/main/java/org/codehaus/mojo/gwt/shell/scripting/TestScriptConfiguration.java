@@ -21,7 +21,7 @@ package org.codehaus.mojo.gwt.shell.scripting;
 
 /**
  * @author ndeloof
- *
+ * @version $Id$
  */
 public interface TestScriptConfiguration
     extends GwtShellScriptConfiguration

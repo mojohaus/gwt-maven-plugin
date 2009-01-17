@@ -43,6 +43,7 @@ import freemarker.template.TemplateException;
  *
  * @goal eclipseTest
  * @execute phase=generate-test-resources
+ * @version $Id$
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class EclipseTestMojo

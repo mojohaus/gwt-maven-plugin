@@ -41,6 +41,7 @@ import org.codehaus.mojo.gwt.shell.AbstractGwtWebMojo;
  * @requiresDependencyResolution compile
  * @description Merges GWT servlet elements into deployment descriptor (and non GWT servlets into shell).
  * @author cooper
+ * @version $Id$
  */
 public class MergeWebXmlMojo
     extends AbstractGwtWebMojo

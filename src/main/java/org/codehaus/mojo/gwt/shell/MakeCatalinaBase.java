@@ -27,6 +27,7 @@ import org.apache.commons.io.IOUtils;
 
 /**
  * @author cooper
+ * @version $Id$
  */
 public class MakeCatalinaBase
 {

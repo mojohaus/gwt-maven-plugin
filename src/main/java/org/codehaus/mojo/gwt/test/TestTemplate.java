@@ -28,6 +28,7 @@ import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ * @version $Id$
  */
 public class TestTemplate
 {

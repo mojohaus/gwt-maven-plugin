@@ -44,6 +44,7 @@ import com.thoughtworks.qdox.model.JavaSource;
  * @goal generateAsync
  * @phase generate-sources
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ * @version $Id$
  */
 public class GenerateAsyncMojo
     extends AbstractGwtMojo

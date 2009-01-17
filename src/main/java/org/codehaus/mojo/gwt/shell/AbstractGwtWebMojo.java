@@ -24,7 +24,7 @@ import java.io.File;
 
 /**
  * @author ndeloof
- *
+ * @version $Id$
  */
 public abstract class AbstractGwtWebMojo
     extends AbstractGwtShellMojo

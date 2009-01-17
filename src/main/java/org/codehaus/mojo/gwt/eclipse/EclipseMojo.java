@@ -43,6 +43,7 @@ import freemarker.template.TemplateException;
  * @goal eclipse
  * @execute phase=generate-resources
  * @requiresDependencyResolution compile
+ * @version $Id$
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  */
 public class EclipseMojo

@@ -53,6 +53,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
  * and/or project dependencies. Creates the runtime dependencies list to be used by GWT tools.
  *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ * @version $Id$
  */
 public abstract class AbstractGwtMojo
     extends AbstractMojo

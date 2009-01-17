@@ -32,6 +32,7 @@ import org.codehaus.mojo.gwt.GwtRuntime;
  *
  * @author ccollins
  * @author rcooper
+ * @version $Id$
  * @plexus.component role="org.codehaus.mojo.gwt.shell.scripting.ScriptWriter" role-hint="windows"
  */
 public class ScriptWriterWindows

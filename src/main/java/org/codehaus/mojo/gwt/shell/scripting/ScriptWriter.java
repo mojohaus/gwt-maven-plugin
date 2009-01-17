@@ -26,6 +26,7 @@ import org.codehaus.mojo.gwt.GwtRuntime;
 
 /**
  * @author ccollins
+ * @version $Id$
  */
 public interface ScriptWriter
 {

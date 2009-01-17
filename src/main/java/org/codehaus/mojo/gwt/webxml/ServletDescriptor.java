@@ -19,6 +19,9 @@ package org.codehaus.mojo.gwt.webxml;
  * under the License.
  */
 
+/**
+ * @version $Id$
+ */
 public class ServletDescriptor
 {
 

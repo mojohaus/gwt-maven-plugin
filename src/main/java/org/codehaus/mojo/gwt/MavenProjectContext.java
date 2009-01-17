@@ -27,7 +27,7 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * @author ndeloof
- *
+ * @version $Id$
  */
 public class MavenProjectContext
 {

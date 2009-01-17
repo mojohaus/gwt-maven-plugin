@@ -23,7 +23,7 @@ import java.io.File;
 
 /**
  * @author ndeloof
- *
+ * @version $Id$
  */
 public class GwtRuntime
 {
