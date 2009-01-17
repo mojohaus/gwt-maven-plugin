@@ -39,6 +39,7 @@ import org.codehaus.plexus.util.cli.StreamConsumer;
  * @author ccollins
  * @author cooper
  * @author willpugh
+ * @version $Id$
  */
 public abstract class AbstractGwtShellMojo
     extends AbstractGwtModuleMojo

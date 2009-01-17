@@ -39,6 +39,7 @@ import org.codehaus.plexus.util.cli.StreamConsumer;
  *
  * @author ccollins
  * @author rcooper
+ * @version $Id$
  * @plexus.component role="org.codehaus.mojo.gwt.shell.scripting.ScriptWriter" role-hint="unix"
  */
 public class ScriptWriterUnix
@@ -93,6 +94,7 @@ public class ScriptWriterUnix
         writer.println( "#!" + sh.getAbsolutePath() );
         writer.println();
 
+        // TODO MGWT-12 remove as we now use a fork "a la" surefire 
         try
         {
             Collection<File> classpath =
