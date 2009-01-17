@@ -37,7 +37,7 @@ import org.codehaus.plexus.util.StringUtils;
 
 /**
  * @author ndeloof
- *
+ * @version $Id$
  */
 public abstract class AbstractScriptWriter
     extends AbstractLogEnabled
@@ -146,30 +146,12 @@ public abstract class AbstractScriptWriter
     public File writeCompileScript( CompileScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
-        File classpath = new File( configuration.getBuildDir(), "gwt.classpath" );
-        try
-        {
-            Collection<File> files =
-                buildClasspathUtil.buildClasspathList( configuration.getProject(), Artifact.SCOPE_COMPILE, runtime,
-                                                       configuration.getSourcesOnPath(),
-                                                       configuration.getResourcesOnPath() );
-            PrintWriter writer = new PrintWriter( classpath );
-            for ( File f : files )
-            {
-                writer.println( f.getAbsolutePath() );
-            }
-            writer.close();
-        }
-        catch ( Exception e )
-        {
-            throw new MojoExecutionException( "Error creating classpath script - " + classpath, e );
-        }
 
         // TODO build classpath and create classpath file based on it
 
         File file = new File( configuration.getBuildDir(), "compile" + getScriptExtension() );
         PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_COMPILE, runtime );
-
+        File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
         for ( String target : configuration.getModules() )
         {
             // TODO how to get current plugin jar path ??
@@ -344,4 +326,6 @@ public abstract class AbstractScriptWriter
             }
         }
     }
+    
+    
 }

@@ -20,6 +20,7 @@ package org.codehaus.mojo.gwt.shell;
  */
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -33,6 +34,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.ActiveProjectArtifact;
 import org.codehaus.mojo.gwt.GwtRuntime;
+import org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
@@ -303,5 +305,36 @@ public class ClasspathBuilder
     private String getProjectReferenceId( final String groupId, final String artifactId, final String version )
     {
         return groupId + ":" + artifactId + ":" + version;
+    }
+    
+    public File writeClassPathFile( GwtShellScriptConfiguration configuration, GwtRuntime runtime )
+        throws MojoExecutionException
+    {
+        File classpath = new File( configuration.getBuildDir(), "gwt.classpath" );
+        PrintWriter writer = null;
+        try
+        {
+            Collection<File> files = buildClasspathList( configuration.getProject(), Artifact.SCOPE_COMPILE, runtime,
+                                                         configuration.getSourcesOnPath(), configuration
+                                                             .getResourcesOnPath() );
+            writer = new PrintWriter( classpath );
+            for ( File f : files )
+            {
+                writer.println( f.getAbsolutePath() );
+            }
+            return classpath;
+
+        }
+        catch ( Exception e )
+        {
+            throw new MojoExecutionException( "Error creating classpath script - " + classpath, e );
+        }
+        finally
+        {
+            if ( writer != null )
+            {
+                writer.close();
+            }
+        }
     }
 }
