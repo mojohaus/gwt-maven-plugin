@@ -47,7 +47,7 @@ public class RunMojo
     /**
      * URL that should be automatically opened by default in the GWT shell.
      * 
-     * @parameter
+     * @parameter expression="${gwt.runTarget}"
      */
     private String runTarget;
 
