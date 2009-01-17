@@ -216,15 +216,17 @@ public abstract class AbstractScriptWriter
             }
         }
         PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_COMPILE, runtime );
-
+        File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
         // constants
         if ( configuration.getI18nConstantsBundles() != null )
         {
             for ( String target : configuration.getI18nConstantsBundles() )
             {
                 String extra = getExtraJvmArgs( configuration );
-                writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra + " -cp "
-                    + getPlatformClasspathVariable() );
+                writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
+                writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
+                writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
+                writer.print( " \"" + classpath.getAbsolutePath() + "\" " );                
                 writer.print( " com.google.gwt.i18n.tools.I18NSync" );
                 writer.print( " -out " );
                 writer.print( "\"" + configuration.getGenerateDirectory() + "\"" );
@@ -241,7 +243,10 @@ public abstract class AbstractScriptWriter
             {
                 String extra = ( configuration.getExtraJvmArgs() != null ) ? configuration.getExtraJvmArgs() : "";
 
-                writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra + " -cp %CLASSPATH%" );
+                writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
+                writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
+                writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );   
+                writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
                 writer.print( " com.google.gwt.i18n.tools.I18NSync" );
                 writer.print( " -createMessages " );
                 writer.print( " -out " );
@@ -276,6 +281,7 @@ public abstract class AbstractScriptWriter
         outputDir.mkdirs();
         outputDir.mkdir();
 
+        File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
         // for each test compile source root, build a test script
         List<String> testCompileRoots = configuration.getProject().getTestCompileSourceRoots();
         for ( String currRoot : testCompileRoots )
@@ -321,7 +327,9 @@ public abstract class AbstractScriptWriter
                 {
                     writer.print( " " + testExtra + " " );
                 }
-                writer.print( " -cp " + getPlatformClasspathVariable() + " " );
+                writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
+                writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
+                writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
                 writer.print( "junit.textui.TestRunner " );
                 writer.print( testName );
 
