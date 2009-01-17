@@ -150,6 +150,7 @@ public class RunMojo
      */
     protected ClassLoader fixThreadClasspath( GwtRuntime runtime )
     {
+        ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
         try
         {
             ClassWorld world = new ClassWorld();
@@ -175,6 +176,10 @@ public class RunMojo
         {
             e.printStackTrace();
             throw new RuntimeException( e );
+        }
+        finally
+        {
+            Thread.currentThread().setContextClassLoader( originalClassLoader );
         }
     }
     
