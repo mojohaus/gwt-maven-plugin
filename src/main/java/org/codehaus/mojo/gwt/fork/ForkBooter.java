@@ -47,9 +47,10 @@ public class ForkBooter
         String className = args[1];
         ClassLoader cl = getClassLoader( fileName );
 
-        Class gwt = cl.loadClass( className );
-
+        Class<?> gwt = cl.loadClass( className );
+        
         Thread.currentThread().setContextClassLoader( cl );
+        
         Method method = gwt.getMethod( "main", new Class[] { String[].class } );
         String[] compilerArgs = new String[args.length - 1];
         System.arraycopy( args, 1, compilerArgs, 0, args.length - 1 );
