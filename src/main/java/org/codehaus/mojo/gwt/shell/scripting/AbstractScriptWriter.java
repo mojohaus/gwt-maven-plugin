@@ -101,8 +101,10 @@ public abstract class AbstractScriptWriter
         File file = new File( configuration.getBuildDir(), filename );
         PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_RUNTIME, runtime );
 
+        File classpath = this.buildClasspathUtil.writeClassPathFile( configuration, runtime );
+        
         String extra = getExtraJvmArgs( configuration );
-        writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp " + getPlatformClasspathVariable() + " " );
+        writer.print( "\"" + PlatformUtil.JAVA_COMMAND + "\" " + extra + " -cp \"" + configuration.getPluginJar() + "\" " );
 
         if ( debugPort >= 0 )
         {
@@ -115,6 +117,8 @@ public abstract class AbstractScriptWriter
         }
 
         writer.print( " -Dcatalina.base=\"" + configuration.getTomcat().getAbsolutePath() + "\" " );
+        writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
+        writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
         writer.print( " com.google.gwt.dev.GWTShell" );
         writer.print( " -gen \"" );
         writer.print( configuration.getGen().getAbsolutePath() );

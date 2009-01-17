@@ -41,6 +41,7 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
  * Util to consolidate classpath manipulation stuff in one place.
  *
  * @author ccollins
+ * @version $Id$
  * @plexus.component role="org.codehaus.mojo.gwt.shell.ClasspathBuilder"
  */
 public class ClasspathBuilder
