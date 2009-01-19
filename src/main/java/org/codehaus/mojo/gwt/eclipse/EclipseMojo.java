@@ -104,6 +104,7 @@ public class EclipseMojo
         File launchFile = new File( getProject().getBasedir(), module + ".launch" );
         if ( launchFile.exists() )
         {
+            getLog().info( "launch file exists " + launchFile.getName() + " skip generation "  );
             return;
         }
 

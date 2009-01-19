@@ -116,36 +116,13 @@ public abstract class AbstractGwtModuleMojo
                 String path = fileName.substring( 0, fileName.length() - GWT_MODULE_EXTENSION.length() );
                 modules[i++] = path.replace( File.separatorChar, '.' );
             }
+            if ( modules.length > 0 )
+            {
+                getLog().info( "auto discovered modules " + Arrays.asList( modules ) );
+            }
+              
         }
         return modules;
-    }
-
-    /**
-     * @return the project classloader
-     * @throws DependencyResolutionRequiredException failed to resolve project dependencies
-     * @throws MalformedURLException configuration issue ?
-     */
-    protected ClassLoader getProjectClassLoader()
-        throws DependencyResolutionRequiredException, MalformedURLException
-    {
-        getLog().debug( "AbstractMojo#getProjectClassLoader()" );
-    
-        List<?> compile = project.getCompileClasspathElements();
-        URL[] urls = new URL[compile.size()];
-        int i = 0;
-        for ( Object object : compile )
-        {
-            if ( object instanceof Artifact )
-            {
-                urls[i] = ( (Artifact) object ).getFile().toURI().toURL();
-            }
-            else
-            {
-                urls[i] = new File( (String) object ).toURI().toURL();
-            }
-            i++;
-        }
-        return new URLClassLoader( urls, ClassLoader.getSystemClassLoader() );
     }
 
     /**
@@ -154,40 +131,6 @@ public abstract class AbstractGwtModuleMojo
     protected void addCompileSourceRoot( File path )
     {
         project.addCompileSourceRoot( path.getAbsolutePath() );
-    }
-
-    /**
-     * Add project classpath element to a classpath URL set
-     *
-     * @param originalUrls the initial URL set
-     * @return full classpath URL set
-     * @throws MojoExecutionException some error occured
-     */
-    protected URL[] addProjectClasspathElements( URL[] originalUrls )
-        throws MojoExecutionException
-    {
-        Collection<?> sources = project.getCompileSourceRoots();
-        Collection<?> resources = project.getResources();
-        Collection<?> dependencies = project.getArtifacts();
-        URL[] urls = new URL[originalUrls.length + sources.size() + resources.size() + dependencies.size() + 2];
-    
-        int i = originalUrls.length;
-        getLog().debug( "add compile source roots to GWTCompiler classpath " + sources.size() );
-        i = addClasspathElements( sources, urls, i );
-        getLog().debug( "add resources to GWTCompiler classpath " + resources.size() );
-        i = addClasspathElements( resources, urls, i );
-        getLog().debug( "add project dependencies to GWTCompiler  classpath " + dependencies.size() );
-        i = addClasspathElements( dependencies, urls, i );
-        try
-        {
-            urls[i++] = generateDirectory.toURL();
-            urls[i] = new File( project.getBuild().getOutputDirectory() ).toURL();
-        }
-        catch ( MalformedURLException e )
-        {
-            throw new MojoExecutionException( "Failed to convert project.build.outputDirectory to URL", e );
-        }
-        return urls;
     }
 
 }
