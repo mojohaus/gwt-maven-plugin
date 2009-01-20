@@ -30,6 +30,7 @@ import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.test.TestMojo;
 import org.codehaus.mojo.gwt.test.TestTemplate;
@@ -55,8 +56,16 @@ public class EclipseTestMojo
     private EclipseUtil eclipseUtil;
 
     /**
+     * The currently executed project (phase=generate-resources).
+     * 
+     * @parameter expression="${executedProject}"
+     * @readonly
+     */
+    private MavenProject executedProject;
+
+    /**
      * Location of the file.
-     *
+     * 
      * @parameter default-value="${project.build.directory}/www-test"
      */
     private File testOutputDirectory;
@@ -105,8 +114,8 @@ public class EclipseTestMojo
 
         Map < String, Object > context = new HashMap < String, Object > ();
         List < String > sources = new LinkedList < String >();
-        sources.addAll( getProject().getTestCompileSourceRoots() );
-        sources.addAll( getProject().getCompileSourceRoots() );
+        sources.addAll( executedProject.getTestCompileSourceRoots() );
+        sources.addAll( executedProject.getCompileSourceRoots() );
         context.put( "sources", sources );
         context.put( "test", fqcn );
         int basedir = getProject().getBasedir().getAbsolutePath().length();

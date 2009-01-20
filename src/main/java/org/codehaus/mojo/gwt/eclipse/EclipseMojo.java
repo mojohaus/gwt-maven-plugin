@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.plexus.util.StringUtils;
@@ -55,8 +56,16 @@ public class EclipseMojo
     private EclipseUtil eclipseUtil;
 
     /**
+     * The currently executed project (phase=generate-resources).
+     * 
+     * @parameter expression="${executedProject}"
+     * @readonly
+     */
+    private MavenProject executedProject;
+
+    /**
      * Location of the file.
-     *
+     * 
      * @parameter default-value="${project.build.directory}/${project.build.finalName}"
      */
     private File outputDirectory;
@@ -112,7 +121,8 @@ public class EclipseMojo
         cfg.setClassForTemplateLoading( EclipseMojo.class, "" );
 
         Map < String, Object > context = new HashMap < String, Object > ();
-        List<String> sources = getProject().getCompileSourceRoots();
+        // Read compileSourceRoots from executedProject to retrieve generated source directories
+        List<String> sources = executedProject.getCompileSourceRoots();
         context.put( "sources", sources );
         context.put( "module", module );
         int idx = module.lastIndexOf( '.' );
