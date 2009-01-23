@@ -208,6 +208,17 @@
       </properties>
     </profile>
     <profile>
+      <id>freebsd</id>
+      <activation>
+        <os>
+          <name>freebsd</name>
+        </os>
+      </activation>
+      <properties>
+        <gwt.variant>linux</gwt.variant>
+      </properties>
+    </profile>
+    <profile>
       <id>windows</id>
       <activation>
         <os>
