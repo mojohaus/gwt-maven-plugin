@@ -130,7 +130,7 @@ public abstract class AbstractGwtMojo
     /**
      * Folder where generated-source will be created (automatically added to compile classpath).
      *
-     * @parameter default-value="${project.build.directory}/generated-sources/gwt
+     * @parameter default-value="${project.build.directory}/generated-sources/gwt"
      * @required
      */
     protected File generateDirectory;
@@ -342,6 +342,10 @@ public abstract class AbstractGwtMojo
     
     public File getGenerateDirectory()
     {
+        if (!generateDirectory.exists())
+        {
+            generateDirectory.mkdirs();
+        }
         return generateDirectory;
     }
     

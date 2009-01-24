@@ -225,6 +225,7 @@ public abstract class AbstractScriptWriter
         {
             for ( String target : configuration.getI18nConstantsBundles() )
             {
+                ensureTargetPackageExists(configuration.getGenerateDirectory(), target);
                 String extra = getExtraJvmArgs( configuration );
                 writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
                 writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
@@ -234,6 +235,7 @@ public abstract class AbstractScriptWriter
                 writer.print( " -out " );
                 writer.print( "\"" + configuration.getGenerateDirectory() + "\"" );
                 writer.print( " " );
+                // gwt I18n failed if target package doesn't exists on file system
                 writer.print( target );
                 writer.println();
             }
@@ -244,6 +246,7 @@ public abstract class AbstractScriptWriter
         {
             for ( String target : configuration.getI18nMessagesBundles() )
             {
+                ensureTargetPackageExists(configuration.getGenerateDirectory(), target);
                 String extra = ( configuration.getExtraJvmArgs() != null ) ? configuration.getExtraJvmArgs() : "";
 
                 writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
@@ -268,6 +271,18 @@ public abstract class AbstractScriptWriter
         return file;
     }
 
+    private void ensureTargetPackageExists(File generateDirectory, String targetName )
+    {
+        targetName = targetName.substring( 0, targetName.lastIndexOf( '.' ) );
+        String targetPackage = targetName.replace( '.', File.separatorChar );
+        getLogger().debug( "ensureTargetPackageExists, targetName : " + targetName + ", targetPackage : " + targetPackage );
+        File targetPackageDirectory = new File( generateDirectory, targetPackage );
+        if ( !targetPackageDirectory.exists() )
+        {
+            targetPackageDirectory.mkdirs();
+        }
+    }
+    
     /**
      * Write test scripts.
      */

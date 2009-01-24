@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,9 +53,20 @@ public class ForkBooter
         Thread.currentThread().setContextClassLoader( cl );
 
         Method method = gwt.getMethod( "main", new Class[] { String[].class } );
-        String[] compilerArgs = new String[args.length - 1];
-        System.arraycopy( args, 1, compilerArgs, 0, args.length - 1 );
-        method.invoke( null, (Object) compilerArgs );
+        String[] compilerArgs = new String[args.length - 2];
+        System.arraycopy( args, 2, compilerArgs, 0, args.length - 2 );
+        List<String> compilerArgsList = Arrays.asList( compilerArgs );
+        System.out.println(" running main class " + className + " with args " + compilerArgsList );
+        try
+        {
+            method.invoke( null, (Object) compilerArgs );
+        }
+        catch ( Throwable e )
+        {
+            // to have message in the output
+            e.printStackTrace();
+            throw new Exception(e);
+        }
     }
 
     private static ClassLoader getClassLoader( String fileName )
