@@ -23,7 +23,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Collection;
 
+import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.gwt.GwtRuntime;
 
@@ -54,7 +56,7 @@ public class ScriptWriterWindows
      * @throws MojoExecutionException
      */
     protected PrintWriter createScript( final GwtShellScriptConfiguration config, File file,
-                                                       final String scope, GwtRuntime runtime )
+                                                       final String scope, GwtRuntime runtime, boolean writeClassPathEnv )
         throws MojoExecutionException
     {
 
@@ -68,6 +70,33 @@ public class ScriptWriterWindows
         {
             throw new MojoExecutionException( "Error creating script - " + file, e );
         }
+        
+
+        if ( writeClassPathEnv )
+        {
+            try
+            {
+                Collection<File> classpath = buildClasspathUtil.buildClasspathList( config.getProject(), scope,
+                                                                                    runtime, config.getSourcesOnPath(),
+                                                                                    config.getResourcesOnPath() );
+                //writer.print( "set CLASSPATH=" );
+
+                StringBuffer cpString = new StringBuffer();
+
+                for ( File f : classpath )
+                {
+                    writer.println( "set CLASSPATH=%CLASSPATH%;" + f.getAbsolutePath() );
+                }
+                writer.println( cpString );
+                writer.println();
+            }
+            catch ( DependencyResolutionRequiredException e )
+            {
+                throw new MojoExecutionException( "Error creating script - " + file, e );
+            }
+    
+}
+        
         writer.println();
         return writer;
     }

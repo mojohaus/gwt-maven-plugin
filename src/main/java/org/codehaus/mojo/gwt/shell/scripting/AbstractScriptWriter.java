@@ -31,7 +31,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.ClasspathBuilder;
-import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -69,7 +68,7 @@ public abstract class AbstractScriptWriter
      */
     protected abstract PrintWriter createScript( final GwtShellScriptConfiguration mojo, File file,
                                                  final String scope,
-                                                 GwtRuntime runtime )
+                                                 GwtRuntime runtime, boolean writeClassPathEnv )
     throws MojoExecutionException;
 
     /**
@@ -99,13 +98,17 @@ public abstract class AbstractScriptWriter
     {
         String filename = ( debugPort >= 0 ) ? "debug" + getScriptExtension() : "run" + getScriptExtension();
         File file = new File( configuration.getBuildDir(), filename );
-        PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_RUNTIME, runtime );
+        PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_RUNTIME, runtime, true );
 
-        File classpath = this.buildClasspathUtil.writeClassPathFile( configuration, runtime );
-        
+        //File classpath = this.buildClasspathUtil.writeClassPathFile( configuration, runtime );
+        //File booterJar = this.buildClasspathUtil.createBooterJar( configuration, runtime, null,
+        //                                                          "com.google.gwt.dev.GWTShell" );
         String extra = getExtraJvmArgs( configuration );
-        writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra + " -cp \"" + configuration.getPluginJar()
-            + "\" " );
+        writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
+        
+        writer.print( " -Dcatalina.base=\"" + configuration.getTomcat().getAbsolutePath() + "\" " );
+        writer.print( " -cp \"" + getPlatformClasspathVariable() + "\" " );
+        //writer.print( " -jar \"" + booterJar + "\" " );
 
         if ( debugPort >= 0 )
         {
@@ -117,9 +120,9 @@ public abstract class AbstractScriptWriter
             }
         }
 
-        writer.print( " -Dcatalina.base=\"" + configuration.getTomcat().getAbsolutePath() + "\" " );
-        writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
-        writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
+        
+        //writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
+        //writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
         writer.print( " com.google.gwt.dev.GWTShell" );
         writer.print( " -gen \"" );
         writer.print( configuration.getGen().getAbsolutePath() );
@@ -155,7 +158,7 @@ public abstract class AbstractScriptWriter
         // TODO build classpath and create classpath file based on it
 
         File file = new File( configuration.getBuildDir(), "compile" + getScriptExtension() );
-        PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_COMPILE, runtime );
+        PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_COMPILE, runtime, false );
         File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
         for ( String target : configuration.getModules() )
         {
@@ -215,7 +218,7 @@ public abstract class AbstractScriptWriter
                                    exe );
             }
         }
-        PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_COMPILE, runtime );
+        PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_COMPILE, runtime, false );
         File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
         // constants
         if ( configuration.getI18nConstantsBundles() != null )
@@ -315,7 +318,7 @@ public abstract class AbstractScriptWriter
                     new File( configuration.getBuildDir() + File.separator + "gwtTest", "gwtTest-" + testName
                         + getScriptExtension() );
                 PrintWriter writer =
-                    this.createScript( configuration, file, Artifact.SCOPE_TEST, runtime );
+                    this.createScript( configuration, file, Artifact.SCOPE_TEST, runtime, false );
 
                 // build Java command
                 writer.print( "\"" + getJavaCommand( configuration ) + "\" " );

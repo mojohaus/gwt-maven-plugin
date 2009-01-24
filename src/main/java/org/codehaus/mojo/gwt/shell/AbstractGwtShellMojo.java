@@ -354,6 +354,11 @@ public abstract class AbstractGwtShellMojo
     public void setJvm( String jvm )
     {
         this.jvm = jvm;
+    }
+
+    public String getVersion()
+    {
+        return this.version;
     }      
 
 }

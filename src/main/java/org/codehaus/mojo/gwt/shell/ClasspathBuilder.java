@@ -20,12 +20,17 @@ package org.codehaus.mojo.gwt.shell;
  */
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -34,6 +39,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.ActiveProjectArtifact;
 import org.codehaus.mojo.gwt.GwtRuntime;
+import org.codehaus.mojo.gwt.fork.ForkBooter;
 import org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -47,6 +53,7 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 public class ClasspathBuilder
     extends AbstractLogEnabled
 {
+       
     /**
      * Build classpath list using either gwtHome (if present) or using *project* dependencies. Note that this is ONLY
      * used for the script/cmd writers (so the scopes are not for the compiler, or war plugins, etc). This is required
@@ -73,9 +80,6 @@ public class ClasspathBuilder
         // (gwt-user and gwt-dev should be scoped provided to keep them out of
         // other maven stuff - not end up in war, etc - this util is only used for GWT-Maven scripts)
         // TODO filter the rest of the stuff so we don't double add these
-
-        items.add( runtime.getGwtUserJar() );
-        items.add( runtime.getGwtDevJar() );
 
         // add sources
         if ( sourcesOnPath )
@@ -128,6 +132,9 @@ public class ClasspathBuilder
             }
         }
 
+        items.add( runtime.getGwtUserJar() );
+        items.add( runtime.getGwtDevJar() );        
+        
         getLogger().debug( "SCRIPT INJECTION CLASSPATH LIST" );
         for ( File f : items )
         {
@@ -338,4 +345,71 @@ public class ClasspathBuilder
             }
         }
     }
+    
+    /**
+     * Create a jar with just a manifest containing a Main-Class entry for Booing and a Class-Path entry
+     * for all classpath elements.
+     *
+     * @param classPath List&lt;String> of all classpath elements.
+     * @return
+     * @throws IOException
+     */
+    public File createBooterJar( GwtShellScriptConfiguration configuration, GwtRuntime runtime, File pluginArtifact, String mainClass  )
+        throws MojoExecutionException
+    {
+        try
+        {
+            File file = new File( configuration.getBuildDir(), "gwt.booter.jar" );
+            if ( !configuration.getLog().isDebugEnabled() )
+            {
+                file.deleteOnExit();
+            }
+            FileOutputStream fos = new FileOutputStream( file );
+            JarOutputStream jos = new JarOutputStream( fos );
+            jos.setLevel( JarOutputStream.STORED );
+            JarEntry je = new JarEntry( "META-INF/MANIFEST.MF" );
+            jos.putNextEntry( je );
+
+            Collection<File> files = buildClasspathList( configuration.getProject(), Artifact.SCOPE_COMPILE, runtime, configuration
+                .getSourcesOnPath(), configuration.getResourcesOnPath() );
+
+            Manifest man = new Manifest();
+
+            StringBuilder cp = new StringBuilder();
+            if ( pluginArtifact != null )
+            {
+                cp.append( pluginArtifact.toURI().toURL().toExternalForm() ).append( " " );
+            }
+            for ( File classPathEntry : files )
+            {
+                String extForm = classPathEntry.toURI().toURL().toExternalForm();
+                if (classPathEntry.isDirectory() && extForm.endsWith( File.separator ))
+                {
+                     
+                    cp.append( extForm.substring( 0, extForm.length() - 1 ) );
+                }
+                else
+                {
+                    cp.append( extForm ).append( " " );
+                }
+            }
+
+            man.getMainAttributes().putValue( "Manifest-Version", "1.0" );
+            man.getMainAttributes().putValue( "Class-Path", cp.toString().trim() );
+            man.getMainAttributes().putValue( "Main-Class", mainClass );
+
+            man.write( jos );
+            jos.close();
+
+            return file;
+        }
+        catch ( DependencyResolutionRequiredException e )
+        {
+            throw new MojoExecutionException( e.getMessage(), e );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( e.getMessage(), e );
+        }
+    }    
 }

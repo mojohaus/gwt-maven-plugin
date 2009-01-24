@@ -102,7 +102,7 @@ public class RunMojo
         // build it for the correct platform
         ScriptWriter writer = scriptWriterFactory.getScriptWriter();
         File exec = writer.writeRunScript( this, runtime );
-
+        
         // run it
         runScript( exec );
     }

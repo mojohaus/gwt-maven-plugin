@@ -21,6 +21,8 @@ package org.codehaus.mojo.gwt.shell.scripting;
 
 import java.io.File;
 
+import org.apache.maven.plugin.logging.Log;
+
 /**
  * @author ndeloof
  * @version $Id$
@@ -80,5 +82,9 @@ public interface GwtShellScriptConfiguration
      * @since 1.1
      */
     String getJvm();
+    
+    Log getLog();
+    
+    String getVersion();
 
 }
