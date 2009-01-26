@@ -42,6 +42,7 @@ public abstract class AbstractScriptWriter
     extends AbstractLogEnabled
     implements ScriptWriter
 {
+
     /**
      * @plexus.requirement
      */
@@ -105,7 +106,7 @@ public abstract class AbstractScriptWriter
         //                                                          "com.google.gwt.dev.GWTShell" );
         String extra = getExtraJvmArgs( configuration );
         writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
-        
+
         writer.print( " -Dcatalina.base=\"" + configuration.getTomcat().getAbsolutePath() + "\" " );
         writer.print( " -cp \"" + getPlatformClasspathVariable() + "\" " );
         //writer.print( " -jar \"" + booterJar + "\" " );
@@ -120,10 +121,10 @@ public abstract class AbstractScriptWriter
             }
         }
 
-        
+
         //writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
         //writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
-        writer.print( " com.google.gwt.dev.GWTShell" );
+        writer.print( " " + runtime.getVersion().getShellFQCN() );
         writer.print( " -gen \"" );
         writer.print( configuration.getGen().getAbsolutePath() );
         writer.print( "\" -logLevel " );
@@ -147,6 +148,8 @@ public abstract class AbstractScriptWriter
 
         return file;
     }
+
+
 
     /**
      * Write compile script.
@@ -230,7 +233,7 @@ public abstract class AbstractScriptWriter
                 writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
                 writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
                 writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
-                writer.print( " \"" + classpath.getAbsolutePath() + "\" " );                
+                writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
                 writer.print( " com.google.gwt.i18n.tools.I18NSync" );
                 writer.print( " -out " );
                 writer.print( "\"" + configuration.getGenerateDirectory() + "\"" );
@@ -251,7 +254,7 @@ public abstract class AbstractScriptWriter
 
                 writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
                 writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
-                writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );   
+                writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
                 writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
                 writer.print( " com.google.gwt.i18n.tools.I18NSync" );
                 writer.print( " -createMessages " );
@@ -282,7 +285,7 @@ public abstract class AbstractScriptWriter
             targetPackageDirectory.mkdirs();
         }
     }
-    
+
     /**
      * Write test scripts.
      */
@@ -357,7 +360,7 @@ public abstract class AbstractScriptWriter
             }
         }
     }
-    
+
     protected String getJavaCommand( GwtShellScriptConfiguration configuration )
         throws MojoExecutionException
     {
@@ -382,6 +385,6 @@ public abstract class AbstractScriptWriter
         // use the same JVM as the one used to run Maven (the "java.home" one)
         return System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + "java";
     }
-    
-    
+
+
 }
