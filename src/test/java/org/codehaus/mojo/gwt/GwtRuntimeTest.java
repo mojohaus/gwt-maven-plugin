@@ -15,10 +15,9 @@ public class GwtRuntimeTest
      */
     public void testGwtVersion153Detection()
     {
-        File x = new File( "D:/platina/repository/com/google/gwt/gwt-dev/1.5.2/gwt-dev-1.5.2-windows.jar" );
         File basedir = new File( System.getProperty( "basedir", "." ) );
         File gwtDevJar = new File( basedir, "target/test-classes/gwt-dev-1.5.3-fake.jar" );
-        GwtRuntime gwt = new GwtRuntime( null, x );
+        GwtRuntime gwt = new GwtRuntime( null, gwtDevJar );
         assertEquals( GwtVersion.ONE_DOT_FIVE, gwt.getVersion() );
     }
 
