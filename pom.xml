@@ -328,7 +328,7 @@
   <repositories>
     <!-- TODO remove when qdox 1.8 is released --> 
     <repository>
-      <id>snapshots.codehaus</id>
+      <id>codehaus.snapshots</id>
       <url>http://snapshots.repository.codehaus.org/</url>
       <releases>
         <enabled>false</enabled>
