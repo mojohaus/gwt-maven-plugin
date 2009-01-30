@@ -82,6 +82,11 @@ public abstract class AbstractGwtModuleMojo
     public String[] getModules()
     {
         List < String > mods = new ArrayList < String > ();
+        
+        //module has higher priority if set by expression
+        if(module != null) {
+        	return new String[] {module};
+        }
         if ( modules == null )
         {
             DirectoryScanner scanner = new DirectoryScanner();
