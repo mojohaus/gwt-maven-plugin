@@ -78,6 +78,20 @@ public class EclipseMojo
     private String additionalPageParameters;
 
     /**
+     * Run without hosted mode server
+     * 
+     * @parameter default-value="false" expression="${gwt.noserver}"
+     */
+    private boolean noserver;
+
+    /**
+     * Port of the HTTP server used when noserver is set
+     * 
+     * @parameter default-value="8080" expression="${gwt.port}"
+     */
+    private int port;
+
+    /**
      * @param parameters additional parameter for module URL
      */
     public void setAdditionalPageParameters( String parameters )
@@ -134,6 +148,7 @@ public class EclipseMojo
         context.put( "page", page );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", outputDirectory.getAbsolutePath().substring( basedir + 1 ) );
+        context.put( "additionalArguments", noserver ? "-noserver -port " + port : "" );
         context.put( "project", eclipseUtil.getProjectName( getProject() ) );
         context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath() );
 

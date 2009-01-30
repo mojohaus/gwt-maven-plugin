@@ -11,7 +11,7 @@
         <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#13;&#10;&lt;runtimeClasspathEntry externalArchive=&quot;${gwtDevJarPath}&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#13;&#10;"/>
     </listAttribute>
     <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value=" -Xmx256M"/>
-    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-out ${out} ${module}/${page}"/>
+    <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-out ${out} ${additionalArguments} ${module}/${page}"/>
     <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="${project}"/>
     <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
 </launchConfiguration>
