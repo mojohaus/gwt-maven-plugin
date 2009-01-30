@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
@@ -40,7 +41,7 @@ import com.thoughtworks.qdox.model.JavaSource;
 
 /**
  * Goal which generate Asyn interface.
- * 
+ *
  * @goal generateAsync
  * @phase generate-sources
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -51,22 +52,23 @@ public class GenerateAsyncMojo
 {
     /**
      * Pattern for GWT service interface
-     * 
+     *
      * @parameter default-value="**\/*Service.java"
      */
     private String servicePattern;
 
     /**
-     * Extension for GWT-RPC. May be set to "rpc" if you want to map GWT-RPC calls to "*.rpc" in web.xml, for example
-     * when using Spring dispatch servlet to handle RPC requests.
+     * A (MessageFormat) Pattern to get the GWT-RPC servlet URL based on service interface name. For example to
+     * "{0}.rpc" if you want to map GWT-RPC calls to "*.rpc" in web.xml, for example when using Spring dispatch servlet
+     * to handle RPC requests.
      * 
-     * @parameter default-value="" expression="${gwt.rpcExtension}"
+     * @parameter default-value="{0}" expression="${gwt.rpcPattern}"
      */
-    private String rpcExtension;
+    private String rpcPattern;
 
     /**
      * Stop the build on error
-     * 
+     *
      * @parameter default-value="false" expression="${maven.gwt.failOnError}"
      */
     private boolean failOnError;
@@ -80,7 +82,7 @@ public class GenerateAsyncMojo
     {
         getLog().debug( "GenerateAsyncMojo#execute()" );
 
-        List < String > sourceRoots = getProject().getCompileSourceRoots();
+        List<String> sourceRoots = getProject().getCompileSourceRoots();
         boolean generated = false;
         for ( String sourceRoot : sourceRoots )
         {
@@ -216,6 +218,8 @@ public class GenerateAsyncMojo
 
         writer.println();
 
+        String uri = MessageFormat.format( rpcPattern, className );
+
         writer.println( "    /**" );
         writer.println( "     * Utility class to get the RPC Async interface from client-side code" );
         writer.println( "     */" );
@@ -229,12 +233,7 @@ public class GenerateAsyncMojo
         writer.println( "            {" );
         writer.println( "                instance = (" + className + "Async) GWT.create( " + className + ".class );" );
         writer.println( "                ServiceDefTarget target = (ServiceDefTarget) instance;" );
-        writer.print( "                target.setServiceEntryPoint( GWT.getModuleBaseURL() + \"" + className + "\"" );
-        if ( rpcExtension != null && rpcExtension.length() > 0 )
-        {
-            writer.print( " + " + rpcExtension );
-        }
-        writer.println( " );" );
+        writer.println( "                target.setServiceEntryPoint( GWT.getModuleBaseURL() + \"" + uri + "\" );" );
         writer.println( "            }" );
         writer.println( "            return instance;" );
         writer.println( "        }" );
@@ -253,7 +252,7 @@ public class GenerateAsyncMojo
         throws DependencyResolutionRequiredException, MalformedURLException
     {
         getLog().debug( "AbstractMojo#getProjectClassLoader()" );
-    
+
         List<?> compile = project.getCompileClasspathElements();
         URL[] urls = new URL[compile.size()];
         int i = 0;
@@ -271,5 +270,5 @@ public class GenerateAsyncMojo
         }
         return new URLClassLoader( urls, ClassLoader.getSystemClassLoader() );
     }
-    
+
 }

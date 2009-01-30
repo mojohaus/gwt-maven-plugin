@@ -21,18 +21,13 @@ package org.codehaus.mojo.gwt;
 
 import java.io.File;
 
-import org.codehaus.mojo.gwt.AbstractGwtMojoTestCase;
-import org.codehaus.mojo.gwt.GenerateAsyncMojo;
-
 import com.thoughtworks.qdox.JavaDocBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
 
 /**
- * 
  * @author Robert Scholte
- *
  */
 public class GenerateAsyncMojoTest
     extends AbstractGwtMojoTestCase
@@ -45,6 +40,7 @@ public class GenerateAsyncMojoTest
 
         //required fields in mojo
         setVariableValueToObject( mojo, "servicePattern", "**\\/*Service.java" );
+        setVariableValueToObject( mojo, "rpcPattern", "{0}.rpc" );
         File generateDirectory = new File( new File( getBasedir(), "target/test/MGWT-1/target" ),
                                            "/generated-sources/gwt" );
         setVariableValueToObject( mojo, "generateDirectory", generateDirectory );
