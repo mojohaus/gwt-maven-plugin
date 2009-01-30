@@ -20,18 +20,12 @@ package org.codehaus.mojo.gwt;
  */
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Resource;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
@@ -54,6 +48,13 @@ public abstract class AbstractGwtModuleMojo
      * @alias compileTargets
      */
     private String[] modules;
+
+    /**
+     * A single GWT module (Shortcut for modules)
+     * 
+     * @parameter expression="${gwt.module}"
+     */
+    private String module; // NOPMD
 
     /**
      *
@@ -120,7 +121,7 @@ public abstract class AbstractGwtModuleMojo
             {
                 getLog().info( "auto discovered modules " + Arrays.asList( modules ) );
             }
-              
+
         }
         return modules;
     }
