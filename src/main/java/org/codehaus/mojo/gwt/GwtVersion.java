@@ -12,6 +12,18 @@ public enum GwtVersion
         {
             return "com.google.gwt.dev.GWTShell";
         }
+
+        @Override
+        public String getCompilerFQCN()
+        {
+            return "com.google.gwt.dev.GwtCompiler";
+        }
+
+        @Override
+        public boolean fixEmbeddedTomcatClassloaderIssue()
+        {
+            return false;
+        }
     },
     ONE_DOT_FIVE
     {
@@ -20,40 +32,40 @@ public enum GwtVersion
         {
             return "com.google.gwt.dev.GWTShell";
         }
+
+        @Override
+        public String getCompilerFQCN()
+        {
+            return "com.google.gwt.dev.GwtCompiler";
+        }
+
+        @Override
+        public boolean fixEmbeddedTomcatClassloaderIssue()
+        {
+            return false;
+        }
     },
     ONE_DOT_SIX
     {
-        @Override
-        public String getShellFQCN()
-        {
-            return "com.google.gwt.dev.HostedMode";
-        }
 
-        @Override
-        public boolean fixEmbeddedTomcatClassloaderIssue()
-        {
-            return true;
-        }
     },
     FUTURE
     {
-        @Override
-        public String getShellFQCN()
-        {
-            return "com.google.gwt.dev.HostedMode";
-        }
 
-        @Override
-        public boolean fixEmbeddedTomcatClassloaderIssue()
-        {
-            return true;
-        }
     };
 
     /**
      * @return fully qualified class name of the GWTShell "main" class
      */
-    public abstract String getShellFQCN();
+    public String getShellFQCN()
+    {
+        return "com.google.gwt.dev.HostedMode";
+    }
+
+    public String getCompilerFQCN()
+    {
+        return "com.google.gwt.dev.Compiler";
+    }
 
     /**
      * @return <code>true</code> if this version fixes EmbeddedTomcatServer issue with SystemClassLoader
@@ -61,7 +73,7 @@ public enum GwtVersion
      */
     public boolean fixEmbeddedTomcatClassloaderIssue()
     {
-        return false;
+        return true;
     }
 
     static GwtVersion fromMavenVersion( String version )
