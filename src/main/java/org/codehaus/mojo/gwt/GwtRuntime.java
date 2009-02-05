@@ -20,7 +20,9 @@ package org.codehaus.mojo.gwt;
  */
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.Properties;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
@@ -72,7 +74,21 @@ public class GwtRuntime
     {
         try
         {
-             URL about = new URL( "jar:" + gwtDevJar.toURL() + "!/com/google/gwt/dev/About.class" );
+            try
+            {
+                // Try to get version from About.properties - typically for unreleased version of gwt-dev.jar
+                URL aboutPropreties = new URL( "jar:" + gwtDevJar.toURL() + "!/com/google/gwt/dev/About.properties" );
+                Properties props = new Properties();
+                props.load( aboutPropreties.openStream() );
+                return props.getProperty( "gwt.version" );
+            }
+            catch ( FileNotFoundException e )
+            {
+                // No About.propertiesn this may be a released jar
+            }
+
+            // Read About.GWT_VERSION_NUM constant on a released version of gwt-dev.jar
+            URL about = new URL( "jar:" + gwtDevJar.toURL() + "!/com/google/gwt/dev/About.class" );
             ClassParser parser = new ClassParser( about.openStream(), "About.class" );
             JavaClass clazz = parser.parse();
             for ( org.apache.bcel.classfile.Field field : clazz.getFields() )
@@ -88,14 +104,15 @@ public class GwtRuntime
                 + " 'About' class" );
 
             // Can't get this to work as expected, always return maven dependency "1.5.3" :'-(
-            // ClassLoader cl = new URLClassLoader( new URL[] { gwtDevJar.toURL() }, ClassLoader.getSystemClassLoader()
+            // ClassLoader cl = new URLClassLoader( new URL[] { gwtDevJar.toURL() },
+            // ClassLoader.getSystemClassLoader()
             // );
             // Class<?> about = cl.loadClass( "com.google.gwt.dev.About" );
             // Field versionNumber = about.getField( "GWT_VERSION_NUM" );
             // String version = versionNumber.get( about ).toString();
             // return version;
         }
-        catch ( Exception e )
+        catch ( Exception ex )
         {
             throw new IllegalStateException( "Failed to read gwt-dev version from " + gwtDevJar.getAbsolutePath() );
         }
