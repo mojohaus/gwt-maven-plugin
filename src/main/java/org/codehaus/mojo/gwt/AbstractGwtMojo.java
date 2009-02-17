@@ -134,7 +134,7 @@ public abstract class AbstractGwtMojo
      * @required
      */
     protected File generateDirectory;
-    
+
     //------------------------------
     // Plexus Lifecycle
     //------------------------------
@@ -285,7 +285,7 @@ public abstract class AbstractGwtMojo
         {
             throw new MojoExecutionException( "artifact resolver problem - " + e.getMessage(), e );
         }
-        return new GwtRuntime( gwtUser.getFile(), gwtDev.getFile() );
+        return new GwtRuntime( gwtUser.getFile(), gwtDev.getFile(), version );
     }
 
     /**
@@ -319,8 +319,8 @@ public abstract class AbstractGwtMojo
     protected void addCompileSourceRoot( File path )
     {
         project.addCompileSourceRoot( path.getAbsolutePath() );
-    }    
-    
+    }
+
     /**
      * @return the project
      */
@@ -328,7 +328,7 @@ public abstract class AbstractGwtMojo
     {
         return project;
     }
-    
+
 
     public ArtifactRepository getLocalRepository()
     {
@@ -338,8 +338,8 @@ public abstract class AbstractGwtMojo
     public List<ArtifactRepository> getRemoteRepositories()
     {
         return this.remoteRepositories;
-    }      
-    
+    }
+
     public File getGenerateDirectory()
     {
         if (!generateDirectory.exists())
@@ -348,7 +348,7 @@ public abstract class AbstractGwtMojo
         }
         return generateDirectory;
     }
-    
+
     protected ArchiverManager getArchiverManager()
     {
         return archiverManager;

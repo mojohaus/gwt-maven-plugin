@@ -31,7 +31,7 @@ import org.codehaus.plexus.util.FileUtils;
 /**
  * Goal which run a GWT module in the GWT Shell.
  * 
- * @goal gwt
+ * @goal run
  * @execute phase=compile
  * @requiresDependencyResolution compile
  * @description Runs the the project in the GWTShell for development.
@@ -102,7 +102,7 @@ public class RunMojo
         // build it for the correct platform
         ScriptWriter writer = scriptWriterFactory.getScriptWriter();
         File exec = writer.writeRunScript( this, runtime );
-        
+
         // run it
         runScript( exec );
     }
@@ -138,7 +138,7 @@ public class RunMojo
         }
     }
 
-    
+
     public File getContextXml()
     {
         return this.contextXml;
@@ -152,5 +152,5 @@ public class RunMojo
     public File getTomcat()
     {
         return this.tomcat;
-    }    
+    }
 }

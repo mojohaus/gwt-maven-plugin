@@ -23,12 +23,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.Iterator;
 
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -61,12 +57,10 @@ public class ScriptWriterUnix
      *
      * @param mojo
      * @param file
-     * @param runtime TODO
      * @return
      * @throws MojoExecutionException
      */
-    protected PrintWriter createScript( final GwtShellScriptConfiguration mojo, File file, final String scope,
-                                        GwtRuntime runtime, boolean writeClassPathEnv )
+    protected PrintWriter createScript( final GwtShellScriptConfiguration mojo, File file )
         throws MojoExecutionException
     {
         PrintWriter writer = null;
@@ -93,34 +87,13 @@ public class ScriptWriterUnix
         }
         writer.println( "#!" + sh.getAbsolutePath() );
         writer.println();
-
-        // TODO MGWT-12 remove as we now use a fork "a la" surefire 
-        if ( writeClassPathEnv )
-        {
-            try
-            {
-                Collection<File> classpath = buildClasspathUtil.buildClasspathList( mojo.getProject(), scope, runtime,
-                                                                                    mojo.getSourcesOnPath(), mojo
-                                                                                        .getResourcesOnPath() );
-                writer.print( "export CLASSPATH=" );
-                Iterator it = classpath.iterator();
-                while ( it.hasNext() )
-                {
-                    File f = (File) it.next();
-                    if ( it.hasNext() )
-                        writer.print( "\"" + f.getAbsolutePath() + "\":" );
-                    else
-                        writer.print( "\"" + f.getAbsolutePath() + "\"" );
-                }
-            }
-            catch ( DependencyResolutionRequiredException e )
-            {
-                throw new MojoExecutionException( "Error creating script - " + file, e );
-            }
-        }
-        writer.println();
-        writer.println();
         return writer;
+    }
+
+    @Override
+    protected String getPlatformClasspathVariableDefinition()
+    {
+        return "export CLASSPATH=";
     }
 
     /**

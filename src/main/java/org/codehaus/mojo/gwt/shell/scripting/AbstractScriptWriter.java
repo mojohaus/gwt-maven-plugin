@@ -35,7 +35,18 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- * @author ndeloof
+ * Implementation note :
+ * <p>
+ * Most of GWT commands require to fork a JVM. The AbstractScriptWriter creates platform dependent command scripts to
+ * run them, with required setup to match the project configuration and dependencies.
+ * <p>
+ * A surefire-like forkBooter is used to setup the required classpath in the forked JVM using a nexted ClassLoader, but
+ * this does not work to launch the GWTShell (http://code.google.com/p/google-web-toolkit/issues/detail?id=1032).
+ * <p>
+ * The option to use a booter Jar (see ClasspathBuilder.createBooter) does not work : GWT fails with error
+ * "No source path entries; expect subsequent failures".
+ * 
+ * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @version $Id$
  */
 public abstract class AbstractScriptWriter
@@ -54,6 +65,11 @@ public abstract class AbstractScriptWriter
     protected abstract String getPlatformClasspathVariable();
 
     /**
+     * @return the platform "CLASSPATH" variable definition String
+     */
+    protected abstract String getPlatformClasspathVariableDefinition();
+
+    /**
      * @return the platform script file extension
      */
     protected abstract String getScriptExtension();
@@ -67,10 +83,8 @@ public abstract class AbstractScriptWriter
     /**
      * Setup a new command Script, with adequate platform declarations for classpath
      */
-    protected abstract PrintWriter createScript( final GwtShellScriptConfiguration mojo, File file,
-                                                 final String scope,
-                                                 GwtRuntime runtime, boolean writeClassPathEnv )
-    throws MojoExecutionException;
+    protected abstract PrintWriter createScript( final GwtShellScriptConfiguration mojo, File file )
+        throws MojoExecutionException;
 
     /**
      * Write debug script.
@@ -99,17 +113,18 @@ public abstract class AbstractScriptWriter
     {
         String filename = ( debugPort >= 0 ) ? "debug" + getScriptExtension() : "run" + getScriptExtension();
         File file = new File( configuration.getBuildDir(), filename );
-        PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_RUNTIME, runtime, true );
+        PrintWriter writer = this.createScript( configuration, file );
+        // The shell runner does not support ForkBooter strategy to bypass windows command line limit
+        // as it uses the System ClassLoader
+        buildClasspathUtil.writeClassPathVariable( configuration, file, Artifact.SCOPE_RUNTIME, runtime, writer,
+                                                   getPlatformClasspathVariableDefinition() );
 
-        //File classpath = this.buildClasspathUtil.writeClassPathFile( configuration, runtime );
-        //File booterJar = this.buildClasspathUtil.createBooterJar( configuration, runtime, null,
-        //                                                          "com.google.gwt.dev.GWTShell" );
         String extra = getExtraJvmArgs( configuration );
         writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
 
         writer.print( " -Dcatalina.base=\"" + configuration.getTomcat().getAbsolutePath() + "\" " );
         writer.print( " -cp \"" + getPlatformClasspathVariable() + "\" " );
-        //writer.print( " -jar \"" + booterJar + "\" " );
+        // writer.print( " -jar \"" + booterJar + "\" " );
 
         if ( debugPort >= 0 )
         {
@@ -121,9 +136,8 @@ public abstract class AbstractScriptWriter
             }
         }
 
-
-        //writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
-        //writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
+        // writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
+        // writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
         writer.print( " " + runtime.getVersion().getShellFQCN() );
         writer.print( " -gen \"" );
         writer.print( configuration.getGen().getAbsolutePath() );
@@ -149,29 +163,23 @@ public abstract class AbstractScriptWriter
         return file;
     }
 
-
-
     /**
      * Write compile script.
      */
     public File writeCompileScript( CompileScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
-
-        // TODO build classpath and create classpath file based on it
-
         File file = new File( configuration.getBuildDir(), "compile" + getScriptExtension() );
-        PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_COMPILE, runtime, false );
+        PrintWriter writer = this.createScript( configuration, file );
         File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
         for ( String target : configuration.getModules() )
         {
-            // TODO how to get current plugin jar path ??
             String extra = getExtraJvmArgs( configuration );
             writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
             writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
             writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
             writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
-            writer.print( " com.google.gwt.dev.GWTCompiler " );
+            writer.print( runtime.getVersion().getCompilerFQCN() );
             writer.print( " -gen \"" );
             writer.print( configuration.getGen().getAbsolutePath() );
             writer.print( "\" -logLevel " );
@@ -221,14 +229,14 @@ public abstract class AbstractScriptWriter
                                    exe );
             }
         }
-        PrintWriter writer = this.createScript( configuration, file, Artifact.SCOPE_COMPILE, runtime, false );
+        PrintWriter writer = this.createScript( configuration, file );
         File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
         // constants
         if ( configuration.getI18nConstantsBundles() != null )
         {
             for ( String target : configuration.getI18nConstantsBundles() )
             {
-                ensureTargetPackageExists(configuration.getGenerateDirectory(), target);
+                ensureTargetPackageExists( configuration.getGenerateDirectory(), target );
                 String extra = getExtraJvmArgs( configuration );
                 writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
                 writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
@@ -249,7 +257,7 @@ public abstract class AbstractScriptWriter
         {
             for ( String target : configuration.getI18nMessagesBundles() )
             {
-                ensureTargetPackageExists(configuration.getGenerateDirectory(), target);
+                ensureTargetPackageExists( configuration.getGenerateDirectory(), target );
                 String extra = ( configuration.getExtraJvmArgs() != null ) ? configuration.getExtraJvmArgs() : "";
 
                 writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
@@ -274,11 +282,13 @@ public abstract class AbstractScriptWriter
         return file;
     }
 
-    private void ensureTargetPackageExists(File generateDirectory, String targetName )
+    private void ensureTargetPackageExists( File generateDirectory, String targetName )
     {
         targetName = targetName.substring( 0, targetName.lastIndexOf( '.' ) );
         String targetPackage = targetName.replace( '.', File.separatorChar );
-        getLogger().debug( "ensureTargetPackageExists, targetName : " + targetName + ", targetPackage : " + targetPackage );
+        getLogger().debug(
+                           "ensureTargetPackageExists, targetName : " + targetName + ", targetPackage : "
+                               + targetPackage );
         File targetPackageDirectory = new File( generateDirectory, targetPackage );
         if ( !targetPackageDirectory.exists() )
         {
@@ -335,8 +345,7 @@ public abstract class AbstractScriptWriter
                 File file =
                     new File( configuration.getBuildDir() + File.separator + "gwtTest", "gwtTest-" + testName
                         + getScriptExtension() );
-                PrintWriter writer =
-                    this.createScript( configuration, file, Artifact.SCOPE_TEST, runtime, false );
+                PrintWriter writer = this.createScript( configuration, file );
 
                 // build Java command
                 writer.print( "\"" + getJavaCommand( configuration ) + "\" " );
@@ -385,6 +394,5 @@ public abstract class AbstractScriptWriter
         // use the same JVM as the one used to run Maven (the "java.home" one)
         return System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + "java";
     }
-
 
 }

@@ -16,7 +16,7 @@ public enum GwtVersion
         @Override
         public String getCompilerFQCN()
         {
-            return "com.google.gwt.dev.GwtCompiler";
+            return "com.google.gwt.dev.GWTCompiler";
         }
 
         @Override
@@ -36,7 +36,7 @@ public enum GwtVersion
         @Override
         public String getCompilerFQCN()
         {
-            return "com.google.gwt.dev.GwtCompiler";
+            return "com.google.gwt.dev.GWTCompiler";
         }
 
         @Override

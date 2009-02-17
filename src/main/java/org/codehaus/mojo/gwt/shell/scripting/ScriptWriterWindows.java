@@ -23,11 +23,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collection;
 
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.codehaus.mojo.gwt.GwtRuntime;
 
 /**
  * Handler for writing cmd scripts for the windows platform.
@@ -48,15 +45,13 @@ public class ScriptWriterWindows
 
     /**
      * Util to get a PrintWriter with Windows preamble.
-     *
-     * @param config
      * @param file
-     * @param runtime TODO
+     * @param config
+     *
      * @return
      * @throws MojoExecutionException
      */
-    protected PrintWriter createScript( final GwtShellScriptConfiguration config, File file,
-                                                       final String scope, GwtRuntime runtime, boolean writeClassPathEnv )
+    protected PrintWriter createScript( final GwtShellScriptConfiguration config, File file )
         throws MojoExecutionException
     {
 
@@ -70,33 +65,7 @@ public class ScriptWriterWindows
         {
             throw new MojoExecutionException( "Error creating script - " + file, e );
         }
-        
 
-        if ( writeClassPathEnv )
-        {
-            try
-            {
-                Collection<File> classpath = buildClasspathUtil.buildClasspathList( config.getProject(), scope,
-                                                                                    runtime, config.getSourcesOnPath(),
-                                                                                    config.getResourcesOnPath() );
-                //writer.print( "set CLASSPATH=" );
-
-                StringBuffer cpString = new StringBuffer();
-
-                for ( File f : classpath )
-                {
-                    writer.println( "set CLASSPATH=%CLASSPATH%;" + f.getAbsolutePath() );
-                }
-                writer.println( cpString );
-                writer.println();
-            }
-            catch ( DependencyResolutionRequiredException e )
-            {
-                throw new MojoExecutionException( "Error creating script - " + file, e );
-            }
-    
-}
-        
         writer.println();
         return writer;
     }
@@ -115,6 +84,15 @@ public class ScriptWriterWindows
     protected String getPlatformClasspathVariable()
     {
         return "%CLASSPATH%";
+    }
+
+    /**
+     * {@inheritDoc}
+     * @see org.codehaus.mojo.gwt.shell.scripting.AbstractScriptWriter#getPlatformClasspathVariableDefinition()
+     */
+    protected String getPlatformClasspathVariableDefinition()
+    {
+        return "set CLASSPATH=";
     }
 
 }

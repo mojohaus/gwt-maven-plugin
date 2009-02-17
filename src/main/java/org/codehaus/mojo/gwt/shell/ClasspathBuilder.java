@@ -39,7 +39,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.ActiveProjectArtifact;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.fork.ForkBooter;
 import org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -53,7 +52,7 @@ import org.codehaus.plexus.logging.AbstractLogEnabled;
 public class ClasspathBuilder
     extends AbstractLogEnabled
 {
-       
+
     /**
      * Build classpath list using either gwtHome (if present) or using *project* dependencies. Note that this is ONLY
      * used for the script/cmd writers (so the scopes are not for the compiler, or war plugins, etc). This is required
@@ -72,7 +71,7 @@ public class ClasspathBuilder
         throws DependencyResolutionRequiredException, MojoExecutionException
     {
 
-        getLogger().info( "establishing classpath list (buildClaspathList - scope = " + scope + ")" );
+        getLogger().info( "establishing classpath list (scope = " + scope + ")" );
 
         Set<File> items = new LinkedHashSet<File>();
 
@@ -122,7 +121,7 @@ public class ClasspathBuilder
         {
             // Add all dependencies BUT "TEST" as we need PROVIDED ones to setup the execution
             // GWTShell
-            for ( Iterator < Artifact > it = project.getArtifacts().iterator(); it.hasNext(); )
+            for ( Iterator<Artifact> it = project.getArtifacts().iterator(); it.hasNext(); )
             {
                 Artifact artifact = it.next();
                 if ( !artifact.getScope().equals( Artifact.SCOPE_TEST ) )
@@ -133,8 +132,8 @@ public class ClasspathBuilder
         }
 
         items.add( runtime.getGwtUserJar() );
-        items.add( runtime.getGwtDevJar() );        
-        
+        items.add( runtime.getGwtDevJar() );
+
         getLogger().debug( "SCRIPT INJECTION CLASSPATH LIST" );
         for ( File f : items )
         {
@@ -314,7 +313,7 @@ public class ClasspathBuilder
     {
         return groupId + ":" + artifactId + ":" + version;
     }
-    
+
     public File writeClassPathFile( GwtShellScriptConfiguration configuration, GwtRuntime runtime )
         throws MojoExecutionException
     {
@@ -322,9 +321,9 @@ public class ClasspathBuilder
         PrintWriter writer = null;
         try
         {
-            Collection<File> files = buildClasspathList( configuration.getProject(), Artifact.SCOPE_COMPILE, runtime,
-                                                         configuration.getSourcesOnPath(), configuration
-                                                             .getResourcesOnPath() );
+            Collection<File> files =
+                buildClasspathList( configuration.getProject(), Artifact.SCOPE_COMPILE, runtime,
+                                    configuration.getSourcesOnPath(), configuration.getResourcesOnPath() );
             writer = new PrintWriter( classpath );
             for ( File f : files )
             {
@@ -345,16 +344,44 @@ public class ClasspathBuilder
             }
         }
     }
-    
+
+    public void writeClassPathVariable( final GwtShellScriptConfiguration mojo, File file, final String scope,
+                                        GwtRuntime runtime, PrintWriter writer, String variableDefinition )
+        throws MojoExecutionException
+    {
+        try
+        {
+            Collection<File> classpath =
+                buildClasspathList( mojo.getProject(), scope, runtime, mojo.getSourcesOnPath(),
+                                    mojo.getResourcesOnPath() );
+            writer.print( variableDefinition );
+
+            Iterator<File> it = classpath.iterator();
+            while ( it.hasNext() )
+            {
+                writer.print( "\"" + it.next().getAbsolutePath() + "\"" );
+                if ( it.hasNext() )
+                {
+                    writer.print( File.pathSeparator );
+                }
+            }
+        }
+        catch ( DependencyResolutionRequiredException e )
+        {
+            throw new MojoExecutionException( "Error creating script - " + file, e );
+        }
+    }
+
     /**
-     * Create a jar with just a manifest containing a Main-Class entry for Booing and a Class-Path entry
-     * for all classpath elements.
-     *
+     * Create a jar with just a manifest containing a Main-Class entry for Booing and a Class-Path entry for all
+     * classpath elements.
+     * 
      * @param classPath List&lt;String> of all classpath elements.
      * @return
      * @throws IOException
      */
-    public File createBooterJar( GwtShellScriptConfiguration configuration, GwtRuntime runtime, File pluginArtifact, String mainClass  )
+    public File createBooterJar( GwtShellScriptConfiguration configuration, GwtRuntime runtime, File pluginArtifact,
+                                 String mainClass )
         throws MojoExecutionException
     {
         try
@@ -370,8 +397,9 @@ public class ClasspathBuilder
             JarEntry je = new JarEntry( "META-INF/MANIFEST.MF" );
             jos.putNextEntry( je );
 
-            Collection<File> files = buildClasspathList( configuration.getProject(), Artifact.SCOPE_COMPILE, runtime, configuration
-                .getSourcesOnPath(), configuration.getResourcesOnPath() );
+            Collection<File> files =
+                buildClasspathList( configuration.getProject(), Artifact.SCOPE_COMPILE, runtime,
+                                    configuration.getSourcesOnPath(), configuration.getResourcesOnPath() );
 
             Manifest man = new Manifest();
 
@@ -380,18 +408,17 @@ public class ClasspathBuilder
             {
                 cp.append( pluginArtifact.toURI().toURL().toExternalForm() ).append( " " );
             }
+
             for ( File classPathEntry : files )
             {
                 String extForm = classPathEntry.toURI().toURL().toExternalForm();
-                if (classPathEntry.isDirectory() && extForm.endsWith( File.separator ))
+                cp.append( extForm );
+                // NOTE: if File points to a directory, this entry MUST end in '/'.
+                if ( classPathEntry.isDirectory() && !extForm.endsWith( "/" ) )
                 {
-                     
-                    cp.append( extForm.substring( 0, extForm.length() - 1 ) );
+                    cp.append( '/' );
                 }
-                else
-                {
-                    cp.append( extForm ).append( " " );
-                }
+                cp.append( " " );
             }
 
             man.getMainAttributes().putValue( "Manifest-Version", "1.0" );
@@ -411,5 +438,5 @@ public class ClasspathBuilder
         {
             throw new MojoExecutionException( e.getMessage(), e );
         }
-    }    
+    }
 }
