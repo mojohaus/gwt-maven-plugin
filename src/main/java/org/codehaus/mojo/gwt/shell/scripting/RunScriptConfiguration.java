@@ -34,6 +34,10 @@ public interface RunScriptConfiguration
      */
     String getRunTarget();
 
+    String getRunModule();
+
+    String getStartupUrl();
+
 
     /**
      * @return

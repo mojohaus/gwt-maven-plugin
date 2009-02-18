@@ -76,11 +76,33 @@ public class RunMojo
     /**
      * {@inheritDoc}
      * 
-     * @see org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration#getRunTarget()
+     * @see org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration#getRunTarget()
      */
     public String getRunTarget()
     {
         return this.runTarget;
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration#getRunModule()
+     */
+    public String getRunModule()
+    {
+        int dash = runTarget.indexOf( '/' );
+        return runTarget.substring( 0, dash );
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration#getStartupUrl()
+     */
+    public String getStartupUrl()
+    {
+        int dash = runTarget.indexOf( '/' );
+        return runTarget.substring( dash + 1 );
     }
 
     public void doExecute( GwtRuntime runtime )

@@ -19,11 +19,6 @@ public enum GwtVersion
             return "com.google.gwt.dev.GWTCompiler";
         }
 
-        @Override
-        public boolean fixEmbeddedTomcatClassloaderIssue()
-        {
-            return false;
-        }
     },
     ONE_DOT_FIVE
     {
@@ -39,11 +34,6 @@ public enum GwtVersion
             return "com.google.gwt.dev.GWTCompiler";
         }
 
-        @Override
-        public boolean fixEmbeddedTomcatClassloaderIssue()
-        {
-            return false;
-        }
     },
     ONE_DOT_SIX
     {
@@ -65,15 +55,6 @@ public enum GwtVersion
     public String getCompilerFQCN()
     {
         return "com.google.gwt.dev.Compiler";
-    }
-
-    /**
-     * @return <code>true</code> if this version fixes EmbeddedTomcatServer issue with SystemClassLoader
-     * @see http://code.google.com/p/google-web-toolkit/issues/detail?id=1032
-     */
-    public boolean fixEmbeddedTomcatClassloaderIssue()
-    {
-        return true;
     }
 
     static GwtVersion fromMavenVersion( String version )

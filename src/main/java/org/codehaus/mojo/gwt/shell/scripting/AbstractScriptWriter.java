@@ -145,17 +145,28 @@ public abstract class AbstractScriptWriter
         writer.print( configuration.getLogLevel() );
         writer.print( " -style " );
         writer.print( configuration.getStyle() );
-        writer.print( " -out " );
-        writer.print( "\"" + configuration.getOutput().getAbsolutePath() + "\"" );
         writer.print( " -port " );
         writer.print( Integer.toString( configuration.getPort() ) );
-
         if ( configuration.isNoServer() )
         {
             writer.print( " -noserver " );
         }
 
-        writer.print( " " + configuration.getRunTarget() );
+        switch ( runtime.getVersion() )
+        {
+            case ONE_DOT_FOUR:
+            case ONE_DOT_FIVE:
+                writer.print( " -out " );
+                writer.print( "\"" + configuration.getOutput().getAbsolutePath() + "\"" );
+                writer.print( " " + configuration.getRunTarget() );
+                break;
+            default:
+                writer.print( " -startupUrl " );
+                writer.print( "\"" + configuration.getStartupUrl() + "\"" );
+                writer.print( " " + configuration.getRunModule() );
+                break;
+        }
+
         writer.println();
         writer.flush();
         writer.close();
@@ -187,8 +198,21 @@ public abstract class AbstractScriptWriter
             writer.print( " -style " );
             writer.print( configuration.getStyle() );
 
-            writer.print( " -out " );
-            writer.print( "\"" + configuration.getOutput().getAbsolutePath() + "\"" );
+            switch ( runtime.getVersion() )
+            {
+                case ONE_DOT_FOUR:
+                case ONE_DOT_FIVE:
+                    writer.print( " -out " );
+                    writer.print( "\"" + configuration.getOutput().getAbsolutePath() + "\"" );
+                    break;
+                default:
+                    writer.print( " -war " );
+                    writer.print( "\"" + configuration.getOutput().getAbsolutePath() + "\"" );
+                    writer.print( " -localWorkers " );
+                    writer.print( Runtime.getRuntime().availableProcessors() );
+                    break;
+            }
+
             writer.print( " " );
 
             if ( configuration.isEnableAssertions() )
