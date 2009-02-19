@@ -120,9 +120,10 @@ public abstract class AbstractGwtShellMojo
      * Extra JVM arguments that are passed to the GWT-Maven generated scripts (for compiler, shell, etc - typically use
      * -Xmx512m here, or -XstartOnFirstThread, etc).
      * <p>
-     * Can be set from command line using '-Dgwt.extraJvmArgs=...'
+     * Can be set from command line using '-Dgwt.extraJvmArgs=...', defaults to setting max Heap size to be large enough
+     * for most GWT use cases.
      * 
-     * @parameter expression="${gwt.extraJvmArgs}"
+     * @parameter expression="${gwt.extraJvmArgs}" default-value="-Xmx512m"
      */
     private String extraJvmArgs;
 
@@ -134,7 +135,7 @@ public abstract class AbstractGwtShellMojo
      * @parameter expression="${google.webtoolkit.extrajvmargs}"
      */
     private String extraArgs;
-    
+
     /**
      * Whether or not to add compile source root to classpath.
      *
@@ -162,14 +163,14 @@ public abstract class AbstractGwtShellMojo
      * @parameter default-value="/*"
      */
     private String shellServletMappingURL;
-    
+
     /**
-     * Option to specify the jvm (or path to the java executable) to use with the forking scripts. 
-     * For the default, the jvm will be the same as the one used to run Maven.
-     *
+     * Option to specify the jvm (or path to the java executable) to use with the forking scripts. For the default, the
+     * jvm will be the same as the one used to run Maven.
+     * 
      * @parameter expression="${gwt.jvm}"
      * @since 1.1
-     */    
+     */
     private String jvm;
 
     // methods
@@ -219,12 +220,12 @@ public abstract class AbstractGwtShellMojo
         String localPath = localRepository.pathOf( plugin );
         return new File( localRepository.getBasedir(), localPath );
     }
-    
+
     public void setExtraArgs( String extraArgs )
     {
         this.extraJvmArgs = extraArgs;
     }
-   
+
     /**
      * {@inheritDoc}
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isEnableAssertions()
@@ -232,7 +233,7 @@ public abstract class AbstractGwtShellMojo
     public boolean isEnableAssertions()
     {
         return this.enableAssertions;
-    }    
+    }
 
     /**
      * {@inheritDoc}
@@ -322,8 +323,8 @@ public abstract class AbstractGwtShellMojo
     public boolean getResourcesOnPath()
     {
         return resourcesOnPath;
-    }    
-    
+    }
+
     /**
      * A plexus-util StreamConsumer to redirect messages to plugin log
      */
@@ -359,6 +360,6 @@ public abstract class AbstractGwtShellMojo
     public String getVersion()
     {
         return this.version;
-    }      
+    }
 
 }
