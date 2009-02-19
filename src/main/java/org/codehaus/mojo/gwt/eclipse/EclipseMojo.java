@@ -139,12 +139,18 @@ public class EclipseMojo
         List<String> sources = executedProject.getCompileSourceRoots();
         context.put( "sources", sources );
         context.put( "module", module );
+        context.put( "runtime", runtime );
         int idx = module.lastIndexOf( '.' );
         String page = module.substring( idx + 1 ) + ".html";
         if ( additionalPageParameters != null )
         {
             page += "?" + additionalPageParameters;
         }
+
+        String renameTo = readModule( module ).getRenameTo();
+        String modulePath = ( renameTo != null ? renameTo : module );
+        context.put( "modulePath", modulePath );
+
         context.put( "page", page );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", outputDirectory.getAbsolutePath().substring( basedir + 1 ) );

@@ -161,6 +161,8 @@ public abstract class AbstractScriptWriter
                 writer.print( " " + configuration.getRunTarget() );
                 break;
             default:
+                writer.print( " -war " );
+                writer.print( "\"" + configuration.getOutput().getAbsolutePath() + "\"" );
                 writer.print( " -startupUrl " );
                 writer.print( "\"" + configuration.getStartupUrl() + "\"" );
                 writer.print( " " + configuration.getRunModule() );

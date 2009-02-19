@@ -20,13 +20,17 @@ package org.codehaus.mojo.gwt;
  */
 
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import org.apache.maven.model.Resource;
+import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.DirectoryScanner;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -39,7 +43,7 @@ public abstract class AbstractGwtModuleMojo
     /**
      *
      */
-    private static final String GWT_MODULE_EXTENSION = ".gwt.xml";
+    public static final String GWT_MODULE_EXTENSION = ".gwt.xml";
 
     /**
      * The project GWT modules. If not set, the plugin will scan the project for <code>.gwt.xml</code> files.
@@ -81,12 +85,12 @@ public abstract class AbstractGwtModuleMojo
     @SuppressWarnings( "unchecked" )
     public String[] getModules()
     {
-        List < String > mods = new ArrayList < String > ();
-        
-        //module has higher priority if set by expression
-        if ( module != null ) 
-		{
-        	return new String[] { module };
+        List<String> mods = new ArrayList<String>();
+
+        // module has higher priority if set by expression
+        if ( module != null )
+        {
+            return new String[] { module };
         }
         if ( modules == null )
         {
@@ -96,7 +100,7 @@ public abstract class AbstractGwtModuleMojo
             scanner.scan();
             mods.addAll( Arrays.asList( scanner.getIncludedFiles() ) );
 
-            Collection < Resource > resources = ( Collection < Resource > ) project.getResources();
+            Collection<Resource> resources = (Collection<Resource>) project.getResources();
             for ( Resource resource : resources )
             {
                 File resourceDirectoryFile = new File( resource.getDirectory() );
@@ -130,6 +134,54 @@ public abstract class AbstractGwtModuleMojo
 
         }
         return modules;
+    }
+
+    protected GwtModule readModule( String name )
+        throws MojoExecutionException
+    {
+        Collection<String> sourceRoots = project.getCompileSourceRoots();
+        for ( String sourceRoot : sourceRoots )
+        {
+            File root = new File( sourceRoot );
+            File xml = new File( root, name.replace( '.', '/' ) + GWT_MODULE_EXTENSION );
+            if ( xml.exists() )
+            {
+                getLog().debug( "GWT module " + name + " found in " + root );
+                return readModule( name, xml );
+            }
+        }
+        Collection<Resource> resources = (Collection<Resource>) project.getResources();
+        for ( Resource resource : resources )
+        {
+            File root = new File( resource.getDirectory() );
+            File xml = new File( root, name.replace( '.', '/' ) + GWT_MODULE_EXTENSION );
+            if ( xml.exists() )
+            {
+                getLog().debug( "GWT module " + name + " found in " + root );
+                return readModule( name, xml );
+            }
+        }
+        throw new MojoExecutionException( "GWT Module " + name + " not found in project sources or resources." );
+    }
+
+    /**
+     * @param module2
+     * @return
+     */
+    private GwtModule readModule( String name, File xml )
+        throws MojoExecutionException
+    {
+        try
+        {
+            Xpp3Dom dom = Xpp3DomBuilder.build( new FileReader( xml ) );
+            return new GwtModule( name, dom );
+        }
+        catch ( Exception e )
+        {
+            String error = "Failed to read module XML file " + xml;
+            getLog().error( error );
+            throw new MojoExecutionException( error, e );
+        }
     }
 
     /**
