@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.mojo.gwt.shell.ClasspathBuilder;
 import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
@@ -41,6 +42,16 @@ import org.codehaus.plexus.util.cli.StreamConsumer;
 public class ScriptWriterUnix
     extends AbstractScriptWriter
 {
+
+    /**
+     * @param buildClasspathUtil
+     */
+    public ScriptWriterUnix( ClasspathBuilder buildClasspathUtil )
+    {
+        super( buildClasspathUtil );
+        // TODO Auto-generated constructor stub
+    }
+
     @Override
     protected String getExtraJvmArgs( GwtShellScriptConfiguration configuration )
     {
@@ -57,15 +68,14 @@ public class ScriptWriterUnix
      *
      * @param mojo
      * @param file
-     * @return
      * @throws MojoExecutionException
      */
-    protected PrintWriter createScript( final GwtShellScriptConfiguration mojo, File file )
+    protected void createScript( final GwtShellScriptConfiguration mojo, File file )
         throws MojoExecutionException
     {
-        PrintWriter writer = null;
         try
         {
+            file.getParentFile().mkdirs();
             file.createNewFile();
             chmodUnixFile( file );
             writer = new PrintWriter( new FileWriter( file ) );
@@ -87,7 +97,6 @@ public class ScriptWriterUnix
         }
         writer.println( "#!" + sh.getAbsolutePath() );
         writer.println();
-        return writer;
     }
 
     @Override

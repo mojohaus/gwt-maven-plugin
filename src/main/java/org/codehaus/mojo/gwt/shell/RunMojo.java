@@ -105,6 +105,11 @@ public class RunMojo
         return runTarget.substring( dash + 1 );
     }
 
+    protected String getFileName()
+    {
+        return "run";
+    }
+
     public void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
     {
@@ -122,11 +127,46 @@ public class RunMojo
         }
 
         // build it for the correct platform
-        ScriptWriter writer = scriptWriterFactory.getScriptWriter();
-        File exec = writer.writeRunScript( this, runtime );
+        ScriptWriter script = scriptWriterFactory.getScript();
+        script.createScript( this, getFileName() );
+        String clazz = runtime.getVersion().getShellFQCN();
+        script.executeClass( this, runtime, ScriptWriter.CLASSPATH, clazz );
+
+        script.print( " -Dcatalina.base=\"" + getTomcat().getAbsolutePath() + "\" " );
+
+        script.print( " -gen \"" );
+        script.print( getGen().getAbsolutePath() );
+        script.print( "\" -logLevel " );
+        script.print( getLogLevel() );
+        script.print( " -style " );
+        script.print( getStyle() );
+        script.print( " -port " );
+        script.print( Integer.toString( getPort() ) );
+        if ( isNoServer() )
+        {
+            script.print( " -noserver " );
+        }
+
+        switch ( runtime.getVersion() )
+        {
+            case ONE_DOT_FOUR:
+            case ONE_DOT_FIVE:
+                script.print( " -out " );
+                script.print( "\"" + getOutput().getAbsolutePath() + "\"" );
+                script.print( " " + getRunTarget() );
+                break;
+            default:
+                script.print( " -war " );
+                script.print( "\"" + getOutput().getAbsolutePath() + "\"" );
+                script.print( " -startupUrl " );
+                script.print( "\"" + getStartupUrl() + "\"" );
+                script.print( " " + getRunModule() );
+                break;
+        }
+        script.println();
 
         // run it
-        runScript( exec );
+        runScript( script.getExecutable() );
     }
 
     /**

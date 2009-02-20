@@ -22,8 +22,6 @@
  */
 package org.codehaus.mojo.gwt.shell;
 
-import java.io.File;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
@@ -32,7 +30,7 @@ import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 
 /**
  * Invokes the GWTCompiler for the project source.
- * 
+ *
  * @goal compile
  * @phase process-classes
  * @requiresDependencyResolution compile
@@ -60,11 +58,49 @@ public class CompileMojo
         }
 
         // build it for the correct platform
-        ScriptWriter writer = scriptWriterFactory.getScriptWriter();
-        File exec = writer.writeCompileScript( this, runtime );
+        ScriptWriter script = scriptWriterFactory.getScript();
+
+        script.createScript( this, "compile" );
+
+        for ( String target : getModules() )
+        {
+            String clazz = runtime.getVersion().getCompilerFQCN();
+            script.executeClass( this, runtime, ScriptWriter.FORKBOOTER, clazz );
+            script.print( " -gen \"" );
+            script.print( getGen().getAbsolutePath() );
+            script.print( "\" -logLevel " );
+            script.print( getLogLevel() );
+            script.print( " -style " );
+            script.print( getStyle() );
+
+            switch ( runtime.getVersion() )
+            {
+                case ONE_DOT_FOUR:
+                case ONE_DOT_FIVE:
+                    script.print( " -out " );
+                    script.print( "\"" + getOutput().getAbsolutePath() + "\"" );
+                    break;
+                default:
+                    script.print( " -war " );
+                    script.print( "\"" + getOutput().getAbsolutePath() + "\"" );
+                    script.print( " -localWorkers " );
+                    script.print( String.valueOf( Runtime.getRuntime().availableProcessors() ) );
+                    break;
+            }
+
+            script.print( " " );
+
+            if ( isEnableAssertions() )
+            {
+                script.print( " -ea " );
+            }
+
+            script.print( target );
+            script.println();
+        }
 
         // run it
-        runScript( exec );
+        runScript( script.getExecutable() );
     }
-    
+
 }

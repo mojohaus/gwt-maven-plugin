@@ -21,12 +21,7 @@ package org.codehaus.mojo.gwt.shell.scripting;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.HiddenFileFilter;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.gwt.GwtRuntime;
@@ -45,7 +40,7 @@ import org.codehaus.plexus.util.StringUtils;
  * <p>
  * The option to use a booter Jar (see ClasspathBuilder.createBooter) does not work : GWT fails with error
  * "No source path entries; expect subsequent failures".
- * 
+ *
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @version $Id$
  */
@@ -55,9 +50,19 @@ public abstract class AbstractScriptWriter
 {
 
     /**
-     * @plexus.requirement
+     * @param buildClasspathUtil
      */
+    public AbstractScriptWriter( ClasspathBuilder buildClasspathUtil )
+    {
+        super();
+        this.buildClasspathUtil = buildClasspathUtil;
+    }
+
     protected ClasspathBuilder buildClasspathUtil;
+
+    protected File file;
+
+    protected PrintWriter writer;
 
     /**
      * @return the platform "CLASSPATH" variable String substitution
@@ -75,237 +80,23 @@ public abstract class AbstractScriptWriter
     protected abstract String getScriptExtension();
 
     /**
-     * @param configuration GwtShell configuration
-     * @return JVM arguments based on both platform and shell configuration
+     * Setup a new command Script, with adequate platform declarations for classpath
      */
+    protected abstract void createScript( final GwtShellScriptConfiguration config, File file )
+        throws MojoExecutionException;
+
     protected abstract String getExtraJvmArgs( GwtShellScriptConfiguration configuration );
+
+
 
     /**
      * Setup a new command Script, with adequate platform declarations for classpath
      */
-    protected abstract PrintWriter createScript( final GwtShellScriptConfiguration mojo, File file )
-        throws MojoExecutionException;
-
-    /**
-     * Write debug script.
-     */
-    public final File writeDebugScript( DebugScriptConfiguration configuration, GwtRuntime runtime )
+    public void createScript( final GwtShellScriptConfiguration config, String name )
         throws MojoExecutionException
     {
-        return writeRunScript( configuration, configuration.getDebugPort(), configuration.isDebugSuspend(), runtime );
-    }
-
-    /**
-     * Write run script.
-     */
-    public final File writeRunScript( RunScriptConfiguration configuration, GwtRuntime runtime )
-        throws MojoExecutionException
-    {
-        return writeRunScript( configuration, -1, false, runtime );
-    }
-
-    /**
-     * Write run script.
-     */
-    private File writeRunScript( RunScriptConfiguration configuration, int debugPort, boolean debugSuspend,
-                                 GwtRuntime runtime )
-        throws MojoExecutionException
-    {
-        String filename = ( debugPort >= 0 ) ? "debug" + getScriptExtension() : "run" + getScriptExtension();
-        File file = new File( configuration.getBuildDir(), filename );
-        PrintWriter writer = this.createScript( configuration, file );
-        // The shell runner does not support ForkBooter strategy to bypass windows command line limit
-        // as it uses the System ClassLoader
-        buildClasspathUtil.writeClassPathVariable( configuration, file, Artifact.SCOPE_RUNTIME, runtime, writer,
-                                                   getPlatformClasspathVariableDefinition() );
-
-        String extra = getExtraJvmArgs( configuration );
-        writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
-
-        writer.print( " -Dcatalina.base=\"" + configuration.getTomcat().getAbsolutePath() + "\" " );
-        writer.print( " -cp \"" + getPlatformClasspathVariable() + "\" " );
-        // writer.print( " -jar \"" + booterJar + "\" " );
-
-        if ( debugPort >= 0 )
-        {
-            writer.print( " -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,address=" );
-            writer.print( debugPort );
-            if ( debugSuspend )
-            {
-                writer.print( ",suspend=y " );
-            }
-        }
-
-        // writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
-        // writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
-        writer.print( " " + runtime.getVersion().getShellFQCN() );
-        writer.print( " -gen \"" );
-        writer.print( configuration.getGen().getAbsolutePath() );
-        writer.print( "\" -logLevel " );
-        writer.print( configuration.getLogLevel() );
-        writer.print( " -style " );
-        writer.print( configuration.getStyle() );
-        writer.print( " -port " );
-        writer.print( Integer.toString( configuration.getPort() ) );
-        if ( configuration.isNoServer() )
-        {
-            writer.print( " -noserver " );
-        }
-
-        switch ( runtime.getVersion() )
-        {
-            case ONE_DOT_FOUR:
-            case ONE_DOT_FIVE:
-                writer.print( " -out " );
-                writer.print( "\"" + configuration.getOutput().getAbsolutePath() + "\"" );
-                writer.print( " " + configuration.getRunTarget() );
-                break;
-            default:
-                writer.print( " -war " );
-                writer.print( "\"" + configuration.getOutput().getAbsolutePath() + "\"" );
-                writer.print( " -startupUrl " );
-                writer.print( "\"" + configuration.getStartupUrl() + "\"" );
-                writer.print( " " + configuration.getRunModule() );
-                break;
-        }
-
-        writer.println();
-        writer.flush();
-        writer.close();
-
-        return file;
-    }
-
-    /**
-     * Write compile script.
-     */
-    public File writeCompileScript( CompileScriptConfiguration configuration, GwtRuntime runtime )
-        throws MojoExecutionException
-    {
-        File file = new File( configuration.getBuildDir(), "compile" + getScriptExtension() );
-        PrintWriter writer = this.createScript( configuration, file );
-        File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
-        for ( String target : configuration.getModules() )
-        {
-            String extra = getExtraJvmArgs( configuration );
-            writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
-            writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
-            writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
-            writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
-            writer.print( runtime.getVersion().getCompilerFQCN() );
-            writer.print( " -gen \"" );
-            writer.print( configuration.getGen().getAbsolutePath() );
-            writer.print( "\" -logLevel " );
-            writer.print( configuration.getLogLevel() );
-            writer.print( " -style " );
-            writer.print( configuration.getStyle() );
-
-            switch ( runtime.getVersion() )
-            {
-                case ONE_DOT_FOUR:
-                case ONE_DOT_FIVE:
-                    writer.print( " -out " );
-                    writer.print( "\"" + configuration.getOutput().getAbsolutePath() + "\"" );
-                    break;
-                default:
-                    writer.print( " -war " );
-                    writer.print( "\"" + configuration.getOutput().getAbsolutePath() + "\"" );
-                    writer.print( " -localWorkers " );
-                    writer.print( Runtime.getRuntime().availableProcessors() );
-                    break;
-            }
-
-            writer.print( " " );
-
-            if ( configuration.isEnableAssertions() )
-            {
-                writer.print( " -ea " );
-            }
-
-            writer.print( target );
-            writer.println();
-        }
-
-        writer.flush();
-        writer.close();
-
-        return file;
-    }
-
-    /**
-     * Write i18n script.
-     */
-    public File writeI18nScript( I18nScriptConfiguration configuration, GwtRuntime runtime )
-        throws MojoExecutionException
-    {
-        File file = new File( configuration.getBuildDir(), "i18n" + getScriptExtension() );
-        if ( !file.exists() )
-        {
-            getLogger().debug( "File '" + file.getAbsolutePath() + "' does not exsists, trying to create." );
-            try
-            {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
-                getLogger().debug( "New file '" + file.getAbsolutePath() + "' created." );
-            }
-            catch ( Exception exe )
-            {
-                getLogger().error(
-                                   "Couldn't create file '" + file.getAbsolutePath() + "'. Reason: " + exe.getMessage(),
-                                   exe );
-            }
-        }
-        PrintWriter writer = this.createScript( configuration, file );
-        File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
-        // constants
-        if ( configuration.getI18nConstantsBundles() != null )
-        {
-            for ( String target : configuration.getI18nConstantsBundles() )
-            {
-                ensureTargetPackageExists( configuration.getGenerateDirectory(), target );
-                String extra = getExtraJvmArgs( configuration );
-                writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
-                writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
-                writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
-                writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
-                writer.print( " com.google.gwt.i18n.tools.I18NSync" );
-                writer.print( " -out " );
-                writer.print( "\"" + configuration.getGenerateDirectory() + "\"" );
-                writer.print( " " );
-                // gwt I18n failed if target package doesn't exists on file system
-                writer.print( target );
-                writer.println();
-            }
-        }
-
-        // messages
-        if ( configuration.getI18nMessagesBundles() != null )
-        {
-            for ( String target : configuration.getI18nMessagesBundles() )
-            {
-                ensureTargetPackageExists( configuration.getGenerateDirectory(), target );
-                String extra = ( configuration.getExtraJvmArgs() != null ) ? configuration.getExtraJvmArgs() : "";
-
-                writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
-                writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
-                writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
-                writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
-                writer.print( " com.google.gwt.i18n.tools.I18NSync" );
-                writer.print( " -createMessages " );
-                writer.print( " -out " );
-                writer.print( "\"" + configuration.getGenerateDirectory() + "\"" );
-                writer.print( " " );
-                writer.print( target );
-                writer.println();
-            }
-        }
-
-        // TODO support getI18nConstantsWithLookupBundles
-
-        writer.flush();
-        writer.close();
-
-        return file;
+        this.file = new File( config.getBuildDir(), name + getScriptExtension() );
+        createScript( config, file );
     }
 
     private void ensureTargetPackageExists( File generateDirectory, String targetName )
@@ -322,77 +113,38 @@ public abstract class AbstractScriptWriter
         }
     }
 
+
     /**
-     * Write test scripts.
+     * {@inheritDoc}
+     *
+     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptWriter#executeClass(org.codehaus.mojo.gwt.shell.CompileMojo,
+     *      org.codehaus.mojo.gwt.GwtRuntime, int, java.lang.String)
      */
-    public void writeTestScripts( TestScriptConfiguration configuration, GwtRuntime runtime )
+    public void executeClass( GwtShellScriptConfiguration configuration, GwtRuntime runtime, int strategy,
+                              String clazz )
         throws MojoExecutionException
     {
-
-        // get extras
         String extra = getExtraJvmArgs( configuration );
-        String testExtra = configuration.getExtraTestArgs() != null ? configuration.getExtraTestArgs() : "";
+        writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
 
-        // make sure output dir is present
-        File outputDir = new File( configuration.getBuildDir(), "gwtTest" );
-        outputDir.mkdirs();
-        outputDir.mkdir();
-
-        File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
-        // for each test compile source root, build a test script
-        List<String> testCompileRoots = configuration.getProject().getTestCompileSourceRoots();
-        for ( String currRoot : testCompileRoots )
+        switch ( strategy )
         {
-            Collection<File> coll =
-                FileUtils.listFiles( new File( currRoot ), new WildcardFileFilter( configuration.getTestFilter() ),
-                                     HiddenFileFilter.VISIBLE );
-            for ( File currFile : coll )
-            {
-                String testName = currFile.toString();
-                getLogger().debug( ( "gwtTest test match found (after filter applied) - " + testName ) );
+            case CLASSPATH:
+                buildClasspathUtil.writeClassPathVariable( configuration, file, Artifact.SCOPE_RUNTIME, runtime,
+                                                           writer, getPlatformClasspathVariableDefinition() );
+                writer.print( " -cp \"" + getPlatformClasspathVariable() + "\" " );
+                writer.print( clazz );
+                break;
 
-                // parse off the extension
-                if ( testName.lastIndexOf( '.' ) > testName.lastIndexOf( File.separatorChar ) )
-                {
-                    testName = testName.substring( 0, testName.lastIndexOf( '.' ) );
-                }
-                if ( testName.startsWith( currRoot ) )
-                {
-                    testName = testName.substring( currRoot.length() );
-                }
-                if ( testName.startsWith( File.separator ) )
-                {
-                    testName = testName.substring( 1 );
-                }
-                testName = StringUtils.replace( testName, File.separatorChar, '.' );
-                getLogger().debug( "testName after parsing - " + testName );
+            case FORKBOOTER:
+            default:
+                File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
 
-                // start script inside gwtTest output dir, and name it with test class name
-                File file =
-                    new File( configuration.getBuildDir() + File.separator + "gwtTest", "gwtTest-" + testName
-                        + getScriptExtension() );
-                PrintWriter writer = this.createScript( configuration, file );
-
-                // build Java command
-                writer.print( "\"" + getJavaCommand( configuration ) + "\" " );
-                if ( extra.length() > 0 )
-                {
-                    writer.print( " " + extra + " " );
-                }
-                if ( testExtra.length() > 0 )
-                {
-                    writer.print( " " + testExtra + " " );
-                }
                 writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
                 writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
                 writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
-                writer.print( "junit.textui.TestRunner " );
-                writer.print( testName );
-
-                // write script out
-                writer.flush();
-                writer.close();
-            }
+                writer.print( clazz );
+                break;
         }
     }
 
@@ -421,4 +173,31 @@ public abstract class AbstractScriptWriter
         return System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + "java";
     }
 
+    public void print( String s )
+    {
+        writer.print( s );
+    }
+
+    public void println()
+    {
+        writer.println();
+    }
+
+    public void println( String x )
+    {
+        writer.println( x );
+    }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptWriter#getExecutable()
+     */
+    public File getExecutable()
+    {
+        writer.flush();
+        writer.close();
+        writer = null;
+        return file;
+    }
 }

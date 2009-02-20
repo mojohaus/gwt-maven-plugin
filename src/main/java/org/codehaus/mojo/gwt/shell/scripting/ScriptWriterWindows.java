@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.mojo.gwt.shell.ClasspathBuilder;
 
 /**
  * Handler for writing cmd scripts for the windows platform.
@@ -32,11 +33,22 @@ import org.apache.maven.plugin.MojoExecutionException;
  * @author ccollins
  * @author rcooper
  * @version $Id$
- * @plexus.component role="org.codehaus.mojo.gwt.shell.scripting.ScriptWriter" role-hint="windows"
  */
 public class ScriptWriterWindows
     extends AbstractScriptWriter
 {
+
+
+
+    /**
+     * @param buildClasspathUtil
+     */
+    public ScriptWriterWindows( ClasspathBuilder buildClasspathUtil )
+    {
+        super( buildClasspathUtil );
+        // TODO Auto-generated constructor stub
+    }
+
     @Override
     protected String getScriptExtension()
     {
@@ -48,16 +60,15 @@ public class ScriptWriterWindows
      * @param file
      * @param config
      *
-     * @return
      * @throws MojoExecutionException
      */
-    protected PrintWriter createScript( final GwtShellScriptConfiguration config, File file )
+    protected void createScript( final GwtShellScriptConfiguration config, File file )
         throws MojoExecutionException
     {
-
-        PrintWriter writer = null;
         try
         {
+            file.getParentFile().mkdirs();
+            file.createNewFile();
             writer = new PrintWriter( new FileWriter( file ) );
             writer.println( "@echo off" );
         }
@@ -67,7 +78,6 @@ public class ScriptWriterWindows
         }
 
         writer.println();
-        return writer;
     }
 
     /**
@@ -75,6 +85,7 @@ public class ScriptWriterWindows
      * 
      * @see org.codehaus.mojo.gwt.shell.scripting.AbstractScriptWriter#getExtraJvmArgs(org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration)
      */
+    @Override
     protected String getExtraJvmArgs( GwtShellScriptConfiguration configuration )
     {
         String extra = ( configuration.getExtraJvmArgs() != null ) ? configuration.getExtraJvmArgs() : "";

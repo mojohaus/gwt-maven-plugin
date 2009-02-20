@@ -50,6 +50,37 @@ public class DebugMojo
     private boolean debugSuspend;
 
     /**
+     * {@inheritDoc}
+     * 
+     * @see org.codehaus.mojo.gwt.shell.RunMojo#getFileName()
+     */
+    @Override
+    protected String getFileName()
+    {
+        return "debug";
+    }
+
+    /**
+     * Override extraJVMArgs to append JVM debugger option
+     * <p>
+     * {@inheritDoc}
+     * 
+     * @see org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo#getExtraJvmArgs()
+     */
+    @Override
+    public String getExtraJvmArgs()
+    {
+        String extras = super.getExtraJvmArgs();
+        extras += " -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,address=";
+        extras += debugPort;
+        if ( debugSuspend )
+        {
+            extras += ",suspend=y ";
+        }
+        return extras;
+    }
+
+    /**
      * @see org.codehaus.mojo.gwt.shell.RunMojo#doExecute(org.codehaus.mojo.gwt.GwtRuntime)
      */
     @Override
@@ -64,7 +95,7 @@ public class DebugMojo
         {
             getLog().info( "starting debugger on port " + getDebugPort() );
         }
-            
+
         super.execute();
     }
 

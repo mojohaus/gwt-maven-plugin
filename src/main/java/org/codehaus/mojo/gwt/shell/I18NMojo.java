@@ -107,14 +107,59 @@ public class I18NMojo
         }
 
         // build it for the correct platform
-        ScriptWriter writer = scriptWriterFactory.getScriptWriter();
-        File exec = writer.writeI18nScript( this, runtime );
+        ScriptWriter script = scriptWriterFactory.getScript();
+        script.createScript( this, "i18n" );
+
+
+     // constants
+        if ( getI18nConstantsBundles() != null )
+        {
+            for ( String target : getI18nConstantsBundles() )
+            {
+                ensureTargetPackageExists( getGenerateDirectory(), target );
+                script.executeClass( this, runtime, ScriptWriter.FORKBOOTER, "com.google.gwt.i18n.tools.I18NSync" );
+                script.print( " -out " );
+                script.print( "\"" + getGenerateDirectory() + "\"" );
+                script.print( " " );
+                script.print( target );
+                script.println();
+            }
+        }
+
+        // messages
+        if ( getI18nMessagesBundles() != null )
+        {
+            for ( String target : getI18nMessagesBundles() )
+            {
+                ensureTargetPackageExists( getGenerateDirectory(), target );
+                script.executeClass( this, runtime, ScriptWriter.FORKBOOTER, "com.google.gwt.i18n.tools.I18NSync" );
+                script.print( " -createMessages " );
+                script.print( " -out " );
+                script.print( "\"" + getGenerateDirectory() + "\"" );
+                script.print( " " );
+                script.print( target );
+                script.println();
+            }
+        }
 
         // run it
-        runScript( exec );
+        runScript( script.getExecutable() );
     }
 
- 
+
+    private void ensureTargetPackageExists( File generateDirectory, String targetName )
+    {
+        targetName = targetName.substring( 0, targetName.lastIndexOf( '.' ) );
+        String targetPackage = targetName.replace( '.', File.separatorChar );
+        getLog().debug( "ensureTargetPackageExists, targetName : " + targetName + ", targetPackage : " + targetPackage );
+        File targetPackageDirectory = new File( generateDirectory, targetPackage );
+        if ( !targetPackageDirectory.exists() )
+        {
+            targetPackageDirectory.mkdirs();
+        }
+    }
+
+
     public void setI18nConstantsWithLookupBundle( String i18nConstantsWithLookupBundle )
     {
         this.i18nConstantsWithLookupBundles = new String[] { i18nConstantsWithLookupBundle };

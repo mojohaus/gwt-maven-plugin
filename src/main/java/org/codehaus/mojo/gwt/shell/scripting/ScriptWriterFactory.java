@@ -19,6 +19,7 @@ package org.codehaus.mojo.gwt.shell.scripting;
  * under the License.
  */
 
+import org.codehaus.mojo.gwt.shell.ClasspathBuilder;
 import org.codehaus.mojo.gwt.shell.PlatformUtil;
 
 /**
@@ -30,25 +31,22 @@ import org.codehaus.mojo.gwt.shell.PlatformUtil;
  */
 public final class ScriptWriterFactory
 {
-    /**
-     * @plexus.requirement role-hint="windows"
-     */
-    private ScriptWriter scriptWriterWindows;
 
     /**
-     * @plexus.requirement role-hint="unix"
+     * @plexus.requirement
      */
-    private ScriptWriter scriptWriterUnix;
+    protected ClasspathBuilder buildClasspathUtil;
 
-    public ScriptWriter getScriptWriter()
+
+    public ScriptWriter getScript()
     {
         if ( PlatformUtil.onWindows() )
         {
-            return scriptWriterWindows;
+            return new ScriptWriterWindows( buildClasspathUtil );
         }
         else
         {
-            return scriptWriterUnix;
+            return new ScriptWriterWindows( buildClasspathUtil );
         }
     }
 }
