@@ -75,7 +75,7 @@ public abstract class AbstractGwtShellMojo
     /**
      * Location on filesystem where GWT will write output files (-out option to GWTCompiler).
      * 
-     * @parameter default-value="${project.build.directory}/${project.build.finalName}"
+     * @parameter expression="${gwt.war}" default-value="${basedir}/src/main/webapp"
      * @alias outputDirectory
      */
     private File output;
