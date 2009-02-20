@@ -46,7 +46,7 @@ public final class ScriptWriterFactory
         }
         else
         {
-            return new ScriptWriterWindows( buildClasspathUtil );
+            return new ScriptWriterUnix( buildClasspathUtil );
         }
     }
 }
