@@ -24,7 +24,6 @@ import java.io.File;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -41,7 +40,6 @@ import org.codehaus.plexus.util.FileUtils;
  */
 public class RunMojo
     extends AbstractGwtWebMojo
-    implements RunScriptConfiguration
 {
 
     /**

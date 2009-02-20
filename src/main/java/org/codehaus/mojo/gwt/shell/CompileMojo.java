@@ -25,7 +25,6 @@ package org.codehaus.mojo.gwt.shell;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.shell.scripting.CompileScriptConfiguration;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 
 /**
@@ -41,7 +40,6 @@ import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
  */
 public class CompileMojo
     extends AbstractGwtShellMojo
-    implements CompileScriptConfiguration
 {
 
     /** Creates a new instance of CompileMojo */

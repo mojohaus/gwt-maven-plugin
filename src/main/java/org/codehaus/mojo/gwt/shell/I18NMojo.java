@@ -25,7 +25,6 @@ import java.io.File;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.shell.scripting.I18nScriptConfiguration;
 import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 
 /**
@@ -41,7 +40,6 @@ import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
  */
 public class I18NMojo
     extends AbstractGwtShellMojo
-    implements I18nScriptConfiguration
 {
     /**
      * List of resourceBundles that should be used to generate i18n Messages interfaces.
