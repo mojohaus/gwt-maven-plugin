@@ -55,7 +55,7 @@
           <execution>
             <id>gwt-i18n</id>
             <goals>
-              <goal>gwti18n</goal>
+              <goal>i18n</goal>
             </goals>
           </execution>
         </executions>
