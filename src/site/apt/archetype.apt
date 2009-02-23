@@ -1,47 +1,22 @@
-GWT-Maven Archetype Information
+ -----
+ GWT Archetype
+ -----
+ -----
 
- The GWT-Maven Archetype - maven-googlewebtoolkit2-archetype, 
- creates a bare bones GWT app with all the GWT-Maven setup and structure in place (a template).
+gwt-maven-plugin Archetype Information
 
-* One shot - create a project NOW using the remote repository
+ The gwt-maven-plugin Archetype creates a bare bones GWT application with all the
+ gwt-maven-plugin setup and structure in place (a template).
 
-+--
- mvn archetype:create -DarchetypeGroupId=com.totsp.gwt \
-    -DarchetypeArtifactId=maven-googlewebtoolkit2-archetype \
-    -DarchetypeVersion=1.0.3 \
-    -DremoteRepositories=http://gwt-maven.googlecode.com/svn/trunk/mavenrepo \
-    -DgroupId=myGroupId \
-    -DartifactId=myArtifactId    
-+--
+* Using the Archetype
 
-
-* Installing the Archetype locally
-
-  Download the <<maven-googlewebtoolkit2-archetype-1.0.3.jar>> file from:
-  
-  {{{http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/com/totsp/gwt/maven-googlewebtoolkit2-archetype/1.0.3/}http://gwt-maven.googlecode.com/svn/trunk/mavenrepo/com/totsp/gwt/maven-googlewebtoolkit2-archetype/1.0.3/}}
-
- Then install it into your local repository: 
- 
-+--
- mvn install:install-file \
-   -DgroupId=com.totsp.gwt \
-   -DartifactId=maven-googlewebtoolkit2-archetype \
-   -Dversion=1.0.3 \
-   -Dpackaging=jar 
-   -Dfile=PATH_TO_JAR_YOU_DOWNLOADED/maven-googlewebtoolkit2-archetype-1.0.3.jar
-+--
-
-* Using the Archetype (if it's already installed locally)
-
- Once you have access to the archetype, you use it as you would any
- other Maven archetype to create a template/stub project. 
+ Use it as you would any other Maven archetype to create a template/stub project.
 
 +--
  mvn archetype:create \
-   -DarchetypeGroupId=com.totsp.gwt \
-   -DarchetypeArtifactId=maven-googlewebtoolkit2-archetype \
-   -DarchetypeVersion=1.0.3 \
+   -DarchetypeGroupId=org.codehaus.mojo \
+   -DarchetypeArtifactId=gwt-maven-plugin \
+   -DarchetypeVersion=1.1 \
    -DgroupId=myGroupId \
    -DartifactId=myArtifactId
 +--
