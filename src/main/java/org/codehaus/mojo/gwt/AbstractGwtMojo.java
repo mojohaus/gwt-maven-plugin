@@ -219,10 +219,18 @@ public abstract class AbstractGwtMojo
             getLog().info( "using GWT jars from local installation " + gwtHome );
             if ( !gwtHome.exists() )
             {
-                throw new MojoExecutionException( "Invalid gwtHome : " + gwtHome );
+                throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
             }
             File userJar = new File( gwtHome, "gwt-user.jar" );
+            if ( !userJar.exists() )
+            {
+                throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
+            }
             File devJar = new File( gwtHome, ArtifactNameUtil.guessDevJarName() );
+            if ( !devJar.exists() )
+            {
+                throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
+            }
             return new GwtRuntime( userJar, devJar );
         }
 
