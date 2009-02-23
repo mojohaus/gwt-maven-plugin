@@ -93,9 +93,15 @@ public class TestMojo
     private int timeOut;
 
     /**
-     * Comma separated list of ant-style inclusion patterns for GWT integration tests
+     * Comma separated list of ant-style inclusion patterns for GWT integration tests. For example, can be set to
+     * <code>**\/*GwtTest.java</code> to match all test class following this naming convention. Surefire plugin may then
+     * ne configured to exclude such tests.
+     * <p>
+     * It is recommended to use a TestSuite to run GwtTests, as they require some huge setup and are very slow. Running
+     * inside a suite allow to execute the setup only once. The default value is defined with this best practice in
+     * mind.
      * 
-     * @parameter default-value="**\/*GwtTest.java"
+     * @parameter default-value="**\/GwtTest*.java,**\/Gwt*Suite.java"
      */
     protected String includes;
 
@@ -114,8 +120,8 @@ public class TestMojo
 
 
     /** failures counter */
-    private int failures;    
-    
+    private int failures;
+
     /**
      * {@inheritDoc}
      *
