@@ -23,9 +23,10 @@ Introduction
 
   * creating Eclipse launch configuration to run GWTTestCase-based unit tests in eclipse,
 
-  * running tests based on GWTTestCase framework
+  * running tests (and test suites) based on GWTTestCase framework
 
   * code generation for GWT-RPC Async interface from synchronous server-side interfaces.
 
   * code generation for GWT internalionalization ("i18n")
 
+  * run (or debug) the Hosted browser from Maven

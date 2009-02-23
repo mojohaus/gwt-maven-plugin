@@ -6,7 +6,7 @@ GWT Maven Plugin Usage
 
 Configuring Google Web Toolkit support for maven
 
-* Translate GWT application to JavaScript
+* Compile GWT application into JavaScript
 
   You can use the following configuration in your pom.xml to run the GWT compiler
   when the project is built. By default, the {{{compile-mojo.html}compile}} goal is configured
@@ -21,7 +21,7 @@ Configuring Google Web Toolkit support for maven
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <executions>
           <execution>
             <configuration>
@@ -42,7 +42,7 @@ Configuring Google Web Toolkit support for maven
 
   You can also configure compilation for multiple modules by nesting them inside a ''<modules>'' element. If none is
   set, the plugin will scan project source and resources directories for ''.gwt.xml'' module files.
-  
+
   See {{{examples/compile.html}examples}} for more details.
 
 * Generate Async interface for GWT-RPC services
@@ -50,8 +50,8 @@ Configuring Google Web Toolkit support for maven
   The {{{generateAsync-mojo.html}generateAsync}} goal will create a generate-sources folder and Async interface for all
   RemoteInterface found in the project. To avoid a full scan, only Java source files that matches a
   pattern (defaults to ''**/*Service.java'') are checked.
-  
-  See {{{examples/asyn.html}examples}} for more details.  
+
+  See {{{examples/asyn.html}examples}} for more details.
 
 +---+
 <project>
@@ -62,7 +62,7 @@ Configuring Google Web Toolkit support for maven
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <executions>
           <execution>
             <configuration>
@@ -87,7 +87,7 @@ Configuring Google Web Toolkit support for maven
   The {{{i18n-mojo.html}i18n}} goal will create a generate-sources folder and Message (or Constants) interface for the
   ResourceBundles specified in configuration. You can specify the "constantsWithLookup" or "message" parameters to
   choose the interface hierarchy (Message or Constants) to use, "Message" beeing used by default.
-  
+
   See {{{examples/i18n.html}examples}} for more details.
 
 +---+
@@ -99,7 +99,7 @@ Configuring Google Web Toolkit support for maven
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <executions>
           <execution>
             <goals>
@@ -124,73 +124,23 @@ Configuring Google Web Toolkit support for maven
 
   The {{{eclipse-mojo.html}eclipse}} goal can be used to create an eclipse launch configuration for executing the GWT
   module in hosted browser mode. The required native libraries are also downloaded and installed in
-  the user local repository.
-  
+  the user local repository. This goal is not intended to be part of a build phase, but to be executed from
+  command line <<<mvn gwt:eclipse>>>.
+
   See {{{examples/eclipse.html}examples}} for more details.
-  
-+---+
-<project>
-  [...]
-  <build>
-    <plugins>
-      [...]
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.0</version>
-        <executions>
-          <execution>
-            <configuration>
-              <module>com.mycompany.gwt.Module</module>
-            </configuration>
-            <goals>
-              <goal>eclipse</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      [...]
-    </plugins>
-  </build>
-  [...]
-</project>
-+---+
+
 
 * Setup GWTTestCase to run in Eclipse
 
   The {{{eclipseTest-mojo.html}eclipseTest}} goal can be used to create an eclipse launch configuration for executing
   the GWTTestCase-based unit tests. The required native libraries are also downloaded and installed in
-  the user local repository.
+  the user local repository. Simply run <<<mvn gwt:eclipseTest>>>
 
   To avoid conflicts with unit tests, we recommand to follow the naming convention to prefix
-  your GWT tests with ''GWTTest''
-  
-+---+
-<project>
-  [...]
-  <build>
-    <plugins>
-      [...]
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.0</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>eclipseTest</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      [...]
-    </plugins>
-  </build>
-  [...]
-</project>
-+---+
+  your GWT tests with ''GwtTest''
 
-* Run GWTTestCase inside maven
+
+* Run GWTTestCase & GWTTestSuite inside maven
 
   GWTTestCase requires some complex setup that makes them difficult to run in maven with the
   surefire plugin. Such tests also are long and start the whole GWT module, so they are not
@@ -201,8 +151,6 @@ Configuring Google Web Toolkit support for maven
   on the console the result. It will also create the standard surefire-reports to be used
   by project site reporting.
 
-  See {{{examples/test.html}examples}} for more details.
-
 +---+
 <project>
   [...]
@@ -212,7 +160,7 @@ Configuring Google Web Toolkit support for maven
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <executions>
           <execution>
             <goals>
@@ -231,26 +179,7 @@ Configuring Google Web Toolkit support for maven
   This plugin declaration could be part of a profile, so that it gets only enabled on
   continuous integration server, as such test execution is long and will penalize the developper.
 
-  To avoid conflicts with unit tests, we recommand to follow the naming convention to prefix
-  your GWT tests with ''GWTTest'' and to use an exclusion patterns in surefire plugin
-  configuration :
+  See {{{testing.html}Testing}} for a detailled description of testing with GWT and Maven, and
+  suggestion about using GwtTestSuite.
 
-+---+
-<project>
-  [...]
-  <build>
-    <plugins>
-      [...]
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>...</version>
-        <configuration>
-          <excludes>
-            <exclude>**/*GwtTest.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      [...]
-  </build>
-</project>
-+---+
+

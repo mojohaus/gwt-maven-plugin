@@ -5,27 +5,32 @@
 
 Google Web Toolkit Maven Plugin
 
- Provides support for using {{{http://code.google.com/webtoolkit/}GWT}} with Maven 2
- and integration with Eclispe IDE.
+ gwt-maven-plugin plugin provides support for {{{http://code.google.com/webtoolkit/}GWT}} projects,
+ including running the GWT developer tools (the compiler, shell and i18n generation) and performing
+ support operations to help developers make GWT fit more closely in with their standard JEE web
+ application development (debugging, managing the emebedded server, running noserver, merging web.xml,
+ generating I18N interfaces, generating Async GWT-RPC interfaces, and more) and environment (Eclispe IDE).
 
-* Goals Overview
+* Goals, Setup and Overview
 
- * {{{eclipse-mojo.html}gwt:eclipse}}: Setup eclipse for GWT modules.
+ To provide you with better understanding of some usages of gwt-maven-plugin, you can take a look at the
+ following goals, setup, and examples information:
 
- * {{{compile-mojo.html}gwt:compile}}: Compile GWT modules into JavaScript.
+ * {{{plugin-info.html}Goals and Parameters}}
 
- * {{{generateAsync-mojo.html}gwt:generateAsync}}: Generate asynchronous interfaces for RPC services.
+ * {{{setup.html}Setup}}
 
- * {{{i18n-mojo.html}gwt:i18n}}: Run the i18nCreator tool to generation message bundle interfaces.
+ * {{{examples.html}Examples}}
 
- * {{{test-mojo.html}gwt:test}}: Run GWTTestCase integration tests.
+* More Details on Specific Goals and Features
 
- * {{{eclipseTest-mojo.html}gwt:eclipseTest}}: Setup eclipse for GWTTestCases.
+ * {{{testing.html}Testing Support}}
 
- []
+ * {{{hosted.html}Hosted server Configuration}}
+
+ * {{{archetype.html}Using the Archetype}}
+
 
 * History
 
-
-
-  {{{http://code.google.com/p/gwt-maven/}Gwt-maven}} has merged with this plugin since version 1.1
+  {{{http://code.google.com/p/gwt-maven/}GWT-maven plugin}} has merged with this plugin since version 1.1

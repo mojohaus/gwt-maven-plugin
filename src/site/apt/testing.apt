@@ -1,37 +1,25 @@
-GWT-Maven Testing Support
+ ------
+Testing Support
+ ------
+ ------
 
-  One special aspect of GWT-Maven to be familiar with is that it runs its own special <<test>> goal
-  during the "test" phase in order to support <<GWTTestCase>> and <<GWTTestSuite>> derived GWT tests. 
-  
-  It's a long story as to why this is needed (having to do with classpath inspection and setup issues 
-  inside GWTTestCase/JUnitShell), but the regular Maven Surefire testing plugin does not work for 
-  GWTTestCase tests (at least not with any configuration we have tried, and we have given it a lot of 
-  effort).  
-  
+Testing GWT code with Maven
+
+  One special aspect of gwt-maven-plugin to be familiar with is that it runs its own special <<<test>>> goal
+  during the "test" phase in order to support <<<GWTTestCase>>> and <<<GWTTestSuite>>> derived GWT tests.
+
+  It's a long story as to why this is needed (having to do with classpath inspection and setup issues
+  inside GWTTestCase/JUnitShell), but the regular Maven Surefire testing plugin does not work for
+  GWTTestCase tests (at least not with any configuration we have tried, and we have given it a lot of
+  effort).
+
   Using this special testing support though, requires that you know a few key things, as outlined below:
 
-* GwtTest test name prefix filter
- 
- Because you will likely want to run <<BOTH>> Surefire and GWT-Maven based tests 
- (for regular server side JUnit tests with Surefire, and for client model and controller tests with GWT)
- you need to distinguish these tests from each other. This is done using a naming convention.
- 
- By default GWT-Maven looks for test classes that are named <<GwtTest"Something.java>> - they
- <<START WITH "GwtTest">>.  Surefire looks for tests that are named <<Something"Test".java>> by default - they
- <<END WITH "Test">>. 
- 
- If you need to, you can change the default <<GwtTest>> prefix by setting the <<testFilter>> plugin property.  
- 
- Look at the full source for the 
- {{{http://gwt-maven.googlecode.com/svn/trunk/maven-googlewebtoolkit2-plugin/simplesample/}Simple sample}}
- and the 
- {{{http://gwt-maven.googlecode.com/svn/trunk/maven-googlewebtoolkit2-sample/}Full sample}} projects
- for reference. 
- 
 * Invoking tests
 
- The GWT-Maven testing support is <<NOT intended to be run standalone>>, rather it is bound to the Maven "test" phase.
- To get gwt:test to run, you should include the "test" goal in your plugin configuration executions, and you should invoke <<mvn test>>.
+ The gwt-maven-plugin testing support is <<not>> intended to be run standalone, rather it is bound to
+ the Maven "<<<integration-test>>>" phase. To get <<<gwt:test>>> to run, you should include the "<<<test>>>"
+ goal in your plugin configuration executions, and you should invoke <<<mvn test>>>.
 
 +--
    <executions>
@@ -41,31 +29,80 @@ GWT-Maven Testing Support
           <goal>test</goal>
         </goals>
       </execution>
-   </executions> 
+   </executions>
 +--
- 
-* GwtTest scripts
 
- Each test that is named with the GwtTest prefix and picked up and run by GWT-Maven is turned into a 
- script in the <<target/gwtTest>> directory and run. This is handy to know because you can re-run
- just these scripts for troubleshooting purposes. (This is the same MO as the compile and shell usage
- with GWT-Maven.) 
+* Separate GwtTest tests from standard unit tests
 
- 
+ Because you will likely want to run <<both>> Surefire and gwt-maven-plugin based tests
+ (for regular server side JUnit tests with Surefire, and for client model and controller tests with GWT)
+ you need to distinguish these tests from each other. This is done using a naming convention.
+
+ You can configure the Surefire plugin (responsible for running
+ tests during maven build) to skip the GwtTests using some naming patterns :
+
++--
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.4.3</version>
+        <configuration>
+          <excludes>
+            <exclude>**/*GwtTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
++--
+
+ A simplier way to separate classic and GWT tests is to name latests <<<GwtTest"Something.java>>> - they
+ <start with> <<<"GwtTest">>>. Surefire looks for tests that are named <<<Something"Test".java>>> by default - they
+ <end with> <<<"Test">>>.
+
+ By default, the gwt-maven-plugin-plugin uses <<<GwtTest*.java>>> as inclusion pattern so that GwtTest will <<not>> match
+ the standard surefire patterns. Using this convention you don't have to change your configuration.
+
+ To configure the plugin to use such a naming convention, set the <<<includes>>> plugin parameter.
+
++--
+        <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin-plugin</artifactId>
+                <version>1.1</version>
+                <configuration>
+                  <includes>**/CustomPattern*.java</includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>generateAsync</goal>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+        </plugin>
++--
+
+ Look at the full source for the {{{examples/test}Test sample}} for reference.
+
+
 * Test results output
 
- Because GWT testing is different and is not run by Surefire, it also has different output. As well as 
- summary output to the console, detailed output for each GwtTest script ends up in the <<target/gwtTest>> directory. 
- 
+ The plugin mimics as far a possible standard Surefire execution and contributes execution report. If you use
+ the surefire-report-plugin you will see the GwtTests result included in generated project site.
+
 * Use GWTTestSuite padawan
 
- GWTTestCase derived tests are slow. This is because the JUnitShell has to load the module for each test (create the shell, hook into it, etc).  <<GWTTestSuite>> 
+ {{{http://google-web-toolkit.googlecode.com/svn/javadoc/1.5/com/google/gwt/junit/client/GWTTestCase.html}<<<GWTTestCase>>>}}
+ derived tests are slow. This is because the JUnitShell has to load the module for each test (create the shell, hook into it, etc).
+ {{http://google-web-toolkit.googlecode.com/svn/javadoc/1.5/com/google/gwt/junit/tools/GWTTestSuite.html}<<<GWTTestSuite>>>}}
  mitigates this by grouping all the tests that are for the same module (those that return the same value for getModuleName) together and running them via the same
- shell instance.  
- 
- This is a BIG time saver, and GWTTestSuite is easy to use, so using it is a good idea. 
- 
- Another tip for GWT-Maven and GWTTestSuite is to name your test suite "GwtTest*Suite.java" so that the test filter picks it up, but name the actual tests
- with a convention that neither GWT-Maven nor Surefire will pickup - something that does NOT start with GwtTest, and does NOT start OR end with Test.  
- For example "GwtTstMyClass.java".  This way GWT-Maven picks up the SUITE, and runs it, but does not also run the individual tests (and Surefire does not pick it up either). 
- 
+ shell instance.
+
+ This is a <<big>> time saver, and <<<GWTTestSuite>>> is easy to use, so using it is a good idea. For this reason, the default value of the
+ test inclusion pattern is <<<**/Gwt*Suite.java>>>.
+
+ We recommand to name your test suite <<<GwtTestSuite.java>>> so that the test filter picks it up, but name the actual tests
+ with a convention that Surefire will ignore by default - something that does <<not>> start with <<<GwtTest>>>, and does <<not>>
+ start <or> end with <<<Test>>>. For example <<<MyClassTestGwt.java>>>. This way gwt-maven-plugin-plugin picks up the <<<Suite>>>, and runs it,
+ but does not also run the individual tests (and Surefire does not pick it up either)
+

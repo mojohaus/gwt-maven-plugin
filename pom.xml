@@ -50,12 +50,12 @@
       <id>olamy</id>
       <name>Olivier Lamy</name>
       <email>olamy@apache.org</email>
-    </developer>    
+    </developer>
   </developers>
   <contributors>
-  	<contributor>
-  		<name>Robert Scholte</name>
-  	</contributor>
+    <contributor>
+      <name>Robert Scholte</name>
+    </contributor>
   </contributors>
   <scm>
     <connection>scm:svn:http://svn.codehaus.org/mojo/trunk/mojo/gwt-maven-plugin</connection>
@@ -68,6 +68,8 @@
   </issueManagement>
   <properties>
     <gwt.version>1.5.3</gwt.version>
+    <maven.compiler.source>1.5</maven.compiler.source>
+    <maven.compiler.target>1.5</maven.compiler.target>
   </properties>
   <dependencies>
     <dependency>
@@ -173,9 +175,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>bcel</groupId>
-    	<artifactId>bcel</artifactId>
-    	<version>5.1</version>
+      <groupId>bcel</groupId>
+      <artifactId>bcel</artifactId>
+      <version>5.1</version>
     </dependency>
   </dependencies>
   <profiles>
@@ -234,7 +236,7 @@
         <gwt.variant>windows</gwt.variant>
       </properties>
     </profile>
-    
+
     <profile>
       <id>run-its</id>
       <activation>
@@ -277,7 +279,7 @@
         </plugins>
       </build>
     </profile>
-    
+
   </profiles>
 
   <build>
@@ -285,8 +287,8 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
         </configuration>
       </plugin>
       <plugin>
@@ -300,6 +302,16 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>2.4.2</version>
+        <configuration>
+          <requirements>
+            <jdk>${maven.compiler.target}</jdk>
+          </requirements>
+        </configuration>
       </plugin>
     </plugins>
   </build>

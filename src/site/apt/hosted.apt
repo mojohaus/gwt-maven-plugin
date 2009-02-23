@@ -1,0 +1,30 @@
+ -------
+ Configuring the Hosted mode server
+ -------
+ -------
+
+Configuring the Hosted mode server
+
+  Another aspect of gwt-maven-plugin to be familiar with is that can help you configure the
+  embedded Servlet container GWT uses in the Hosted Mode shell - Tomcat Lite or Jetty (since 1.6).
+
+* Jetty (GWT 1.6)
+
+  Jetty is used as a lightwight servlet engine for GWT 1.6+ Hosted mode.
+
+  <<MORE TO COME ASAP>>.
+
+
+
+
+
+
+
+* Tomcat Lite (GWT 1.5)
+
+  Tomcat Lite is a stripped down version of Tomcat that works a bit differently than what
+  most developers are used to. It's also an older version of Tomcat, 5.0.28, and some of the
+  configuration is different than 6.x or 5.5.x.
+
+  The old documentation about Tomcat lite has been moved {{{tomcatLite.html}here}}.
+
