@@ -30,7 +30,7 @@ import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 /**
  * Creates I18N interfaces for constants and messages files.
  * 
- * @goal gwti18n
+ * @goal i18n
  * @phase process-resources
  * @requiresDependencyResolution compile
  * @description Creates I18N interfaces for constants and messages files.
