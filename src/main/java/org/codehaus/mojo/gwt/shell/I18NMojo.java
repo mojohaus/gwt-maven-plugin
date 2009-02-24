@@ -20,6 +20,8 @@
  */
 package org.codehaus.mojo.gwt.shell;
 
+import static org.codehaus.mojo.gwt.shell.scripting.ClasspathStrategy.FORKBOOTER;
+
 import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -115,7 +117,7 @@ public class I18NMojo
             for ( String target : getI18nConstantsBundles() )
             {
                 ensureTargetPackageExists( getGenerateDirectory(), target );
-                script.executeClass( this, runtime, ScriptWriter.FORKBOOTER, "com.google.gwt.i18n.tools.I18NSync" );
+                script.executeClass( this, runtime, FORKBOOTER, "com.google.gwt.i18n.tools.I18NSync" );
                 script.print( " -out " );
                 script.print( "\"" + getGenerateDirectory() + "\"" );
                 script.print( " " );
@@ -130,7 +132,7 @@ public class I18NMojo
             for ( String target : getI18nMessagesBundles() )
             {
                 ensureTargetPackageExists( getGenerateDirectory(), target );
-                script.executeClass( this, runtime, ScriptWriter.FORKBOOTER, "com.google.gwt.i18n.tools.I18NSync" );
+                script.executeClass( this, runtime, FORKBOOTER, "com.google.gwt.i18n.tools.I18NSync" );
                 script.print( " -createMessages " );
                 script.print( " -out " );
                 script.print( "\"" + getGenerateDirectory() + "\"" );

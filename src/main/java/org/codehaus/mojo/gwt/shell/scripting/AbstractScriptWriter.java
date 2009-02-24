@@ -113,14 +113,14 @@ public abstract class AbstractScriptWriter
         }
     }
 
-
     /**
      * {@inheritDoc}
-     *
+     * 
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptWriter#executeClass(org.codehaus.mojo.gwt.shell.CompileMojo,
-     *      org.codehaus.mojo.gwt.GwtRuntime, int, java.lang.String)
+     *      org.codehaus.mojo.gwt.GwtRuntime, ClasspathStrategy, java.lang.String)
      */
-    public void executeClass( GwtShellScriptConfiguration configuration, GwtRuntime runtime, int strategy,
+    public void executeClass( GwtShellScriptConfiguration configuration, GwtRuntime runtime,
+                              ClasspathStrategy strategy,
                               String clazz )
         throws MojoExecutionException
     {
@@ -129,11 +129,16 @@ public abstract class AbstractScriptWriter
 
         switch ( strategy )
         {
-            case CLASSPATH:
+            case CLASSPATH_VARIABLE:
                 buildClasspathUtil.writeClassPathVariable( configuration, file, Artifact.SCOPE_RUNTIME, runtime,
                                                            writer, getPlatformClasspathVariableDefinition() );
                 writer.print( " -cp \"" + getPlatformClasspathVariable() + "\" " );
                 writer.print( clazz );
+                break;
+
+            case JARBOOTER:
+                File booter = buildClasspathUtil.createBooterJar( configuration, runtime, null, clazz );
+                writer.print( " -jar \"" + booter.getAbsolutePath() + "\" " );
                 break;
 
             case FORKBOOTER:

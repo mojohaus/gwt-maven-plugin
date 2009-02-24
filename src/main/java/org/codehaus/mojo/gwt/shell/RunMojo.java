@@ -19,6 +19,8 @@ package org.codehaus.mojo.gwt.shell;
  * under the License.
  */
 
+import static org.codehaus.mojo.gwt.shell.scripting.ClasspathStrategy.CLASSPATH_VARIABLE;
+
 import java.io.File;
 
 import org.apache.maven.plugin.MojoExecutionException;
@@ -128,7 +130,7 @@ public class RunMojo
         ScriptWriter script = scriptWriterFactory.getScript();
         script.createScript( this, getFileName() );
         String clazz = runtime.getVersion().getShellFQCN();
-        script.executeClass( this, runtime, ScriptWriter.CLASSPATH, clazz );
+        script.executeClass( this, runtime, CLASSPATH_VARIABLE, clazz );
 
         script.print( " -Dcatalina.base=\"" + getTomcat().getAbsolutePath() + "\" " );
 

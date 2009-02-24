@@ -30,17 +30,6 @@ import org.codehaus.mojo.gwt.GwtRuntime;
  */
 public interface ScriptWriter
 {
-    // Classpath Strategies to run a forked Script
-
-    /** Use ForkBooter class to setup a nested ClassLoader */
-    int FORKBOOTER = 1;
-
-    /** Use an empty Jar with ClassPath MANIFEST */
-    int JARBOOTER = 2;
-
-    /** Use command line classpath option */
-    int CLASSPATH = 3;
-
     /**
      * @param configuration
      * @param string
@@ -54,7 +43,8 @@ public interface ScriptWriter
      * @param forkbooter2
      * @param clazz
      */
-    void executeClass( GwtShellScriptConfiguration configuration, GwtRuntime runtime, int forkbooter2, String clazz )
+    void executeClass( GwtShellScriptConfiguration configuration, GwtRuntime runtime, ClasspathStrategy strategy,
+                       String clazz )
         throws MojoExecutionException;
 
     /**

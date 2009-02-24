@@ -22,6 +22,8 @@
  */
 package org.codehaus.mojo.gwt.shell;
 
+import static org.codehaus.mojo.gwt.shell.scripting.ClasspathStrategy.FORKBOOTER;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
@@ -33,7 +35,6 @@ import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
  * @goal compile
  * @phase process-classes
  * @requiresDependencyResolution compile
- * @description Invokes the GWTCompiler for the project source.
  * @version $Id$
  * @author cooper
  * @author ccollins
@@ -63,7 +64,7 @@ public class CompileMojo
         for ( String target : getModules() )
         {
             String clazz = runtime.getVersion().getCompilerFQCN();
-            script.executeClass( this, runtime, ScriptWriter.FORKBOOTER, clazz );
+            script.executeClass( this, runtime, FORKBOOTER, clazz );
             script.print( " -gen \"" );
             script.print( getGen().getAbsolutePath() );
             script.print( "\" -logLevel " );
