@@ -21,12 +21,19 @@ package org.codehaus.mojo.gwt.shell.scripting;
 
 public enum ClasspathStrategy
 {
-    /** Use ForkBooter class to setup a nested ClassLoader */
+    /**
+     * Use the {@link org.codehaus.mojo.gwt.fork.ForkBooter} class to setup a nested URLClassLoader based on dependency
+     * listed in a file
+     */
     FORKBOOTER,
 
-    /** Use an empty Jar with ClassPath MANIFEST */
+    /**
+     * Use an (empty) Jar with Main-Class and Class-Path entries in MANIFEST
+     */
     JARBOOTER,
 
-    /** Use command line classpath option */
+    /**
+     * Use command line classpath option - known to be buggy on Windows due to command line lenght limitation
+     */
     CLASSPATH_VARIABLE
 }
