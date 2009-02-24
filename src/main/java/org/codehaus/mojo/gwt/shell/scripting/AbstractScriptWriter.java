@@ -140,7 +140,11 @@ public abstract class AbstractScriptWriter
             default:
                 File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
 
-                writer.print( " -cp \"" + configuration.getPluginJar() + "\" " );
+                writer.print( " -cp " );
+                writer.print( "\"" + configuration.getPluginJar() + "\"" );
+                writer.print( File.pathSeparator );
+                // gwt-dev is required in bootclasspath to run GWT 1.6 parallel permutation processing
+                writer.print( "\"" + runtime.getGwtDevJar() + "\"" );
                 writer.print( " org.codehaus.mojo.gwt.fork.ForkBooter " );
                 writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
                 writer.print( clazz );
