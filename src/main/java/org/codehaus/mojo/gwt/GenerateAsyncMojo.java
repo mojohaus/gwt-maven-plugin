@@ -157,6 +157,8 @@ public class GenerateAsyncMojo
         {
             return;
         }
+        String className = clazz.getName();
+        getLog().debug( "generate Async interface for " + className );
 
         File out = new File( generateDirectory, name + ".java" );
         out.getParentFile().mkdirs();
@@ -178,7 +180,6 @@ public class GenerateAsyncMojo
         writer.println( "import com.google.gwt.user.client.rpc.ServiceDefTarget;" );
 
         writer.println();
-        String className = clazz.getName();
         writer.println( "public interface " + className + "Async" );
         writer.println( "{" );
 

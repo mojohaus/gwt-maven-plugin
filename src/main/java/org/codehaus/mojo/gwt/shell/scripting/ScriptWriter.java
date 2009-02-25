@@ -58,4 +58,10 @@ public interface ScriptWriter
 
     File getExecutable();
 
+    /**
+     * @param string
+     * @param absolutePath
+     */
+    void addVariable( String string, String absolutePath );
+
 }

@@ -39,6 +39,7 @@ import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
  * @author cooper
  * @author ccollins
  */
+// @phase prepare-package should be even better to avoid unecessary gwt:compile when used with m2eclipse
 public class CompileMojo
     extends AbstractGwtShellMojo
 {

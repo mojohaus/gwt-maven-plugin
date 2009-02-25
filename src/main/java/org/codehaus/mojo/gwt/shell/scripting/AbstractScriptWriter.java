@@ -21,6 +21,8 @@ package org.codehaus.mojo.gwt.shell.scripting;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -113,6 +115,18 @@ public abstract class AbstractScriptWriter
         }
     }
 
+    private Map<String, String> variables = new HashMap<String, String>();
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptWriter#addVariable(java.lang.String, java.lang.String)
+     */
+    public void addVariable( String string, String absolutePath )
+    {
+        variables.put( string, absolutePath );
+    }
+
     /**
      * {@inheritDoc}
      * 
@@ -124,27 +138,26 @@ public abstract class AbstractScriptWriter
                               String clazz )
         throws MojoExecutionException
     {
-        String extra = getExtraJvmArgs( configuration );
-        writer.print( "\"" + getJavaCommand( configuration ) + "\" " + extra );
-
         switch ( strategy )
         {
             case CLASSPATH_VARIABLE:
                 buildClasspathUtil.writeClassPathVariable( configuration, file, Artifact.SCOPE_RUNTIME, runtime,
                                                            writer, getPlatformClasspathVariableDefinition() );
+                javaCommand( configuration );
                 writer.print( " -cp \"" + getPlatformClasspathVariable() + "\" " );
                 writer.print( clazz );
                 break;
 
             case JARBOOTER:
                 File booter = buildClasspathUtil.createBooterJar( configuration, runtime, null, clazz );
+                javaCommand( configuration );
                 writer.print( " -jar \"" + booter.getAbsolutePath() + "\" " );
                 break;
 
             case FORKBOOTER:
             default:
                 File classpath = buildClasspathUtil.writeClassPathFile( configuration, runtime );
-
+                javaCommand( configuration );
                 writer.print( " -cp " );
                 writer.print( "\"" + configuration.getPluginJar() + "\"" );
                 writer.print( File.pathSeparator );
@@ -154,6 +167,22 @@ public abstract class AbstractScriptWriter
                 writer.print( " \"" + classpath.getAbsolutePath() + "\" " );
                 writer.print( clazz );
                 break;
+        }
+    }
+
+    private void javaCommand( GwtShellScriptConfiguration configuration )
+        throws MojoExecutionException
+    {
+        String extra = getExtraJvmArgs( configuration );
+        writer.print( "\"" + getJavaCommand( configuration ) + "\" " );
+        writer.print( extra );
+        writer.print( " " );
+        for ( Map.Entry<String, String> variable : variables.entrySet() )
+        {
+            writer.append( " -D" );
+            writer.append( variable.getKey() );
+            writer.append( "=" );
+            writer.append( variable.getValue() );
         }
     }
 

@@ -365,6 +365,7 @@ public class ClasspathBuilder
                     writer.print( File.pathSeparator );
                 }
             }
+            writer.println();
         }
         catch ( DependencyResolutionRequiredException e )
         {

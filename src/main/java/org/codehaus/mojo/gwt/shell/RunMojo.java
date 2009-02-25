@@ -45,9 +45,10 @@ public class RunMojo
 {
 
     /**
-     * URL that should be automatically opened by default in the GWT shell.
+     * URL that should be automatically opened in the GWT shell. For example com.myapp.gwt.Module/Module.html
      * 
-     * @parameter expression="${gwt.runTarget}"
+     * @parameter expression="${runTarget}"
+     * @required
      */
     private String runTarget;
 
@@ -101,8 +102,7 @@ public class RunMojo
      */
     public String getStartupUrl()
     {
-        int dash = runTarget.indexOf( '/' );
-        return runTarget.substring( dash + 1 );
+        return runTarget;
     }
 
     protected String getFileName()
@@ -130,9 +130,14 @@ public class RunMojo
         ScriptWriter script = scriptWriterFactory.getScript();
         script.createScript( this, getFileName() );
         String clazz = runtime.getVersion().getShellFQCN();
+        switch ( runtime.getVersion() )
+        {
+            case ONE_DOT_FOUR:
+            case ONE_DOT_FIVE:
+                script.addVariable( "catalina.base", "\"" + getTomcat().getAbsolutePath() + "\"" );
+                break;
+        }
         script.executeClass( this, runtime, CLASSPATH_VARIABLE, clazz );
-
-        script.print( " -Dcatalina.base=\"" + getTomcat().getAbsolutePath() + "\" " );
 
         script.print( " -gen \"" );
         script.print( getGen().getAbsolutePath() );
