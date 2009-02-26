@@ -102,7 +102,8 @@ public class RunMojo
      */
     public String getStartupUrl()
     {
-        return runTarget;
+        int dash = runTarget.indexOf( '/' );
+        return runTarget.substring( dash + 1 );
     }
 
     protected String getFileName()

@@ -18,15 +18,21 @@ package org.codehaus.mojo.gwt.eclipse;
  * specific language governing permissions and limitations
  * under the License.
  */
+import static org.codehaus.mojo.gwt.EmbeddedServer.JETTY;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
@@ -66,13 +72,28 @@ public class EclipseMojo
     /**
      * Location of the file.
      * 
-     * @parameter default-value="${project.build.directory}/${project.build.finalName}"
+     * @parameter default-value="${basedir}/src/main/webapp"
      */
     private File outputDirectory;
 
     /**
+     * Location of the compiled classes.
+     * 
+     * @parameter default-value="${project.build.outputDirectory}"
+     * @readOnly
+     */
+    private File buildOutputDirectory;
+
+    /**
+     * Location of the hosted-mode web application structure.
+     * 
+     * @parameter default-value="${basedir}/src/test/webapp"
+     */
+    private File hostedWebapp;
+
+    /**
      * Additional parameters to append to the module URL. For example, gwt-log users will set "log_level=DEBUG"
-     *
+     * 
      * @parameter
      */
     private String additionalPageParameters;
@@ -109,6 +130,40 @@ public class EclipseMojo
         throws MojoExecutionException, MojoFailureException
     {
         GwtRuntime runtime = getGwtRuntime();
+
+        if ( runtime.getVersion().getEmbeddedServer() == JETTY )
+        {
+            // Jetty requires an exploded webapp
+            try
+            {
+                File classes = new File( hostedWebapp, "WEB-INF/classes" );
+                if ( !buildOutputDirectory.getAbsolutePath().equals( classes.getAbsolutePath() ) )
+                {
+                    getLog().error(
+                                    "Your POM <build><outputdirectory> must match your "
+                                        + "hosted webapp WEB-INF/classes folder for GWT Hosted browser to see your classes." );
+                    throw new MojoExecutionException( "Configuration does not match GWT Hosted mode requirements" );
+                }
+
+                File lib = new File( hostedWebapp, "WEB-INF/lib" );
+                getLog().info( "create exploded Jetty webapp in " + hostedWebapp );
+                lib.mkdirs();
+
+                File basedir = new File( localRepository.getBasedir() );
+                Collection<Artifact> artifacts = project.getArtifacts();
+                for ( Artifact artifact : artifacts )
+                {
+                    File file = new File( basedir, localRepository.pathOf( artifact ) );
+                    FileUtils.copyFileToDirectory( file, lib );
+                }
+
+            }
+            catch ( IOException ioe )
+            {
+                throw new MojoExecutionException( "Failed to create Jetty exploded webapp", ioe );
+            }
+        }
+
         for ( String module : getModules() )
         {
             createLaunchConfigurationForHostedModeBrowser( runtime, module );
@@ -117,29 +172,35 @@ public class EclipseMojo
 
     /**
      * create an Eclipse launch configuration file to Eclipse to run the module in hosted browser
+     * 
      * @param module the GWT module
      * @throws MojoExecutionException some error occured
      */
     private void createLaunchConfigurationForHostedModeBrowser( GwtRuntime runtime, String module )
         throws MojoExecutionException
     {
-
         File launchFile = new File( getProject().getBasedir(), module + ".launch" );
         if ( launchFile.exists() )
         {
-            getLog().info( "launch file exists " + launchFile.getName() + " skip generation "  );
+            getLog().info( "launch file exists " + launchFile.getName() + " skip generation " );
             return;
         }
 
         Configuration cfg = new Configuration();
         cfg.setClassForTemplateLoading( EclipseMojo.class, "" );
 
-        Map < String, Object > context = new HashMap < String, Object > ();
+        Map<String, Object> context = new HashMap<String, Object>();
         // Read compileSourceRoots from executedProject to retrieve generated source directories
-        List<String> sources = executedProject.getCompileSourceRoots();
+        Collection<String> sources = new LinkedList<String>( executedProject.getCompileSourceRoots() );
+        List<Resource> resources = executedProject.getResources();
+        for ( Resource resource : resources )
+        {
+            sources.add( resource.getDirectory() );
+        }
         context.put( "sources", sources );
         context.put( "module", module );
         context.put( "runtime", runtime );
+        context.put( "localRepository", localRepository.getBasedir() );
         int idx = module.lastIndexOf( '.' );
         String page = module.substring( idx + 1 ) + ".html";
         if ( additionalPageParameters != null )
@@ -154,6 +215,7 @@ public class EclipseMojo
         context.put( "page", page );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", outputDirectory.getAbsolutePath().substring( basedir + 1 ) );
+        context.put( "war", hostedWebapp.getAbsolutePath().substring( basedir + 1 ) );
         context.put( "additionalArguments", noserver ? "-noserver -port " + port : "" );
         context.put( "project", eclipseUtil.getProjectName( getProject() ) );
         context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath() );

@@ -1,4 +1,4 @@
-GWT_VERSION=1.1.0
+GWT_VERSION=1.6.0
 GWT_HOME=/usr/local/Google/gwt-linux-$GWT_VERSION
 
 mvn install:install-file "-Dfile=$GWT_HOME/gwt-user.jar" -DgroupId=com.google.gwt -DartifactId=gwt-user -Dversion=$GWT_VERSION -Dpackaging=jar -DgeneratePom=true -DcreateChecksum=true
