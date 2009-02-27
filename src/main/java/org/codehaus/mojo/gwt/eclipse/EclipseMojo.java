@@ -87,7 +87,7 @@ public class EclipseMojo
     /**
      * Location of the hosted-mode web application structure.
      * 
-     * @parameter default-value="${basedir}/src/test/webapp"
+     * @parameter default-value="${basedir}/src/test/hosted"
      */
     private File hostedWebapp;
 
