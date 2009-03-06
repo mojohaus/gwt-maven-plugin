@@ -12,11 +12,26 @@ Configuring the Hosted mode server
 
   Jetty is used as a lightwight servlet engine for GWT 1.6+ Hosted mode.
 
-  <<MORE TO COME ASAP>>.
-
-
-
-
+  Jetty requires a standard servlet 2.4 webapp structure to run. To match this requirement, the gwt-maven-plugin
+  uses a hosted mode testing webapp folder : <<<src/test/hosted>>>. This folder must contain the project dependencies
+  in <<<WEB-INF/lib>>> and classes in <<<WEB-INF/classes>>>.  
+  
+  Project dependencies are copied by the plugin when generating the Hosted mode launch Scripts (<<<mvn gwt:eclipse>>>).
+  To match the second requirement, configure your POM to set the ouputDirectory to <<<src/test/hosted/WEB-INF/classes>>>.
+  Don't forget to exclude both folders from your SCM, using <<<svn:ingore>>> property or equivalent !
+  
+  With this setup, when you change some java source code, your IDE compiler will update the webapp classes folder
+  and you can see changes in the hosted browser with a simple refresh.
+  
+  All server-side components used in hosted mode need to be configured in <<<src/test/hosted/WEB-INF/web.xml>>>. As this
+  mode is for testing only, we use a distinct web.xml than the webapp one (<<<src/main/webapp/WEB-INF/web.xml>>>)
+  that may use many frameworks. In hosted mode, you will configure simple GWT-RPC stubs servlets. Your application 
+  will in many case use a complex setup with a DataBase, many
+  frameworks like Spring and Hibernate, and some other out-of-testing stuff like use authentication.
+  
+  If you want to test your GWT client with a "real" server-side webapp, run the hosted browser with the <<<-noserver>>> option
+  set and start your webapp in a standalone process.
+ 
 
 
 
