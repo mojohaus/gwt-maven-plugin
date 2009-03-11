@@ -47,7 +47,7 @@ public class GwtShellWebProcessor
         }
 
         this.destination = new File( targetWebXml );
-        this.servletDescriptors = new ArrayList();
+        this.servletDescriptors = new ArrayList<ServletDescriptor>();
         ServletDescriptor d = new ServletDescriptor( shellServletMappingURL, "com.google.gwt.dev.shell.GWTShellServlet" );
         d.setName( "shell" );
         this.servletDescriptors.add( d );

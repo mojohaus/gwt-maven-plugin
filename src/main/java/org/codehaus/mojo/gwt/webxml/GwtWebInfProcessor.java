@@ -44,7 +44,7 @@ public class GwtWebInfProcessor {
 
     protected File destination;
 
-    protected List servletDescriptors;
+    protected List<ServletDescriptor> servletDescriptors;
 
     private String moduleName;
 
@@ -52,7 +52,7 @@ public class GwtWebInfProcessor {
 
     protected String webXmlPath;
 
-    private HashSet checkedModules = new HashSet();
+    private HashSet<String> checkedModules = new HashSet<String>();
 
     protected GwtWebInfProcessor()
     {
@@ -136,13 +136,13 @@ public class GwtWebInfProcessor {
      * @param webXmlServletPath
      * @return
      */
-    protected List getGwtServletDescriptors( String module, boolean webXmlServletPath )
+    protected List<ServletDescriptor> getGwtServletDescriptors( String module, boolean webXmlServletPath )
         throws IOException, JDOMException
     {
 
         ///System.out.println("GwtWebInfProcessor getGwtServletDescriptors (module - " + module + ")");
 
-        ArrayList servletElements = new ArrayList();
+        List<ServletDescriptor> servletElements= new ArrayList<ServletDescriptor>();
         checkedModules.add( module );
         Document document = null;
         SAXBuilder builder = null;
@@ -229,8 +229,8 @@ public class GwtWebInfProcessor {
         List children = webapp.getContent();
         Content insertAfter = new Comment( "inserted by gwt-maven" );
 
-        ArrayList namesBefore = new ArrayList();
-        ArrayList namesAfter = new ArrayList();
+        ArrayList<String> namesBefore = new ArrayList<String>();
+        ArrayList<String> namesAfter = new ArrayList<String>();
 
         for ( int i = 0; i < startAfter.length; i++ )
         {
