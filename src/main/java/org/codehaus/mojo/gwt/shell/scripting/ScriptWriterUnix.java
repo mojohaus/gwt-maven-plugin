@@ -49,7 +49,6 @@ public class ScriptWriterUnix
     public ScriptWriterUnix( ClasspathBuilder buildClasspathUtil )
     {
         super( buildClasspathUtil );
-        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -141,6 +140,12 @@ public class ScriptWriterUnix
     protected String getPlatformClasspathVariable()
     {
         return "$CLASSPATH";
+    }
+
+	@Override
+	protected String getPlatformClasspathVariableReference()
+    {
+        return " -cp \"" + getPlatformClasspathVariable() + "\" ";
     }
 
 }

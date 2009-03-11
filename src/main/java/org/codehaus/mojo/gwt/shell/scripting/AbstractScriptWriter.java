@@ -71,6 +71,13 @@ public abstract class AbstractScriptWriter
      */
     protected abstract String getPlatformClasspathVariable();
 
+    
+    /**
+     * @return a reference to the "CLASSPATH" variable, including the -cp switch.
+     */
+    protected abstract String getPlatformClasspathVariableReference();
+
+    
     /**
      * @return the platform "CLASSPATH" variable definition String
      */
@@ -144,7 +151,7 @@ public abstract class AbstractScriptWriter
                 buildClasspathUtil.writeClassPathVariable( configuration, file, Artifact.SCOPE_RUNTIME, runtime,
                                                            writer, getPlatformClasspathVariableDefinition() );
                 javaCommand( configuration );
-                writer.print( " -cp \"" + getPlatformClasspathVariable() + "\" " );
+                writer.print( getPlatformClasspathVariableReference());
                 writer.print( clazz );
                 break;
 

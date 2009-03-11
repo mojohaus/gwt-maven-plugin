@@ -46,7 +46,6 @@ public class ScriptWriterWindows
     public ScriptWriterWindows( ClasspathBuilder buildClasspathUtil )
     {
         super( buildClasspathUtil );
-        // TODO Auto-generated constructor stub
     }
 
     @Override
@@ -104,6 +103,12 @@ public class ScriptWriterWindows
     protected String getPlatformClasspathVariableDefinition()
     {
         return "set CLASSPATH=";
+    }
+
+	@Override
+	protected String getPlatformClasspathVariableReference()
+    {
+        return " -cp " + getPlatformClasspathVariable() + " ";
     }
 
 }
