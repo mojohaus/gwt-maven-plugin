@@ -67,7 +67,6 @@
     <url>http://jira.codehaus.org/browse/MGWT</url>
   </issueManagement>
   <properties>
-    <gwt.version>1.5.3</gwt.version>
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
   </properties>
@@ -96,13 +95,6 @@
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
       <version>1.5.6</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <!-- User can override this version by setting a <dependencies> block in <plugin> -->
-      <version>${gwt.version}</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>com.thoughtworks.qdox</groupId>
@@ -146,19 +138,6 @@
       <version>2.4.3</version>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-dev</artifactId>
-      <version>${gwt.version}</version>
-      <classifier>${gwt.variant}</classifier>
-    </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-dev</artifactId>
-      <version>${gwt.version}</version>
-      <classifier>${gwt.variant}-libs</classifier>
-      <type>zip</type>
-    </dependency>
-    <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>1.4</version>
@@ -169,12 +148,6 @@
       <version>1.1</version>
     </dependency>
     <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-plugin-testing-harness</artifactId>
-      <version>1.0-beta-1</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>bcel</groupId>
       <artifactId>bcel</artifactId>
       <version>5.1</version>
@@ -183,6 +156,19 @@
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <version>2.9.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-plugin-testing-harness</artifactId>
+      <version>1.0-beta-1</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>1.6.1</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <profiles>

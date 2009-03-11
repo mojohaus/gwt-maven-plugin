@@ -71,58 +71,11 @@ Setup Maven for GWT development
     <version>${gwt.version}</version>
     <scope>provided</scope>
   </dependency>
-  <dependency>
-    <groupId>com.google.gwt</groupId>
-    <artifactId>gwt-dev</artifactId>
-    <version>${gwt.version}</version>
-    <classifier>${gwt.platform}</classifier>
-    <scope>provided</scope>
-  </dependency>
-+--
+  +--
 
-
-    Also, with automatic OR manual mode, you may want to configure profiles for each platform, so the same POM can be used in multiple environments.
-
-    For example:
-
-+--
-  <!--  profiles (with activation per platform) -->
-  <profiles>
-    <profile>
-        <id>windows</id>
-        <properties>
-            <gwt.platform>windows</gwt.platform>
-        </properties>
-        <activation>
-            <os>
-                <family>windows</family>
-            </os>
-        </activation>
-    </profile>
-    <profile>
-        <id>mac</id>
-        <properties>
-            <gwt.platform>mac</gwt.platform>
-        </properties>
-        <activation>
-            <os>
-                <family>mac</family>
-            </os>
-        </activation>
-    </profile>
-    <profile>
-        <id>linux</id>
-        <properties>
-            <gwt.platform>linux</gwt.platform>
-        </properties>
-        <activation>
-            <os>
-                <name>linux</name>
-            </os>
-        </activation>
-    </profile>
-  </profiles>
-+--
+   Don't define <<<gwt-dev>>> as project dependency : this JAR has many common libraries packaged taht may conflict with
+   the ones defined for your project, resulting in incomprehensible NoSuchMethodError. The gwt-maven-plugin will
+   automagically resolve the required dependency based on your declared <<<gwt-user>>> dependency.
 
   For a complete automatic mode POM example see the {{{examples.html}Examples}} page, specifically:
   {{{examples/simple.html}the simple one}}.
@@ -171,14 +124,6 @@ Setup Maven for GWT development
         <version>custom</version>
         <scope>system</scope>
         <systemPath>${env.GWT_HOME}/gwt-user.jar</systemPath>
-    </dependency>
-    <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-dev</artifactId>
-        <version>custom</version>
-        <classifier>${gwt.platform}</classifier>
-        <scope>system</scope>
-        <systemPath>${env.GWT_HOME}/gwt-dev-${gwt.platform}.jar</systemPath>
     </dependency>
 
     . . . .

@@ -257,8 +257,18 @@ public abstract class AbstractGwtMojo
             getLog().error( "no gwtHome, gwtVersion or com.google.gwt:gwt-user dependency set" );
             throw new MojoExecutionException( "Cannot resolve GWT version" );
         }
-        return getGwtRuntimeForVersion( gwtVersion );
 
+        for ( Iterator iterator = project.getArtifacts().iterator(); iterator.hasNext(); )
+        {
+            Artifact artifact = (Artifact) iterator.next();
+            if ( AbstractGwtMojo.GWT_GROUP_ID.equals( artifact.getGroupId() )
+                && "gwt-dev".equals( artifact.getArtifactId() ) )
+            {
+                getLog().warn( "You should not declare gwt-dev as a project dependency. This may introduce complex dependency conflicts" );
+            }
+        }
+
+        return getGwtRuntimeForVersion( gwtVersion );
     }
 
     /**

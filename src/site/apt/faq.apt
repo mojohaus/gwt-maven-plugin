@@ -4,7 +4,7 @@
  ---
 
 Frequently Asked Questions
- 
+
 * Do I need GWT SDK on my computer to use the plugin ?
 
   No. The plugin uses maven dependency management to get the required libraries and native components depending on
@@ -13,9 +13,15 @@ Frequently Asked Questions
 * How to use another version of GWT to compile my project ?
 
   Use a <dependencies> element in your plugin configuration to override the plugin dependency on
-  ''com.google.gwt:gwt-user'' and ''com.google.gwt:gwt-dev''. Please note this only works with maven 2.0.9 and later.
-  
+  ''com.google.gwt:gwt-user''. Please note this only works with maven 2.0.9 and later.
+
 * How does this plugin compare to other maven / gwt plugins ?
 
   This plugin, beeing part of the Mojo Project, can benefict for a large community of maven developers. It's async interface
   generation feature is AFAIK not supported by other plugins.
+
+* I get strange NoSuchMethodError running my application unit tests !
+
+  <<<gwt-dev>>> JAR includes many libraries, including some apache commons-* that you may use in your project with more
+  recent version. Don't define gwt-dev as a dependency, the plugin will resolve it when necessary for you based on your
+  <<<gwt-user>>> version.

@@ -36,13 +36,6 @@
       <version>${gwt.version}</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-dev</artifactId>
-      <version>${gwt.version}</version>
-      <classifier>${gwt.platform}</classifier>
-      <scope>provided</scope>
-    </dependency>
 
     <!-- test -->
     <dependency>
@@ -96,42 +89,4 @@
     </plugins>
   </build>
 
-  <profiles>
-
-        <!--  profiles with activation per platform -->
-    <profile>
-      <id>windows</id>
-      <properties>
-        <gwt.platform>windows</gwt.platform>
-      </properties>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-        <os>
-          <family>Windows</family>
-        </os>
-      </activation>
-    </profile>
-    <profile>
-      <id>mac</id>
-      <properties>
-        <gwt.platform>mac</gwt.platform>
-      </properties>
-      <activation>
-        <os>
-          <family>mac</family>
-        </os>
-      </activation>
-    </profile>
-    <profile>
-      <id>linux</id>
-      <properties>
-        <gwt.platform>linux</gwt.platform>
-      </properties>
-      <activation>
-        <os>
-          <name>Linux</name>
-        </os>
-      </activation>
-    </profile>
-  </profiles>
 </project>

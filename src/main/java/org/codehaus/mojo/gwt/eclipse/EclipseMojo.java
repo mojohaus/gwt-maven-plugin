@@ -46,7 +46,7 @@ import freemarker.template.TemplateException;
 
 /**
  * Goal which install GWT artifacts in local repository.
- * 
+ *
  * @goal eclipse
  * @execute phase=generate-resources
  * @requiresDependencyResolution compile
@@ -63,7 +63,7 @@ public class EclipseMojo
 
     /**
      * The currently executed project (phase=generate-resources).
-     * 
+     *
      * @parameter expression="${executedProject}"
      * @readonly
      */
@@ -71,14 +71,14 @@ public class EclipseMojo
 
     /**
      * Location of the file.
-     * 
+     *
      * @parameter default-value="${basedir}/src/main/webapp"
      */
     private File outputDirectory;
 
     /**
      * Location of the compiled classes.
-     * 
+     *
      * @parameter default-value="${project.build.outputDirectory}"
      * @readOnly
      */
@@ -86,28 +86,28 @@ public class EclipseMojo
 
     /**
      * Location of the hosted-mode web application structure.
-     * 
+     *
      * @parameter default-value="${basedir}/src/test/hosted"
      */
     private File hostedWebapp;
 
     /**
      * Additional parameters to append to the module URL. For example, gwt-log users will set "log_level=DEBUG"
-     * 
+     *
      * @parameter
      */
     private String additionalPageParameters;
 
     /**
      * Run without hosted mode server
-     * 
+     *
      * @parameter default-value="false" expression="${gwt.noserver}"
      */
     private boolean noserver;
 
     /**
      * Port of the HTTP server used when noserver is set
-     * 
+     *
      * @parameter default-value="8080" expression="${gwt.port}"
      */
     private int port;
@@ -172,7 +172,7 @@ public class EclipseMojo
 
     /**
      * create an Eclipse launch configuration file to Eclipse to run the module in hosted browser
-     * 
+     *
      * @param module the GWT module
      * @throws MojoExecutionException some error occured
      */
@@ -218,7 +218,7 @@ public class EclipseMojo
         context.put( "war", hostedWebapp.getAbsolutePath().substring( basedir + 1 ) );
         context.put( "additionalArguments", noserver ? "-noserver -port " + port : "" );
         context.put( "project", eclipseUtil.getProjectName( getProject() ) );
-        context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath() );
+        context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath().replace( '\\', '/' ) );
 
         try
         {
