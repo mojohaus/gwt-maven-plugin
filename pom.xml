@@ -172,61 +172,6 @@
     </dependency>
   </dependencies>
   <profiles>
-    <profile>
-      <id>mac</id>
-      <activation>
-        <os>
-          <family>mac</family>
-        </os>
-      </activation>
-      <properties>
-        <gwt.variant>mac</gwt.variant>
-      </properties>
-    </profile>
-    <profile>
-      <id>linux</id>
-      <activation>
-        <os>
-          <name>linux</name>
-        </os>
-      </activation>
-      <properties>
-        <gwt.variant>linux</gwt.variant>
-      </properties>
-    </profile>
-    <profile>
-      <id>solaris</id>
-      <activation>
-        <os>
-          <name>SunOS</name>
-        </os>
-      </activation>
-      <properties>
-        <gwt.variant>linux</gwt.variant>
-      </properties>
-    </profile>
-    <profile>
-      <id>freebsd</id>
-      <activation>
-        <os>
-          <name>freebsd</name>
-        </os>
-      </activation>
-      <properties>
-        <gwt.variant>linux</gwt.variant>
-      </properties>
-    </profile>
-    <profile>
-      <id>windows</id>
-      <activation>
-        <os>
-          <family>windows</family>
-        </os>
-      </activation>
-      <properties>
-        <gwt.variant>windows</gwt.variant>
-      </properties>
-    </profile>
 
     <profile>
       <id>run-its</id>
