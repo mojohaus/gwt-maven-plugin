@@ -191,7 +191,7 @@ public class TestMojo
             cli.createArg( false ).setLine( " -Dsurefire.reports=\"" + reportsDirectory + "\"" );
             cli.createArg( false ).setLine( " -Dgwt.args=\"-out " + out + "\"" );
             new File( getProject().getBasedir(), out ).mkdirs();
-            cli.createArg( false ).setLine( " org.codehaus.mojo.gwt.MavenTestRunner " );
+            cli.createArg( false ).setLine( MavenTestRunner.class.getName() );
             cli.createArg( false ).setLine( test );
 
             getLog().debug( "execute : " + cli.toString() );
