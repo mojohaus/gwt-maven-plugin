@@ -17,7 +17,7 @@ public class Application
    */
   public void onModuleLoad()
   {
-     final Lavel label = new Label ( "gwt-maven-plugin Archetype :: Project ${groupId}.${artifactId}" );
+     final Label label = new Label ( "gwt-maven-plugin Archetype :: Project ${groupId}.${artifactId}" );
      RootPanel.get().add( label );
   }
 }
