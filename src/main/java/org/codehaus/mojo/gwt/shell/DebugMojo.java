@@ -96,7 +96,7 @@ public class DebugMojo
             getLog().info( "starting debugger on port " + getDebugPort() );
         }
 
-        super.execute();
+        super.doExecute( runtime );
     }
 
 
