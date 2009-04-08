@@ -52,6 +52,7 @@ import freemarker.template.TemplateException;
  * @requiresDependencyResolution compile
  * @version $Id$
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ * @deprecated use google eclipse plugin http://code.google.com/intl/fr-FR/eclipse/docs/users_guide.html
  */
 public class EclipseMojo
     extends AbstractGwtModuleMojo

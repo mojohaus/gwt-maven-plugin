@@ -46,6 +46,7 @@ import freemarker.template.TemplateException;
  * @execute phase=generate-test-resources
  * @version $Id$
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ * @deprecated use google eclipse plugin http://code.google.com/intl/fr-FR/eclipse/docs/users_guide.html
  */
 public class EclipseTestMojo
     extends TestMojo
