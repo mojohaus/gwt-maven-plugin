@@ -25,7 +25,7 @@
   <packaging>war</packaging>
   <properties>
     <gwtPluginVersion>@pom.version@</gwtPluginVersion>
-    <gwtVersion>1.5.3</gwtVersion><!-- rev-4528 -->
+    <gwtVersion>1.6.4</gwtVersion><!-- rev-4528 -->
   </properties>
   <build>
     <pluginManagement>
