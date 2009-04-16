@@ -147,6 +147,7 @@ public class TestMojo
         {
             throw new MojoExecutionException( "Failed to resolve dependencies", e );
         }
+        classpath.add( getGwtRuntime().getGwtDevJar().getPath() );
 
         final String jvm = System.getProperty( "java.home" ) + File.separator + "bin" + File.separator + "java";
         getLog().debug( "Using JVM: " + jvm );
