@@ -7,4 +7,6 @@ public interface NumberService extends RemoteService{
 
 	public List<Number> getNumberList();
 
+	public int getPrimitive();
+	
 }
