@@ -74,36 +74,25 @@ public class RunMojo
      */
     private File contextXml;
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration#getRunTarget()
-     */
     public String getRunTarget()
     {
         return this.runTarget;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration#getRunModule()
-     */
     public String getRunModule()
     {
         int dash = runTarget.indexOf( '/' );
         return runTarget.substring( 0, dash );
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @see org.codehaus.mojo.gwt.shell.scripting.RunScriptConfiguration#getStartupUrl()
-     */
     public String getStartupUrl()
+	   throws MojoExecutionException
     {
         int dash = runTarget.indexOf( '/' );
-        return runTarget.substring( dash + 1 );
+		String module = getRunModule();
+		String renameTo = readModule( module ).getRenameTo();
+		String modulePath = ( renameTo != null ? renameTo : module );		
+        return modulePath + '/' + runTarget.substring( dash + 1 );
     }
 
     protected String getFileName()
@@ -161,7 +150,7 @@ public class RunMojo
                 script.print( "\"" + getOutput().getAbsolutePath() + "\"" );
                 script.print( " " + getRunTarget() );
                 break;
-            default:
+            default:			    
                 script.print( " -war " );
                 script.print( "\"" + getOutput().getAbsolutePath() + "\"" );
                 script.print( " -startupUrl " );
