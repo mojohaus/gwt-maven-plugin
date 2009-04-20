@@ -303,4 +303,13 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <distributionManagement> 
+    <site> 
+      <id>codehaus.org</id> 
+      <name>Mojo Website</name> 
+      <url>dav:https://dav.codehaus.org/mojo/gwt-maven-plugin/${project.version}</url> 
+    </site> 
+  </distributionManagement> 
+  
 </project>
