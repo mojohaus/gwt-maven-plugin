@@ -57,6 +57,37 @@
       <name>Robert Scholte</name>
     </contributor>
   </contributors>
+  <mailingLists>
+    <mailingList>
+      <name>gwt-maven-plugin User List</name>
+      <subscribe>codehaus-mojo-gwt-maven-plugin-users-subscribe@googlegroups.com</subscribe>
+      <unsubscribe>codehaus-mojo-gwt-maven-plugin-users+unsubscribe@googlegroups.com</unsubscribe>
+      <post>codehaus-mojo-gwt-maven-plugin-users@googlegroups.com</post>
+      <archive>http://groups.google.com/group/codehaus-mojo-gwt-maven-plugin-users</archive>
+    </mailingList>
+    <mailingList>
+      <name>General Mojo User List</name>
+      <subscribe>user-subscribe@mojo.codehaus.org</subscribe>
+      <unsubscribe>user-unsubscribe@mojo.codehaus.org</unsubscribe>
+      <post>user@mojo.codehaus.org</post>
+      <archive>http://archive.hausfoundation.org/lists/org.codehaus.mojo.user</archive>
+      <otherArchives>
+        <otherArchive>http://www.nabble.com/mojo---user-f11980.html</otherArchive>
+        <otherArchive>http://markmail.org/list/org.codehaus.mojo.user</otherArchive>
+      </otherArchives>
+    </mailingList>
+    <mailingList>
+      <name>General Mojo Development List</name>
+      <subscribe>dev-subscribe@mojo.codehaus.org</subscribe>
+      <unsubscribe>dev-unsubscribe@mojo.codehaus.org</unsubscribe>
+      <post>dev@mojo.codehaus.org</post>
+      <archive>http://archive.hausfoundation.org/lists/org.codehaus.mojo.dev</archive>
+      <otherArchives>
+        <otherArchive>http://www.nabble.com/mojo---dev-f11981.html</otherArchive>
+        <otherArchive>http://markmail.org/list/org.codehaus.mojo.dev</otherArchive>
+      </otherArchives>
+    </mailingList>
+  </mailingLists>
   <scm>
     <connection>scm:svn:http://svn.codehaus.org/mojo/trunk/mojo/gwt-maven-plugin</connection>
     <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo/gwt-maven-plugin</developerConnection>

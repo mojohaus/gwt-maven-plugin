@@ -3,13 +3,13 @@
  ------
  ------
 
-Google Web Toolkit Maven Plugin
+Google Web Toolkit Maven Plugin (gwt-maven-plugin)
 
- gwt-maven-plugin plugin provides support for {{{http://code.google.com/webtoolkit/}GWT}} projects,
+ The gwt-maven-plugin provides support for {{{http://code.google.com/webtoolkit/}GWT}} projects,
  including running the GWT developer tools (the compiler, shell and i18n generation) and performing
  support operations to help developers make GWT fit more closely in with their standard JEE web
- application development (debugging, managing the emebedded server, running noserver, merging web.xml,
- generating I18N interfaces, generating Async GWT-RPC interfaces, and more) and environment (Eclispe IDE).
+ application development (debugging, managing the embedded server, running noserver, merging web.xml,
+ generating I18N interfaces, generating Async GWT-RPC interfaces, and more) and environment (Eclipse IDE).
 
 * Goals, Setup and Overview
 
@@ -19,8 +19,6 @@ Google Web Toolkit Maven Plugin
  * {{{plugin-info.html}Goals and Parameters}}
 
  * {{{setup.html}Setup}}
-
- * {{{examples.html}Examples}}
 
 * More Details on Specific Goals and Features
 
