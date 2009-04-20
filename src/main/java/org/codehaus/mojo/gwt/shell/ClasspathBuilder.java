@@ -351,6 +351,9 @@ public class ClasspathBuilder
     {
         try
         {
+            /*
+             * Still an issue here with long classpath on windows. No workaround found yet.
+             */
             Collection<File> classpath =
                 buildClasspathList( mojo.getProject(), scope, runtime, mojo.getSourcesOnPath(),
                                     mojo.getResourcesOnPath() );

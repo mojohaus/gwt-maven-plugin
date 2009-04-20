@@ -54,17 +54,17 @@ public class GenerateAsyncMojo
     extends AbstractGwtMojo
 {
     private final static Map<String,String> WRAPPERS = new HashMap<String,String>();
-	static 
-	{
-	    WRAPPERS.put( "boolean", Boolean.class.getName() );
-	    WRAPPERS.put( "byte", Byte.class.getName() );
-	    WRAPPERS.put( "char", Character.class.getName() );
-	    WRAPPERS.put( "short", Short.class.getName() );
-	    WRAPPERS.put( "int", Integer.class.getName() );
-	    WRAPPERS.put( "long", Long.class.getName() );
-	    WRAPPERS.put( "float", Float.class.getName() );
-	    WRAPPERS.put( "double", Double.class.getName() );
-	}
+    static
+    {
+        WRAPPERS.put( "boolean", Boolean.class.getName() );
+        WRAPPERS.put( "byte", Byte.class.getName() );
+        WRAPPERS.put( "char", Character.class.getName() );
+        WRAPPERS.put( "short", Short.class.getName() );
+        WRAPPERS.put( "int", Integer.class.getName() );
+        WRAPPERS.put( "long", Long.class.getName() );
+        WRAPPERS.put( "float", Float.class.getName() );
+        WRAPPERS.put( "double", Double.class.getName() );
+    }
 
     /**
      * Pattern for GWT service interface
@@ -226,11 +226,11 @@ public class GenerateAsyncMojo
             {
                 writer.println( "AsyncCallback<Void> callback );" );
             }
-            if ( method.getReturns().isPrimitive() ) 
-			{
+            else if ( method.getReturns().isPrimitive() )
+            {
                 String primitive = method.getReturns().getGenericValue();
                 writer.println( "AsyncCallback<" + WRAPPERS.get( primitive ) + "> callback );" );
-		    }
+            }
             else
             {
                 writer.println( "AsyncCallback<" + method.getReturns().getGenericValue() + "> callback );" );

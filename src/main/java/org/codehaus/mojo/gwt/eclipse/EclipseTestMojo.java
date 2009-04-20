@@ -40,8 +40,8 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 /**
- * Goal which install GWT artifacts in local repository.
- *
+ * Goal which creates Eclipse lauch configurations for GWTTestCases.
+ * 
  * @goal eclipseTest
  * @execute phase=generate-test-resources
  * @version $Id$

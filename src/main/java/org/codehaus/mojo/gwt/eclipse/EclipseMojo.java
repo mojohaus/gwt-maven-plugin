@@ -45,8 +45,8 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 /**
- * Goal which install GWT artifacts in local repository.
- *
+ * Goal which creates Eclipse lauch configurations for GWT modules.
+ * 
  * @goal eclipse
  * @execute phase=generate-resources
  * @requiresDependencyResolution compile
@@ -151,7 +151,7 @@ public class EclipseMojo
                 lib.mkdirs();
 
                 File basedir = new File( localRepository.getBasedir() );
-                Collection<Artifact> artifacts = project.getArtifacts();
+                Collection<Artifact> artifacts = project.getRuntimeArtifacts();
                 for ( Artifact artifact : artifacts )
                 {
                     File file = new File( basedir, localRepository.pathOf( artifact ) );

@@ -31,7 +31,7 @@ import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Goal which run a GWT module in the GWT Shell.
- * 
+ *
  * @goal run
  * @execute phase=compile
  * @requiresDependencyResolution compile
@@ -43,10 +43,17 @@ import org.codehaus.plexus.util.FileUtils;
 public class RunMojo
     extends AbstractGwtWebMojo
 {
+    /**
+     * Location of the hosted-mode web application structure.
+     *
+     * @parameter default-value="${basedir}/src/test/hosted"
+     */
+    // Parameter shared with EclipseMojo
+    private File hostedWebapp;
 
     /**
      * URL that should be automatically opened in the GWT shell. For example com.myapp.gwt.Module/Module.html
-     * 
+     *
      * @parameter expression="${runTarget}"
      * @required
      */
@@ -54,14 +61,14 @@ public class RunMojo
 
     /**
      * Runs the embedded GWT Tomcat server on the specified port.
-     * 
+     *
      * @parameter default-value="8888"
      */
     private int port;
 
     /**
      * Specify the location on the filesystem for the generated embedded Tomcat directory.
-     * 
+     *
      * @parameter default-value="${project.build.directory}/tomcat"
      */
     private File tomcat;
@@ -69,7 +76,7 @@ public class RunMojo
     /**
      * Source Tomcat context.xml for GWT shell - copied to /gwt/localhost/ROOT.xml (used as the context.xml for the
      * SHELL - requires Tomcat 5.0.x format - hence no default).
-     * 
+     *
      * @parameter
      */
     private File contextXml;
@@ -79,19 +86,41 @@ public class RunMojo
         return this.runTarget;
     }
 
+    /**
+     * @return the GWT module to run (gwt 1.6+)
+     */
     public String getRunModule()
+    throws MojoExecutionException
     {
+        if (isNoServer())
+        {
+            String[] modules = getModules();
+            if (modules.length != 1)
+            {
+                getLog().error(
+                    "Running in 'noserver' mode you must specify the single module to run using -Dgwt.module=..." );
+                throw new MojoExecutionException( "No single module specified" );
+            }
+            return modules[0];
+        }
         int dash = runTarget.indexOf( '/' );
         return runTarget.substring( 0, dash );
     }
 
+    /**
+     * @return the startup URL to open in hosted browser (gwt 1.6+)
+     */
     public String getStartupUrl()
-	   throws MojoExecutionException
+       throws MojoExecutionException
     {
+        if ( isNoServer() )
+        {
+            return runTarget;
+        }
         int dash = runTarget.indexOf( '/' );
-		String module = getRunModule();
-		String renameTo = readModule( module ).getRenameTo();
-		String modulePath = ( renameTo != null ? renameTo : module );		
+        String module = getRunModule();
+        String renameTo = readModule( module ).getRenameTo();
+        String modulePath = ( renameTo != null ? renameTo : module );
         return modulePath + '/' + runTarget.substring( dash + 1 );
     }
 
@@ -147,12 +176,12 @@ public class RunMojo
             case ONE_DOT_FOUR:
             case ONE_DOT_FIVE:
                 script.print( " -out " );
-                script.print( "\"" + getOutput().getAbsolutePath() + "\"" );
+                script.print( "\"" + hostedWebapp.getAbsolutePath() + "\"" );
                 script.print( " " + getRunTarget() );
                 break;
-            default:			    
+            default:
                 script.print( " -war " );
-                script.print( "\"" + getOutput().getAbsolutePath() + "\"" );
+                script.print( "\"" + hostedWebapp.getAbsolutePath() + "\"" );
                 script.print( " -startupUrl " );
                 script.print( "\"" + getStartupUrl() + "\"" );
                 script.print( " " + getRunModule() );
@@ -166,7 +195,7 @@ public class RunMojo
 
     /**
      * Create embedded GWT tomcat base dir based on properties.
-     * 
+     *
      * @throws Exception
      */
     public void makeCatalinaBase()
