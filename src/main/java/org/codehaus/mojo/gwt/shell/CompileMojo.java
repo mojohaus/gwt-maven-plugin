@@ -43,17 +43,28 @@ import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 public class CompileMojo
     extends AbstractGwtShellMojo
 {
+    /**
+     * @parameter expression="${gwt.compiler.skip}" default-value="false"
+     */
+    private boolean skip;
 
     /** Creates a new instance of CompileMojo */
-    public CompileMojo() {
+    public CompileMojo()
+    {
         super();
     }
 
     public void doExecute(GwtRuntime runtime)
         throws MojoExecutionException, MojoFailureException
     {
+        if ( skip )
+        {
+            getLog().info( "GWT compilation is skipped" );
+            return;
+        }
 
-        if (!this.getOutput().exists()) {
+        if ( !this.getOutput().exists() )
+        {
             this.getOutput().mkdirs();
         }
 
