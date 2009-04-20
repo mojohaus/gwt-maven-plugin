@@ -24,7 +24,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
 
 /**
- * Extends the gwt goal and runs the project in the GWTShell with a debugger port hook (optionally suspended).
+ * Extends the gwt goal and runs the project in the GWT Hosted mode with a debugger port hook (optionally suspended).
  *
  * @goal debug
  * @description Runs the project with a debugger port hook (optionally suspended).

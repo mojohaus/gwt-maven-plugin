@@ -86,9 +86,9 @@ public class EclipseMojo
     private File buildOutputDirectory;
 
     /**
-     * Location of the hosted-mode web application structure.
+     * Location of the hosted-mode web application structure. Default value matches the Google Eclipse plugin.
      *
-     * @parameter default-value="${basedir}/src/test/hosted"
+     * @parameter default-value="${basedir}/war"
      */
     private File hostedWebapp;
 

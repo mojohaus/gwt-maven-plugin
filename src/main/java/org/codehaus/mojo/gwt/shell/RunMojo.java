@@ -30,12 +30,12 @@ import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
- * Goal which run a GWT module in the GWT Shell.
+ * Goal which run a GWT module in the GWT Hosted mode.
  *
  * @goal run
  * @execute phase=compile
  * @requiresDependencyResolution compile
- * @description Runs the the project in the GWTShell for development.
+ * @description Runs the the project in the GWT Hosted mode for development.
  * @author ccollins
  * @author cooper
  * @version $Id$
@@ -46,7 +46,7 @@ public class RunMojo
     /**
      * Location of the hosted-mode web application structure.
      *
-     * @parameter default-value="${basedir}/src/test/hosted"
+     * @parameter default-value="${basedir}/war"
      */
     // Parameter shared with EclipseMojo
     private File hostedWebapp;
@@ -60,7 +60,7 @@ public class RunMojo
     private String runTarget;
 
     /**
-     * Runs the embedded GWT Tomcat server on the specified port.
+     * Runs the embedded GWT server on the specified port.
      *
      * @parameter default-value="8888"
      */
