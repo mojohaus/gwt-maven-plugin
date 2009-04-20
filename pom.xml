@@ -210,4 +210,12 @@
       </plugin>
     </plugins>
   </reporting>
+  
+  <distributionManagement> 
+    <site> 
+      <id>codehaus.org</id> 
+      <name>Mojo Website</name> 
+      <url>dav:https://dav.codehaus.org/mojo/gwt-maven-plugin/1.0</url> 
+    </site> 
+  </distributionManagement> 
 </project>
