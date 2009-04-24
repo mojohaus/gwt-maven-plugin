@@ -1,4 +1,4 @@
-package org.codehaus.mojo.gwt.shell.scripting;
+package org.codehaus.mojo.gwt.shell;
 
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,35 +20,71 @@ package org.codehaus.mojo.gwt.shell.scripting;
  */
 
 import java.io.File;
-import java.util.List;
 
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.plugin.logging.Log;
 
 /**
  * @author ndeloof
  * @version $Id$
  */
-public interface MavenScriptConfiguration
+public interface GwtShellScriptConfiguration
+    extends MavenScriptConfiguration
 {
 
     /**
      * @return
      */
-    File getBuildDir();
+    String getExtraJvmArgs();
 
     /**
      * @return
      */
-    MavenProject getProject();
+    File getGen();
 
     /**
      * @return
      */
-    List<ArtifactRepository> getRemoteRepositories();
+    String getLogLevel();
 
     /**
      * @return
      */
-    ArtifactRepository getLocalRepository();
+    String getStyle();
+
+    /**
+     * @return
+     */
+    File getOutput();
+
+    /**
+     * @return
+     */
+    boolean isNoServer();
+
+    /**
+     * @return
+     */
+    boolean getSourcesOnPath();
+
+    /**
+     * @return
+     */
+    boolean getResourcesOnPath();
+
+    /**
+     * @return The File path to the plugin JAR artifact in the local repository
+     * @since 1.1
+     */
+    File getPluginJar();
+    
+    /**
+     * @return the path to the java executable to use with the forked script
+     * @since 1.1
+     */
+    String getJvm();
+    
+    Log getLog();
+    
+    String getVersion();
+
 }

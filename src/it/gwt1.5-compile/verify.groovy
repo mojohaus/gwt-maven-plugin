@@ -1,5 +1,3 @@
-package org.codehaus.mojo.gwt.shell.scripting;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,22 +16,8 @@ package org.codehaus.mojo.gwt.shell.scripting;
  * specific language governing permissions and limitations
  * under the License.
  */
+assert new File(basedir, 'target/classes').exists();
+assert new File(basedir, 'target/gwt-compile-1.0-SNAPSHOT/com.google.gwt.sample.hello.Hello').exists();
+assert new File(basedir, 'src/main/webapp/com.google.gwt.sample.hello.Hello/com.google.gwt.sample.hello.Hello.nocache.js').exists();
 
-public enum ClasspathStrategy
-{
-    /**
-     * Use the {@link org.codehaus.mojo.gwt.fork.ForkBooter} class to setup a nested URLClassLoader based on dependency
-     * listed in a file
-     */
-    FORKBOOTER,
-
-    /**
-     * Use an (empty) Jar with Main-Class and Class-Path entries in MANIFEST
-     */
-    JARBOOTER,
-
-    /**
-     * Use command line classpath option - known to be buggy on Windows due to command line lenght limitation
-     */
-    CLASSPATH_VARIABLE
-}
+return true;

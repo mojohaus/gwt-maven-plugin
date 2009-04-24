@@ -22,12 +22,13 @@
  */
 package org.codehaus.mojo.gwt.shell;
 
-import static org.codehaus.mojo.gwt.shell.scripting.ClasspathStrategy.FORKBOOTER;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 
 /**
  * Invokes the GWTCompiler for the project source.
@@ -54,7 +55,7 @@ public class CompileMojo
         super();
     }
 
-    public void doExecute(GwtRuntime runtime)
+    public void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
     {
         if ( skip )
@@ -67,51 +68,39 @@ public class CompileMojo
         {
             this.getOutput().mkdirs();
         }
-
-        // build it for the correct platform
-        ScriptWriter script = scriptWriterFactory.getScript();
-
-        script.createScript( this, "compile" );
-
         for ( String target : getModules() )
         {
             String clazz = runtime.getVersion().getCompilerFQCN();
-            script.executeClass( this, runtime, FORKBOOTER, clazz );
-            script.print( " -gen \"" );
-            script.print( getGen().getAbsolutePath() );
-            script.print( "\" -logLevel " );
-            script.print( getLogLevel() );
-            script.print( " -style " );
-            script.print( getStyle() );
+            List<String> args = new ArrayList<String>();
+            args.add( "-gen" );
+            args.add( quote( getGen().getAbsolutePath() ) );
+            args.add( "-logLevel" );
+            args.add( getLogLevel() );
+            args.add( "-style" );
+            args.add( getStyle() );
 
             switch ( runtime.getVersion() )
             {
                 case ONE_DOT_FOUR:
                 case ONE_DOT_FIVE:
-                    script.print( " -out " );
-                    script.print( "\"" + getOutput().getAbsolutePath() + "\"" );
+                    args.add( "-out" );
+                    args.add( quote( getOutput().getAbsolutePath() ) );
                     break;
                 default:
-                    script.print( " -war " );
-                    script.print( "\"" + getOutput().getAbsolutePath() + "\"" );
-                    script.print( " -localWorkers " );
-                    script.print( String.valueOf( Runtime.getRuntime().availableProcessors() ) );
+                    args.add( "-war" );
+                    args.add( quote( getOutput().getAbsolutePath() ) );
+                    args.add( "-localWorkers" );
+                    args.add( String.valueOf( Runtime.getRuntime().availableProcessors() ) );
                     break;
             }
-
-            script.print( " " );
 
             if ( isEnableAssertions() )
             {
-                script.print( " -ea " );
+                args.add( "-ea" );
             }
 
-            script.print( target );
-            script.println();
+            args.add( target );
+            execute( clazz, Artifact.SCOPE_COMPILE, runtime, args, null );
         }
-
-        // run it
-        runScript( script.getExecutable() );
     }
-
 }

@@ -20,14 +20,14 @@
  */
 package org.codehaus.mojo.gwt.shell;
 
-import static org.codehaus.mojo.gwt.shell.scripting.ClasspathStrategy.FORKBOOTER;
-
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 
 /**
  * Creates I18N interfaces for constants and messages files.
@@ -106,23 +106,17 @@ public class I18NMojo
             generateDirectory.mkdirs();
         }
 
-        // build it for the correct platform
-        ScriptWriter script = scriptWriterFactory.getScript();
-        script.createScript( this, "i18n" );
-
-
-     // constants
+       // constants
         if ( getI18nConstantsBundles() != null )
         {
             for ( String target : getI18nConstantsBundles() )
             {
                 ensureTargetPackageExists( getGenerateDirectory(), target );
-                script.executeClass( this, runtime, FORKBOOTER, "com.google.gwt.i18n.tools.I18NSync" );
-                script.print( " -out " );
-                script.print( "\"" + getGenerateDirectory() + "\"" );
-                script.print( " " );
-                script.print( target );
-                script.println();
+                List<String> args = new ArrayList<String>();
+                args.add( "-out" );
+                args.add( "\"" + getGenerateDirectory() + "\"" );
+                args.add( target );
+                execute( "com.google.gwt.i18n.tools.I18NSync", Artifact.SCOPE_COMPILE, runtime, args, null );
             }
         }
 
@@ -132,18 +126,14 @@ public class I18NMojo
             for ( String target : getI18nMessagesBundles() )
             {
                 ensureTargetPackageExists( getGenerateDirectory(), target );
-                script.executeClass( this, runtime, FORKBOOTER, "com.google.gwt.i18n.tools.I18NSync" );
-                script.print( " -createMessages " );
-                script.print( " -out " );
-                script.print( "\"" + getGenerateDirectory() + "\"" );
-                script.print( " " );
-                script.print( target );
-                script.println();
+                List<String> args = new ArrayList<String>();
+                args.add( "-createMessages" );
+                args.add( "-out" );
+                args.add( "\"" + getGenerateDirectory() + "\"" );
+                args.add( target );
+                execute( "com.google.gwt.i18n.tools.I18NSync", Artifact.SCOPE_COMPILE, runtime, args, null );
             }
         }
-
-        // run it
-        runScript( script.getExecutable() );
     }
 
 

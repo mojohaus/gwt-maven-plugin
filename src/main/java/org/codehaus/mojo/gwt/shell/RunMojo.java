@@ -19,14 +19,15 @@ package org.codehaus.mojo.gwt.shell;
  * under the License.
  */
 
-import static org.codehaus.mojo.gwt.shell.scripting.ClasspathStrategy.CLASSPATH_VARIABLE;
-
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.shell.scripting.ScriptWriter;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -145,52 +146,47 @@ public class RunMojo
             this.getOutput().mkdirs();
         }
 
-        // build it for the correct platform
-        ScriptWriter script = scriptWriterFactory.getScript();
-        script.createScript( this, getFileName() );
+        List<String> args = new ArrayList<String>();
+        Properties env = new Properties();
         String clazz = runtime.getVersion().getShellFQCN();
         switch ( runtime.getVersion() )
         {
             case ONE_DOT_FOUR:
             case ONE_DOT_FIVE:
-                script.addVariable( "catalina.base", "\"" + getTomcat().getAbsolutePath() + "\"" );
+                env.setProperty( "catalina.base=", quote( getTomcat().getAbsolutePath() ) );
                 break;
         }
-        script.executeClass( this, runtime, CLASSPATH_VARIABLE, clazz );
-
-        script.print( " -gen \"" );
-        script.print( getGen().getAbsolutePath() );
-        script.print( "\" -logLevel " );
-        script.print( getLogLevel() );
-        script.print( " -style " );
-        script.print( getStyle() );
-        script.print( " -port " );
-        script.print( Integer.toString( getPort() ) );
+        args.add( "-gen" );
+        args.add( quote( getGen().getAbsolutePath() ) );
+        args.add( "-logLevel" );
+        args.add( getLogLevel() );
+        args.add( "-style" );
+        args.add( getStyle() );
+        args.add( "-port" );
+        args.add( Integer.toString( getPort() ) );
         if ( isNoServer() )
         {
-            script.print( " -noserver " );
+            args.add( "-noserver" );
         }
 
         switch ( runtime.getVersion() )
         {
             case ONE_DOT_FOUR:
             case ONE_DOT_FIVE:
-                script.print( " -out " );
-                script.print( "\"" + hostedWebapp.getAbsolutePath() + "\"" );
-                script.print( " " + getRunTarget() );
+                args.add( "-out" );
+                args.add( quote( hostedWebapp.getAbsolutePath() ) );
+                args.add( getRunTarget() );
                 break;
             default:
-                script.print( " -war " );
-                script.print( "\"" + hostedWebapp.getAbsolutePath() + "\"" );
-                script.print( " -startupUrl " );
-                script.print( "\"" + getStartupUrl() + "\"" );
-                script.print( " " + getRunModule() );
+                args.add( "-war" );
+                args.add( quote( hostedWebapp.getAbsolutePath() ) );
+                args.add( "-startupUrl" );
+                args.add( quote( getStartupUrl() ) );
+                args.add( getRunModule() );
                 break;
         }
-        script.println();
 
-        // run it
-        runScript( script.getExecutable() );
+        execute( clazz, Artifact.SCOPE_RUNTIME, runtime, args, env );
     }
 
     /**

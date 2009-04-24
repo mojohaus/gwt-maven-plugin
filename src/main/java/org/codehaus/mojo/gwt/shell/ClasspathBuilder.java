@@ -39,7 +39,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.artifact.ActiveProjectArtifact;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.shell.scripting.GwtShellScriptConfiguration;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
 /**
@@ -70,6 +69,8 @@ public class ClasspathBuilder
                                                 boolean sourcesOnPath, boolean resourcesOnPath )
         throws DependencyResolutionRequiredException, MojoExecutionException
     {
+        // FIXME what are sourcesOnPath & resourcesOnPath for ?
+       
 
         getLogger().info( "establishing classpath list (scope = " + scope + ")" );
 
