@@ -21,10 +21,10 @@ package org.codehaus.mojo.gwt;
 
 import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -85,8 +85,6 @@ public abstract class AbstractGwtModuleMojo
     @SuppressWarnings( "unchecked" )
     public String[] getModules()
     {
-        List<String> mods = new ArrayList<String>();
-
         // module has higher priority if set by expression
         if ( module != null )
         {
@@ -98,6 +96,9 @@ public abstract class AbstractGwtModuleMojo
             scanner.setBasedir( project.getBuild().getSourceDirectory() );
             scanner.setIncludes( new String[] { "**/*" + GWT_MODULE_EXTENSION } );
             scanner.scan();
+
+            // Use a Set to avoid duplicate when user set src/main/java as <resource>
+            Set<String> mods = new HashSet<String>();
             mods.addAll( Arrays.asList( scanner.getIncludedFiles() ) );
 
             Collection<Resource> resources = (Collection<Resource>) project.getResources();
