@@ -22,6 +22,7 @@
  */
 package org.codehaus.mojo.gwt.shell;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,9 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
+import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
+import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
+import org.codehaus.plexus.compiler.util.scan.mapping.SingleTargetSourceMapping;
 
 /**
  * Invokes the GWTCompiler for the project source.
@@ -70,6 +74,12 @@ public class CompileMojo
         }
         for ( String target : getModules() )
         {
+            if ( !compilationRequired( target, getOutput() ) )
+            {
+                getLog().info( target + " is up to date. GWT compilation skipped" );
+                continue;
+            }
+
             String clazz = runtime.getVersion().getCompilerFQCN();
             List<String> args = new ArrayList<String>();
             args.add( "-gen" );
@@ -102,5 +112,44 @@ public class CompileMojo
             args.add( target );
             execute( clazz, Artifact.SCOPE_COMPILE, runtime, args, null );
         }
+    }
+
+    /**
+     * Try to find out, if there are stale sources. If aren't some, we don't have to compile... ...this heuristic
+     * doesn't take into account, that there could be updated dependencies. But for this case, as 'clean compile' could
+     * be executed which would force a compilation.
+     * 
+     * @param module Name of the GWT module to compile
+     * @param output Output path
+     * @return true if compilation is required (i.e. stale sources are found)
+     * @throws MojoExecutionException When sources scanning fails
+     * @author Alexander Gordt
+     */
+    private boolean compilationRequired( String module, File output )
+        throws MojoExecutionException
+    {
+        String outputTarget = module + "/" + module + ".nocache.js";
+        SingleTargetSourceMapping singleTargetMapping = new SingleTargetSourceMapping( ".java", outputTarget );
+        StaleSourceScanner scanner = new StaleSourceScanner();
+        scanner.addSourceMapping( singleTargetMapping );
+
+        for ( Object sourceRoot : getProject().getCompileSourceRoots() )
+        {
+            File rootFile = new File( sourceRoot.toString() );
+            if ( !rootFile.isDirectory() )
+            {
+                continue;
+            }
+            try
+            {
+                return !scanner.getIncludedSources( rootFile, output ).isEmpty();
+            }
+            catch ( InclusionScanException e )
+            {
+                throw new MojoExecutionException( "Error scanning source root: \'" + sourceRoot + "\' "
+                    + "for stale files to recompile.", e );
+            }
+        }
+        return false;
     }
 }

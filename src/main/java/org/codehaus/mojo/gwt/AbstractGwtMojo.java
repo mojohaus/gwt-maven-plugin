@@ -33,6 +33,7 @@ import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -241,6 +242,23 @@ public abstract class AbstractGwtMojo
         }
 
         // Autodetect
+        detectGwtVersion();
+        if ( gwtVersion == null )
+        {
+            getLog().error( "no gwtHome, gwtVersion or com.google.gwt:gwt-user dependency set" );
+            throw new MojoExecutionException( "Cannot resolve GWT version" );
+        }
+
+        checkGwtDevAsDependency();
+
+        return getGwtRuntimeForVersion( gwtVersion );
+    }
+
+    /**
+     * Detect the GWT version to use
+     */
+    private void detectGwtVersion()
+    {
         for ( Iterator iterator = project.getArtifacts().iterator(); iterator.hasNext(); )
         {
             Artifact artifact = (Artifact) iterator.next();
@@ -248,16 +266,35 @@ public abstract class AbstractGwtMojo
                 && "gwt-user".equals( artifact.getArtifactId() ) )
             {
                 gwtVersion = artifact.getVersion();
-                getLog().info( "using GWT jars from project dependencies : " + gwtVersion );
+                if ( gwtVersion != null )
+                {
+                    getLog().info( "using GWT jars from project dependencies : " + gwtVersion );
+                }
                 break;
             }
         }
         if ( gwtVersion == null )
         {
-            getLog().error( "no gwtHome, gwtVersion or com.google.gwt:gwt-user dependency set" );
-            throw new MojoExecutionException( "Cannot resolve GWT version" );
+            for ( Iterator iterator = project.getDependencyManagement().getDependencies().iterator(); iterator.hasNext(); )
+            {
+                Dependency dependency = (Dependency) iterator.next();
+                if ( AbstractGwtMojo.GWT_GROUP_ID.equals( dependency.getGroupId() )
+                    && "gwt-user".equals( dependency.getArtifactId() ) )
+                {
+                    gwtVersion = dependency.getVersion();
+                    getLog().info( "using GWT jars from project dependencyManagement section : " + gwtVersion );
+                    break;
+                }
+            }
         }
+    }
 
+    /**
+     * Check that gwt-dev is not define in dependencies : this can produce version conflicts with other dependencies, as
+     * gwt-dev is a "uber-jar" with some commons-* and jetty libs inside.
+     */
+    private void checkGwtDevAsDependency()
+    {
         for ( Iterator iterator = project.getArtifacts().iterator(); iterator.hasNext(); )
         {
             Artifact artifact = (Artifact) iterator.next();
@@ -267,8 +304,6 @@ public abstract class AbstractGwtMojo
                 getLog().warn( "You should not declare gwt-dev as a project dependency. This may introduce complex dependency conflicts" );
             }
         }
-
-        return getGwtRuntimeForVersion( gwtVersion );
     }
 
     /**
