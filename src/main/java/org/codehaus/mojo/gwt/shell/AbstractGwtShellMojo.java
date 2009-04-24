@@ -372,6 +372,18 @@ public abstract class AbstractGwtShellMojo
         return this.version;
     }
 
+    /**
+     * Execute a Java Class in a forked process. Build the JVM classpath using the project dependencies as defined by
+     * <code>scope</code> and use <code>runtime</code> to add GWT-SDK libs. Optional env properties are added to he
+     * forked process if set.
+     * 
+     * @param className the java Fully qualified class name to execute in forked JVM
+     * @param scope the dependencies scope
+     * @param runtime the GWT Runtime
+     * @param args java command line arguments (JVM or program arguments)
+     * @param env environment properties
+     * @throws MojoExecutionException something was wrong :'(
+     */
     protected void execute( String className, String scope, GwtRuntime runtime, List<String> args, Properties env )
         throws MojoExecutionException
     {
