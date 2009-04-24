@@ -173,6 +173,13 @@ public abstract class AbstractGwtShellMojo
      */
     private String jvm;
 
+    /**
+     * Forked process execution timeOut. Usefull to avoid maven to hang in continuous integration server.
+     * 
+     * @parameter default-value="0";
+     */
+    private int timeOut;
+
     // methods
 
     /**
@@ -189,24 +196,6 @@ public abstract class AbstractGwtShellMojo
 
     protected abstract void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException;
-
-    protected void runScript( final File exec )
-        throws MojoExecutionException
-    {
-        try
-        {
-            Commandline cmd = new Commandline( exec.getAbsolutePath() );
-            int retVal = CommandLineUtils.executeCommandLine( cmd, out, err );
-            if ( retVal != 0 )
-            {
-                throw new MojoExecutionException( exec.getName() + " script exited abnormally with code - " + retVal );
-            }
-        }
-        catch ( CommandLineException e )
-        {
-            throw new MojoExecutionException( "Exception attempting to run script - " + exec.getName(), e );
-        }
-    }
 
     /**
      * @return The File path to the plugin JAR artifact in the local repository
@@ -418,7 +407,14 @@ public abstract class AbstractGwtShellMojo
                 }
             }
             getLog().debug( "Execute command :\n" + cmd.toString() );
-            CommandLineUtils.executeCommandLine( cmd, out, err );
+            if ( timeOut > 0 )
+            {
+                CommandLineUtils.executeCommandLine( cmd, out, err, timeOut );
+            }
+            else
+            {
+                CommandLineUtils.executeCommandLine( cmd, out, err );
+            }
         }
         catch ( CommandLineException e )
         {

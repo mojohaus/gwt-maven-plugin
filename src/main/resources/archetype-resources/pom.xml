@@ -13,7 +13,7 @@
   <properties>
 
       <!-- convenience to define GWT version in one place -->
-      <gwt.version>1.6.1</gwt.version>
+      <gwt.version>1.6.4</gwt.version>
 
       <!--  tell the compiler we can use 1.5 -->
       <maven.compiler.source>1.5</maven.compiler.source>
@@ -41,18 +41,18 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.1</version>
+      <version>4.4</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
   <build>
-    <outputDirectory>src/test/hosted/WEB-INF/classes</outputDirectory>
+    <outputDirectory>war/WEB-INF/classes</outputDirectory>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.1</version>
+        <version>1.1-SNAPSHOT</version>
         <executions>
           <execution>
             <goals>
