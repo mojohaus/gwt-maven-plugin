@@ -35,6 +35,7 @@ import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
+import org.codehaus.plexus.util.cli.CommandLineTimeOutException;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 import org.codehaus.plexus.util.cli.Commandline;
 import org.codehaus.plexus.util.cli.StreamConsumer;
@@ -424,16 +425,18 @@ public abstract class AbstractGwtShellMojo
                 return CommandLineUtils.executeCommandLine( cmd, out, err );
             }
         }
-        catch ( CommandLineException e )
+        catch ( CommandLineTimeOutException e )
         {
-            if (timeOut > 0 && e.getMessage().contains( "killed" ))
+            if ( timeOut > 0 )
             {
-                // FIXME PLXUTILS-106
-                // Plexus has no CommandLineException hierarchy to distinct such case
-                // Process has been killed after TimeOut
                 getLog().warn( "Forked JVM has been killed on time-out after " + timeOut + "seconds" );
                 return 0;
             }
+            throw new MojoExecutionException( "Failed to execute command line " + command );
+        }
+        catch ( CommandLineException e )
+        {
+
             throw new MojoExecutionException( "Failed to execute command line " + command );
         }
     }
