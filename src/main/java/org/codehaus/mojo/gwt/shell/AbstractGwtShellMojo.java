@@ -20,6 +20,7 @@ package org.codehaus.mojo.gwt.shell;
  */
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -386,14 +387,12 @@ public abstract class AbstractGwtShellMojo
             throw new MojoExecutionException( "Failed to build " + scope + " classpath" );
         }
         List<String> command = new ArrayList<String>();
-        command.add( getJvmArgs() );
+        command.addAll( getJvmArgs() );
         command.add( "-classpath" );
         command.add( quote( StringUtils.join( classpath.iterator(), File.pathSeparator ) ) );
         command.add( className );
         command.addAll( args );
 
-        // FIXME should be better to use Plexus-utils command line BUT need to NOT use a shell (windows command line
-        // limit)
         try
         {
             String[] arguments = (String[]) command.toArray( new String[command.size()] );
@@ -422,12 +421,19 @@ public abstract class AbstractGwtShellMojo
         }
     }
 
-    private String getJvmArgs()
+    private List<String> getJvmArgs()
     {
-        String extra = ( extraJvmArgs != null ? extraJvmArgs : "" );
+		List<String> extra = new ArrayList<String>();
+		if ( extraJvmArgs != null ) 
+		{
+			for ( String extraArg : extraJvmArgs.split( " " ) )
+			{
+                extra.add( extraArg );
+            }
+        }
         if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( extraJvmArgs.contains( "-XstartOnFirstThread" ) ) )
         {
-            extra += " -XstartOnFirstThread ";
+            extra.add( " -XstartOnFirstThread " );
         }
         return extra;
     }
