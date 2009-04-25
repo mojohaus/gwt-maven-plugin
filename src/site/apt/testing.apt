@@ -57,7 +57,7 @@ Testing GWT code with Maven
  <start with> <<<"GwtTest">>>. Surefire looks for tests that are named <<<Something"Test".java>>> by default - they
  <end with> <<<"Test">>>.
 
- By default, the gwt-maven-plugin-plugin uses <<<GwtTest*.java>>> as inclusion pattern so that GwtTest will <<not>> match
+ By default, the gwt-maven-plugin uses <<<GwtTest*.java>>> as inclusion pattern so that GwtTest will <<not>> match
  the standard surefire patterns. Using this convention you don't have to change your configuration.
 
  To configure the plugin to use such a naming convention, set the <<<includes>>> plugin parameter.
@@ -65,7 +65,7 @@ Testing GWT code with Maven
 +--
         <plugin>
                 <groupId>org.codehaus.mojo</groupId>
-                <artifactId>gwt-maven-plugin-plugin</artifactId>
+                <artifactId>gwt-maven-plugin</artifactId>
                 <version>1.1</version>
                 <configuration>
                   <includes>**/CustomPattern*.java</includes>
@@ -103,6 +103,6 @@ Testing GWT code with Maven
 
  We recommand to name your test suite <<<GwtTestSuite.java>>> so that the test filter picks it up, but name the actual tests
  with a convention that Surefire will ignore by default - something that does <<not>> start with <<<GwtTest>>>, and does <<not>>
- start <or> end with <<<Test>>>. For example <<<MyClassTestGwt.java>>>. This way gwt-maven-plugin-plugin picks up the <<<Suite>>>, and runs it,
+ start <or> end with <<<Test>>>. For example <<<MyClassTestGwt.java>>>. This way gwt-maven-plugin picks up the <<<Suite>>>, and runs it,
  but does not also run the individual tests (and Surefire does not pick it up either)
 
