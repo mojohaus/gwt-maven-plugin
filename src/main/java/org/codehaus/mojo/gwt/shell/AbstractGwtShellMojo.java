@@ -20,7 +20,6 @@ package org.codehaus.mojo.gwt.shell;
  */
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
