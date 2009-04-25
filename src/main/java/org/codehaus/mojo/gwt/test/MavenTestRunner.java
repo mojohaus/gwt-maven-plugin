@@ -41,7 +41,7 @@ import org.apache.maven.surefire.report.XMLReporter;
 
 /**
  * Mostly a copy/paste of surefire TestListenerInvocationHandler
- * 
+ *
  * @author ndeloof
  * @version $Id$
  */
@@ -77,7 +77,7 @@ public class MavenTestRunner
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see junit.textui.TestRunner#createTestResult()
      */
     @Override
@@ -90,7 +90,7 @@ public class MavenTestRunner
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see junit.textui.TestRunner#doRun(junit.framework.Test, boolean)
      */
     @Override
@@ -124,12 +124,11 @@ public class MavenTestRunner
     public MavenTestRunner()
     {
         String dir = System.getProperty( "surefire.reports" );
-        List < Reporter > reports = new ArrayList < Reporter > ();
+        List<Reporter> reports = new ArrayList<Reporter>();
         reports.add( new XMLReporter( new File( dir ), false ) );
         reports.add( new FileReporter( new File( dir ), false ) );
         reports.add( new BriefConsoleReporter( true ) );
         reportManager = new ReporterManager( reports );
-
     }
 
     /**
@@ -189,7 +188,7 @@ public class MavenTestRunner
 
     /**
      * @param test the test
-     * @param t a throwable    
+     * @param t a throwable
      * @return a StackTraceWriter to trace the error
      */
     private StackTraceWriter getStackTraceWriter( Test test, Throwable t )

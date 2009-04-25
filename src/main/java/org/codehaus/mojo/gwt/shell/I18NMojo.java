@@ -116,7 +116,7 @@ public class I18NMojo
                 args.add( "-out" );
                 args.add( "\"" + getGenerateDirectory() + "\"" );
                 args.add( target );
-                execute( "com.google.gwt.i18n.tools.I18NSync", Artifact.SCOPE_COMPILE, runtime, args, null );
+                execute( "com.google.gwt.i18n.tools.I18NSync", Artifact.SCOPE_COMPILE, runtime, args, null, null );
             }
         }
 
@@ -131,7 +131,7 @@ public class I18NMojo
                 args.add( "-out" );
                 args.add( "\"" + getGenerateDirectory() + "\"" );
                 args.add( target );
-                execute( "com.google.gwt.i18n.tools.I18NSync", Artifact.SCOPE_COMPILE, runtime, args, null );
+                execute( "com.google.gwt.i18n.tools.I18NSync", Artifact.SCOPE_COMPILE, runtime, args, null, null );
             }
         }
     }

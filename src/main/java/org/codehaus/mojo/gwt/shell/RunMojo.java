@@ -61,6 +61,13 @@ public class RunMojo
     private String runTarget;
 
     /**
+     * Forked process execution timeOut (in seconds). Primary used for integration-testing.
+     * @parameter
+     */
+    @SuppressWarnings("unused")
+    private int runTimeOut;
+
+    /**
      * Runs the embedded GWT server on the specified port.
      *
      * @parameter default-value="8888"
@@ -186,7 +193,7 @@ public class RunMojo
                 break;
         }
 
-        execute( clazz, Artifact.SCOPE_RUNTIME, runtime, args, env );
+        execute( clazz, Artifact.SCOPE_RUNTIME, runtime, args, null, env );
     }
 
     /**
@@ -234,5 +241,13 @@ public class RunMojo
     public File getTomcat()
     {
         return this.tomcat;
+    }
+
+    /**
+     * @param runTimeOut the runTimeOut to set
+     */
+    public void setRunTimeOut( int runTimeOut )
+    {
+        setTimeOut( runTimeOut );
     }
 }

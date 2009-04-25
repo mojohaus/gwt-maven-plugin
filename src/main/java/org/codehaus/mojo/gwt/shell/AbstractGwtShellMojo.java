@@ -176,8 +176,6 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * Forked process execution timeOut. Usefull to avoid maven to hang in continuous integration server.
-     * 
-     * @parameter default-value="0";
      */
     private int timeOut;
 
@@ -205,7 +203,7 @@ public abstract class AbstractGwtShellMojo
     {
         Artifact plugin =
             artifactFactory.createArtifact( "org.codehaus.mojo", "gwt-maven-plugin", version, Artifact.SCOPE_COMPILE,
-                "maven-plugin" );
+                                            "maven-plugin" );
         String localPath = localRepository.pathOf( plugin );
         return new File( localRepository.getBasedir(), localPath );
     }
@@ -366,15 +364,17 @@ public abstract class AbstractGwtShellMojo
      * Execute a Java Class in a forked process. Build the JVM classpath using the project dependencies as defined by
      * <code>scope</code> and use <code>runtime</code> to add GWT-SDK libs. Optional env properties are added to he
      * forked process if set.
-     * 
+     *
      * @param className the java Fully qualified class name to execute in forked JVM
      * @param scope the dependencies scope
      * @param runtime the GWT Runtime
      * @param args java command line arguments (JVM or program arguments)
+     * @param systemProperties system properties (-D) for the forked JVM
      * @param env environment properties
      * @throws MojoExecutionException something was wrong :'(
      */
-    protected void execute( String className, String scope, GwtRuntime runtime, List<String> args, Properties env )
+    protected int execute( String className, String scope, GwtRuntime runtime, List<String> args, Properties systemProperties,
+                           Properties env )
         throws MojoExecutionException
     {
         Collection<File> classpath;
@@ -386,10 +386,19 @@ public abstract class AbstractGwtShellMojo
         {
             throw new MojoExecutionException( "Failed to build " + scope + " classpath" );
         }
+        postProcessClassPath( classpath );
+
         List<String> command = new ArrayList<String>();
         command.addAll( getJvmArgs() );
         command.add( "-classpath" );
         command.add( quote( StringUtils.join( classpath.iterator(), File.pathSeparator ) ) );
+        if ( systemProperties != null )
+        {
+            for ( Map.Entry entry : systemProperties.entrySet() )
+            {
+                command.add( "-D" + entry.getKey() + "=" + entry.getValue() );
+            }
+        }
         command.add( className );
         command.addAll( args );
 
@@ -408,26 +417,42 @@ public abstract class AbstractGwtShellMojo
             getLog().debug( "Execute command :\n" + cmd.toString() );
             if ( timeOut > 0 )
             {
-                CommandLineUtils.executeCommandLine( cmd, out, err, timeOut );
+                return CommandLineUtils.executeCommandLine( cmd, out, err, timeOut );
             }
             else
             {
-                CommandLineUtils.executeCommandLine( cmd, out, err );
+                return CommandLineUtils.executeCommandLine( cmd, out, err );
             }
         }
         catch ( CommandLineException e )
         {
+            if (timeOut > 0 && e.getMessage().contains( "killed" ))
+            {
+                // FIXME PLXUTILS-106
+                // Plexus has no CommandLineException hierarchy to distinct such case
+                // Process has been killed after TimeOut
+                getLog().warn( "Forked JVM has been killed on time-out after " + timeOut + "seconds" );
+                return 0;
+            }
             throw new MojoExecutionException( "Failed to execute command line " + command );
         }
     }
 
+    /**
+     * hook to post-process the dependency-based classpath
+     */
+    protected void postProcessClassPath( Collection<File> classpath )
+    {
+        // Nothing to do in most case
+    }
+
     private List<String> getJvmArgs()
     {
-		List<String> extra = new ArrayList<String>();
-		if ( extraJvmArgs != null ) 
-		{
-			for ( String extraArg : extraJvmArgs.split( " " ) )
-			{
+        List<String> extra = new ArrayList<String>();
+        if ( extraJvmArgs != null )
+        {
+            for ( String extraArg : extraJvmArgs.split( " " ) )
+            {
                 extra.add( extraArg );
             }
         }
@@ -451,8 +476,8 @@ public abstract class AbstractGwtShellMojo
         File jvmFile = new File( jvm );
         if ( !jvmFile.exists() )
         {
-            throw new MojoExecutionException( "the configured jvm " + jvm
-                + " doesn't exists please check your environnement" );
+            throw new MojoExecutionException( "the configured jvm " + jvm +
+                " doesn't exists please check your environnement" );
         }
         if ( jvmFile.isDirectory() )
         {
@@ -467,6 +492,7 @@ public abstract class AbstractGwtShellMojo
         return "\"" + arg + "\"";
     }
 
+    // PLXUTILS-107
     private class JavaShell
         extends Shell
     {
@@ -476,9 +502,9 @@ public abstract class AbstractGwtShellMojo
             setExecutable( getJavaCommand() );
         }
 
-        protected List getRawCommandLine( String executable, String[] arguments )
+        protected List<String> getRawCommandLine( String executable, String[] arguments )
         {
-            List commandLine = new ArrayList();
+            List<String> commandLine = new ArrayList<String>();
             if ( executable != null )
             {
                 commandLine.add( executable );
@@ -489,5 +515,13 @@ public abstract class AbstractGwtShellMojo
             }
             return commandLine;
         }
+    }
+
+    /**
+     * @param timeOut the timeOut to set
+     */
+    public void setTimeOut( int timeOut )
+    {
+        this.timeOut = timeOut;
     };
 }

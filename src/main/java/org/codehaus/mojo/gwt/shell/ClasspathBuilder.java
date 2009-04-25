@@ -19,10 +19,13 @@ package org.codehaus.mojo.gwt.shell;
  * under the License.
  */
 
+import static org.apache.maven.artifact.Artifact.*;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -70,7 +73,7 @@ public class ClasspathBuilder
         throws DependencyResolutionRequiredException, MojoExecutionException
     {
         // FIXME what are sourcesOnPath & resourcesOnPath for ?
-       
+
 
         getLogger().info( "establishing classpath list (scope = " + scope + ")" );
 
@@ -84,13 +87,13 @@ public class ClasspathBuilder
         // add sources
         if ( sourcesOnPath )
         {
-            addSourcesWithActiveProjects( project, items, Artifact.SCOPE_COMPILE );
+            addSourcesWithActiveProjects( project, items, scope );
         }
 
         // add resources
         if ( resourcesOnPath )
         {
-            addResourcesWithActiveProjects( project, items, Artifact.SCOPE_COMPILE );
+            addResourcesWithActiveProjects( project, items, scope );
         }
 
         // add classes dir
@@ -99,18 +102,15 @@ public class ClasspathBuilder
         // Use our own ClasspathElements fitering, as for RUNTIME we need to include PROVIDED artifacts,
         // that is not the default Maven policy, as RUNTIME is used here to build the GWTShell execution classpath
 
-        if ( scope.equals( Artifact.SCOPE_TEST ) )
+        if ( scope.equals( SCOPE_TEST ) )
         {
             // Add all project dependencies in classpath
             for ( Iterator it = project.getTestClasspathElements().iterator(); it.hasNext(); )
             {
                 items.add( new File( it.next().toString() ) );
             }
-            // add test sources and resources
-            addSourcesWithActiveProjects( project, items, scope );
-            addResourcesWithActiveProjects( project, items, scope );
         }
-        else if ( scope.equals( Artifact.SCOPE_COMPILE ) )
+        else if ( scope.equals( SCOPE_COMPILE ) )
         {
             // Add all project dependencies in classpath
             for ( Iterator it = project.getCompileClasspathElements().iterator(); it.hasNext(); )
@@ -118,21 +118,20 @@ public class ClasspathBuilder
                 items.add( new File( it.next().toString() ) );
             }
         }
-        else if ( scope.equals( Artifact.SCOPE_RUNTIME ) )
+        else if ( scope.equals( SCOPE_RUNTIME ) )
         {
             // Add all dependencies BUT "TEST" as we need PROVIDED ones to setup the execution
             // GWTShell
             for ( Iterator<Artifact> it = project.getArtifacts().iterator(); it.hasNext(); )
             {
                 Artifact artifact = it.next();
-                if ( !artifact.getScope().equals( Artifact.SCOPE_TEST ) )
+                if ( !artifact.getScope().equals( SCOPE_TEST ) )
                 {
                     items.add( artifact.getFile() );
                 }
             }
         }
 
-        items.add( runtime.getGwtUserJar() );
         items.add( runtime.getGwtDevJar() );
 
         getLogger().debug( "SCRIPT INJECTION CLASSPATH LIST" );
@@ -212,11 +211,15 @@ public class ClasspathBuilder
     @SuppressWarnings( "unchecked" )
     private List<Artifact> getScopeArtifacts( final MavenProject project, final String scope )
     {
-        if ( Artifact.SCOPE_COMPILE.equals( scope ) )
+        if ( SCOPE_COMPILE.equals( scope ) )
         {
             return project.getCompileArtifacts();
         }
-        else if ( Artifact.SCOPE_TEST.equals( scope ) )
+        if ( SCOPE_RUNTIME.equals( scope ) )
+        {
+            return project.getRuntimeArtifacts();
+        }
+        else if ( SCOPE_TEST.equals( scope ) )
         {
             return project.getTestArtifacts();
         }
@@ -235,13 +238,16 @@ public class ClasspathBuilder
      */
     private List getSourceRoots( final MavenProject project, final String scope )
     {
-        if ( Artifact.SCOPE_COMPILE.equals( scope ) )
+        if ( SCOPE_COMPILE.equals( scope ) || SCOPE_RUNTIME.equals( scope ) )
         {
             return project.getCompileSourceRoots();
         }
-        else if ( Artifact.SCOPE_TEST.equals( scope ) )
+        else if ( SCOPE_TEST.equals( scope ) )
         {
-            return project.getTestCompileSourceRoots();
+            List sourceRoots = new ArrayList();
+            sourceRoots.addAll( project.getTestCompileSourceRoots() );
+            sourceRoots.addAll( project.getCompileSourceRoots() );
+            return sourceRoots;
         }
         else
         {
@@ -259,13 +265,16 @@ public class ClasspathBuilder
     @SuppressWarnings( "unchecked" )
     private List<Artifact> getResources( final MavenProject project, final String scope )
     {
-        if ( Artifact.SCOPE_COMPILE.equals( scope ) )
+        if ( SCOPE_COMPILE.equals( scope ) || SCOPE_RUNTIME.equals( scope ) )
         {
             return project.getResources();
         }
-        else if ( Artifact.SCOPE_TEST.equals( scope ) )
+        else if ( SCOPE_TEST.equals( scope ) )
         {
-            return project.getTestResources();
+            List<Artifact> resources = new ArrayList<Artifact>();
+            resources.addAll( project.getTestResources() );
+            resources.addAll( project.getResources() );
+            return resources;
         }
         else
         {
@@ -323,7 +332,7 @@ public class ClasspathBuilder
         try
         {
             Collection<File> files =
-                buildClasspathList( configuration.getProject(), Artifact.SCOPE_COMPILE, runtime,
+                buildClasspathList( configuration.getProject(), SCOPE_COMPILE, runtime,
                                     configuration.getSourcesOnPath(), configuration.getResourcesOnPath() );
             writer = new PrintWriter( classpath );
             for ( File f : files )
@@ -380,7 +389,7 @@ public class ClasspathBuilder
     /**
      * Create a jar with just a manifest containing a Main-Class entry for Booing and a Class-Path entry for all
      * classpath elements.
-     * 
+     *
      * @param classPath List&lt;String> of all classpath elements.
      * @return
      * @throws IOException
@@ -403,7 +412,7 @@ public class ClasspathBuilder
             jos.putNextEntry( je );
 
             Collection<File> files =
-                buildClasspathList( configuration.getProject(), Artifact.SCOPE_COMPILE, runtime,
+                buildClasspathList( configuration.getProject(), SCOPE_COMPILE, runtime,
                                     configuration.getSourcesOnPath(), configuration.getResourcesOnPath() );
 
             Manifest man = new Manifest();

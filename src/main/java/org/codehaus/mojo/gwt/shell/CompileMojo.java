@@ -110,7 +110,7 @@ public class CompileMojo
             }
 
             args.add( target );
-            execute( clazz, Artifact.SCOPE_COMPILE, runtime, args, null );
+            execute( clazz, Artifact.SCOPE_COMPILE, runtime, args, null, null );
         }
     }
 

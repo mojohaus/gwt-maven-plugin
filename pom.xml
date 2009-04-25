@@ -125,7 +125,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>1.5.6</version>
+      <version>1.5.8</version>
     </dependency>
     <dependency>
       <groupId>com.thoughtworks.qdox</groupId>
@@ -133,11 +133,13 @@
       <version>1.9</version>
     </dependency>
     <dependency>
+      <!-- used to generate eclipse .lanch files -->
       <groupId>freemarker</groupId>
       <artifactId>freemarker</artifactId>
       <version>2.3.6</version>
     </dependency>
     <dependency>
+      <!-- used to unpack gwt native libs -->
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
       <version>1.0-alpha-9</version>
@@ -159,6 +161,7 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <!-- used to run GWTTestCases -->
       <groupId>org.apache.maven.surefire</groupId>
       <artifactId>surefire-booter</artifactId>
       <version>2.4.3</version>
@@ -184,6 +187,7 @@
       <version>5.1</version>
     </dependency>
     <dependency>
+      <!-- required when running GWT 1.6 Hosted server to fix JAXP parser mismatches -->
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
       <version>2.9.1</version>
@@ -202,9 +206,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>org.codehaus.plexus</groupId>
-    	<artifactId>plexus-compiler-javac</artifactId>
-    	<version>1.5.3</version>
+      <!-- used to check for up-to-date compilation output -->
+      <groupId>org.codehaus.plexus</groupId>
+      <artifactId>plexus-compiler-javac</artifactId>
+      <version>1.5.3</version>
     </dependency>
   </dependencies>
   <profiles>
@@ -233,7 +238,7 @@
               <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
               <goals>
                 <goal>clean</goal>
-                <goal>package</goal>
+                <goal>integration-test</goal>
               </goals>
               <settingsFile>src/it/settings.xml</settingsFile>
               <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
@@ -309,12 +314,12 @@
     </plugins>
   </reporting>
 
-  <distributionManagement> 
-    <site> 
-      <id>codehaus.org</id> 
-      <name>Mojo Website</name> 
-      <url>dav:https://dav.codehaus.org/mojo/gwt-maven-plugin/${project.version}</url> 
-    </site> 
-  </distributionManagement> 
-  
+  <distributionManagement>
+    <site>
+      <id>codehaus.org</id>
+      <name>Mojo Website</name>
+      <url>dav:https://dav.codehaus.org/mojo/gwt-maven-plugin/${project.version}</url>
+    </site>
+  </distributionManagement>
+
 </project>

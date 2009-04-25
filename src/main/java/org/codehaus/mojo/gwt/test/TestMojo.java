@@ -44,10 +44,8 @@ import org.codehaus.plexus.util.StringUtils;
 /**
  * Mimic surefire to run GWTTestCases during integration-test phase, until SUREFIRE-508 is fixed
  *
- * @goal test
- * @phase integration-test
+ * @deprecated replaced by org.codehaus.mojo.gwt.shell.TestMojo
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- * @requiresDependencyResolution test
  * @version $Id$
  */
 public class TestMojo
@@ -100,14 +98,14 @@ public class TestMojo
      * It is recommended to use a TestSuite to run GwtTests, as they require some huge setup and are very slow. Running
      * inside a suite allow to execute the setup only once. The default value is defined with this best practice in
      * mind.
-     * 
+     *
      * @parameter default-value="**\/GwtTest*.java,**\/Gwt*Suite.java"
      */
     protected String includes;
 
     /**
      * Comma separated list of ant-style exclusion patterns for GWT integration tests
-     * 
+     *
      * @parameter
      */
     protected String excludes;
