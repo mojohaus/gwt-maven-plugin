@@ -43,7 +43,7 @@ import com.thoughtworks.qdox.model.JavaSource;
 
 /**
  * Goal which generate Asyn interface.
- *
+ * 
  * @goal generateAsync
  * @phase generate-sources
  * @requiresDependencyResolution compile
@@ -53,7 +53,7 @@ import com.thoughtworks.qdox.model.JavaSource;
 public class GenerateAsyncMojo
     extends AbstractGwtMojo
 {
-    private final static Map<String,String> WRAPPERS = new HashMap<String,String>();
+    private final static Map<String, String> WRAPPERS = new HashMap<String, String>();
     static
     {
         WRAPPERS.put( "boolean", Boolean.class.getName() );
@@ -68,7 +68,7 @@ public class GenerateAsyncMojo
 
     /**
      * Pattern for GWT service interface
-     *
+     * 
      * @parameter default-value="**\/*Service.java"
      */
     private String servicePattern;
@@ -84,7 +84,7 @@ public class GenerateAsyncMojo
 
     /**
      * Stop the build on error
-     *
+     * 
      * @parameter default-value="false" expression="${maven.gwt.failOnError}"
      */
     private boolean failOnError;
@@ -216,7 +216,12 @@ public class GenerateAsyncMojo
                 {
                     writer.print( ", " );
                 }
-                writer.print( param.getType().getGenericValue() + " " + param.getName() );
+                writer.print( param.getType().getGenericValue() );
+                if ( param.getType().isArray() )
+                {
+                    writer.print( "[]" );
+                }
+                writer.print( " " + param.getName() );
             }
             if ( params.length > 0 )
             {
