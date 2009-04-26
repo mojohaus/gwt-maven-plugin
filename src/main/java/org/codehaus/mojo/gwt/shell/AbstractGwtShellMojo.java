@@ -42,7 +42,7 @@ import org.codehaus.plexus.util.cli.shell.Shell;
 
 /**
  * Abstract Mojo for GWT-Maven.
- * 
+ *
  * @author ccollins
  * @author cooper
  * @author willpugh
@@ -59,7 +59,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * Map of of plugin artifacts.
-     * 
+     *
      * @parameter expression="${plugin.version}"
      * @required
      * @readonly
@@ -68,14 +68,14 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * Location on filesystem where project should be built.
-     * 
+     *
      * @parameter expression="${project.build.directory}"
      */
     private File buildDir;
 
     /**
      * Location on filesystem where GWT will write output files (-out option to GWTCompiler).
-     * 
+     *
      * @parameter expression="${gwt.war}" default-value="${basedir}/src/main/webapp"
      * @alias outputDirectory
      */
@@ -85,7 +85,7 @@ public abstract class AbstractGwtShellMojo
      * Location on filesystem where GWT will write generated content for review (-gen option to GWTCompiler).
      * <p>
      * Can be set from command line using '-Dgwt.gen=...'
-     * 
+     *
      * @parameter default-value="${project.build.directory}/.generated" expression="${gwt.gen}"
      */
     private File gen;
@@ -94,7 +94,7 @@ public abstract class AbstractGwtShellMojo
      * GWT logging level (-logLevel ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL).
      * <p>
      * Can be set from command line using '-Dgwt.logLevel=...'
-     * 
+     *
      * @parameter default-value="INFO" expression="${gwt.logLevel}"
      */
     private String logLevel;
@@ -103,7 +103,7 @@ public abstract class AbstractGwtShellMojo
      * GWT JavaScript compiler output style (-style OBF[USCATED], PRETTY, or DETAILED).
      * <p>
      * Can be set from command line using '-Dgwt.style=...'
-     * 
+     *
      * @parameter default-value="OBF" expression="${gwt.style}"
      */
     private String style;
@@ -112,7 +112,7 @@ public abstract class AbstractGwtShellMojo
      * Prevents the embedded GWT Tomcat server from running (even if a port is specified).
      * <p>
      * Can be set from command line using '-Dgwt.noserver=...'
-     * 
+     *
      * @parameter default-value="false" expression="${gwt.noserver}"
      */
     private boolean noServer;
@@ -123,7 +123,7 @@ public abstract class AbstractGwtShellMojo
      * <p>
      * Can be set from command line using '-Dgwt.extraJvmArgs=...', defaults to setting max Heap size to be large enough
      * for most GWT use cases.
-     * 
+     *
      * @parameter expression="${gwt.extraJvmArgs}" default-value="-Xmx512m"
      */
     private String extraJvmArgs;
@@ -131,7 +131,7 @@ public abstract class AbstractGwtShellMojo
     /**
      * For backward compatibility with googlecode gwt-maven, support the command line argument
      * '-Dgoogle.webtoolkit.extrajvmargs=...'.
-     * 
+     *
      * @deprecated use extraJvmArgs
      * @parameter expression="${google.webtoolkit.extrajvmargs}"
      */
@@ -139,28 +139,28 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * Whether or not to add compile source root to classpath.
-     * 
+     *
      * @parameter default-value="true"
      */
     protected boolean sourcesOnPath;
 
     /**
      * Whether or not to add resources root to classpath.
-     * 
+     *
      * @parameter default-value="true"
      */
     protected boolean resourcesOnPath;
 
     /**
      * Whether or not to enable assertions in generated scripts (-ea).
-     * 
+     *
      * @parameter default-value="false"
      */
     private boolean enableAssertions;
 
     /**
      * Specifies the mapping URL to be used with the shell servlet.
-     * 
+     *
      * @parameter default-value="/*"
      */
     private String shellServletMappingURL;
@@ -168,7 +168,7 @@ public abstract class AbstractGwtShellMojo
     /**
      * Option to specify the jvm (or path to the java executable) to use with the forking scripts. For the default, the
      * jvm will be the same as the one used to run Maven.
-     * 
+     *
      * @parameter expression="${gwt.jvm}"
      * @since 1.1
      */
@@ -183,7 +183,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     public final void execute()
@@ -215,7 +215,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isEnableAssertions()
      */
     public boolean isEnableAssertions()
@@ -225,7 +225,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getBuildDir()
      */
     public File getBuildDir()
@@ -235,7 +235,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getExtraJvmArgs()
      */
     public String getExtraJvmArgs()
@@ -245,7 +245,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getGen()
      */
     public File getGen()
@@ -255,7 +255,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getLogLevel()
      */
     public String getLogLevel()
@@ -265,7 +265,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isNoServer()
      */
     public boolean isNoServer()
@@ -275,7 +275,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getOutput()
      */
     public File getOutput()
@@ -285,7 +285,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getStyle()
      */
     public String getStyle()
@@ -295,7 +295,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getShellServletMappingURL()
      */
     public String getShellServletMappingURL()
@@ -305,7 +305,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getSourcesOnPath()
      */
     public boolean getSourcesOnPath()
@@ -315,7 +315,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getResourcesOnPath()
      */
     public boolean getResourcesOnPath()
@@ -449,7 +449,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * Create a command to execute using builder pattern
-     * 
+     *
      * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
      */
     public class JavaCommand
@@ -525,7 +525,7 @@ public abstract class AbstractGwtShellMojo
             for ( File file : classpath )
             {
                 path.add( quote( file.getAbsolutePath() ) );
-            }            
+            }
             command.add( StringUtils.join( path.iterator(), File.pathSeparator ) );
             if ( systemProperties != null )
             {
@@ -540,7 +540,17 @@ public abstract class AbstractGwtShellMojo
             try
             {
                 String[] arguments = (String[]) command.toArray( new String[command.size()] );
-                Commandline cmd = new Commandline( new JavaShell() );
+                Commandline cmd;
+                if ( PlatformUtil.onWindows() )
+                {
+                    // Bypass windows command line lenght limitation
+                    cmd = new Commandline( new JavaShell() );
+                }
+                else
+                {
+                    cmd = new Commandline();
+                    cmd.setExecutable( getJavaCommand() );
+                }
                 cmd.addArguments( arguments );
                 if ( env != null )
                 {
@@ -559,7 +569,7 @@ public abstract class AbstractGwtShellMojo
                 {
                     status = CommandLineUtils.executeCommandLine( cmd, out, err );
                 }
-                
+
                 if ( status != 0 )
                 {
                     throw new ForkedProcessExecutionException( "Command [[\n" + cmd.toString() + "\n]] failed with status " + status );
