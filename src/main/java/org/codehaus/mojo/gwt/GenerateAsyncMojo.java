@@ -36,6 +36,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.DirectoryScanner;
 
 import com.thoughtworks.qdox.JavaDocBuilder;
+import com.thoughtworks.qdox.model.Annotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
@@ -247,6 +248,20 @@ public class GenerateAsyncMojo
         writer.println();
 
         String uri = MessageFormat.format( rpcPattern, className );
+        if (clazz.getAnnotations() != null)
+        {
+            for ( Annotation annotation : clazz.getAnnotations() )
+            {
+                getLog().debug( "annotation found on service interface " + annotation );
+                if ( annotation.getType().getValue().equals( "com.google.gwt.user.client.rpc.RemoteServiceRelativePath" ) )
+                {
+                    uri = annotation.getNamedParameter( "value" ).toString();
+                    // remove quotes
+                    uri = uri.substring( 1, uri.length() - 1 );
+                    getLog().debug( "@RemoteServiceRelativePath annotation found on service interface " + uri );
+                }
+            }
+        }
 
         writer.println( "    /**" );
         writer.println( "     * Utility class to get the RPC Async interface from client-side code" );
