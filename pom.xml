@@ -326,12 +326,13 @@
   <repositories>
     <repository>
       <id>plexus.snapshots</id>
+      <name>plexus.snapshots</name>
       <url>http://oss.sonatype.org/content/repositories/plexus-snapshots/</url>
       <releases>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </releases>
       <snapshots>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
