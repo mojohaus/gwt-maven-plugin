@@ -414,16 +414,13 @@ public abstract class AbstractGwtShellMojo
         return "\"" + arg + "\"";
     }
 
-    // PLXUTILS-107
+    /**
+     * plexus-util hack to run a command WITHOUT a shell
+     * @see PLXUTILS-107
+     */
     private class JavaShell
         extends Shell
     {
-        public JavaShell()
-            throws MojoExecutionException
-        {
-            setExecutable( getJavaCommand() );
-        }
-
         protected List<String> getRawCommandLine( String executable, String[] arguments )
         {
             List<String> commandLine = new ArrayList<String>();
@@ -540,17 +537,14 @@ public abstract class AbstractGwtShellMojo
             try
             {
                 String[] arguments = (String[]) command.toArray( new String[command.size()] );
-                Commandline cmd;
-                if ( PlatformUtil.onWindows() )
-                {
-                    // Bypass windows command line lenght limitation
-                    cmd = new Commandline( new JavaShell() );
-                }
-                else
-                {
-                    cmd = new Commandline();
-                    cmd.setExecutable( getJavaCommand() );
-                }
+
+                // On windows, the default Shell will fall into command line length limitation issue
+                // On Unixes, not using a Shell breaks the classpath (NoClassDefFoundError: com/google/gwt/dev/Compiler).
+                Commandline cmd = PlatformUtil.onWindows()
+                    ? new Commandline( new JavaShell() )
+                    : new Commandline();
+
+                cmd.setExecutable( getJavaCommand() );
                 cmd.addArguments( arguments );
                 if ( env != null )
                 {
