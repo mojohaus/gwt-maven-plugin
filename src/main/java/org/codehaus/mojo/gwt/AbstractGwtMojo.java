@@ -259,9 +259,9 @@ public abstract class AbstractGwtMojo
      */
     private void detectGwtVersion()
     {
-        for ( Iterator iterator = project.getArtifacts().iterator(); iterator.hasNext(); )
+        Collection<Artifact> artifacts = project.getArtifacts();
+        for ( Artifact artifact : artifacts )
         {
-            Artifact artifact = (Artifact) iterator.next();
             if ( AbstractGwtMojo.GWT_GROUP_ID.equals( artifact.getGroupId() )
                 && "gwt-user".equals( artifact.getArtifactId() ) )
             {
@@ -275,15 +275,18 @@ public abstract class AbstractGwtMojo
         }
         if ( gwtVersion == null )
         {
-            for ( Iterator iterator = project.getDependencyManagement().getDependencies().iterator(); iterator.hasNext(); )
+            if ( project.getDependencyManagement() != null && project.getDependencyManagement().getDependencies() != null )
             {
-                Dependency dependency = (Dependency) iterator.next();
-                if ( AbstractGwtMojo.GWT_GROUP_ID.equals( dependency.getGroupId() )
-                    && "gwt-user".equals( dependency.getArtifactId() ) )
+                Collection<Dependency> dependencyManagement = project.getDependencyManagement().getDependencies();
+                for ( Dependency dependency : dependencyManagement )
                 {
-                    gwtVersion = dependency.getVersion();
-                    getLog().info( "using GWT jars from project dependencyManagement section : " + gwtVersion );
-                    break;
+                    if ( AbstractGwtMojo.GWT_GROUP_ID.equals( dependency.getGroupId() )
+                        && "gwt-user".equals( dependency.getArtifactId() ) )
+                    {
+                        gwtVersion = dependency.getVersion();
+                        getLog().info( "using GWT jars from project dependencyManagement section : " + gwtVersion );
+                        break;
+                    }
                 }
             }
         }
