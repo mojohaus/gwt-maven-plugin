@@ -38,7 +38,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-war-plugin</artifactId>
-          <version>2.1-alpha-2</version>          
+          <version>2.1-alpha-2</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -49,9 +49,9 @@
         <configuration>
           <gwtVersion>${gwtVersion}</gwtVersion>
           <output>${basedir}/src/main/webapp/</output>
-          <logLevel>INFO</logLevel>        
+          <logLevel>INFO</logLevel>
           <runTarget>org.codehaus.mojo.gwt.test.Hello/Hello.html</runTarget>
-          <runTimeOut>20</runTimeOut>  
+          <runTimeOut>20</runTimeOut>
         </configuration>
         <executions>
           <execution>
@@ -66,7 +66,7 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.1-alpha-2</version>
         <configuration>
-          <webXml>src/main/webapp/web.xml</webXml>
+          <webXml>war/web.xml</webXml>
         </configuration>
       </plugin>
       <plugin>
@@ -76,7 +76,7 @@
           <target>1.5</target>
         </configuration>
       </plugin>
-        
+
     </plugins>
   </build>
 
