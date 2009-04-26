@@ -20,13 +20,11 @@ package org.codehaus.mojo.gwt.shell;
  */
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -51,6 +49,13 @@ public class RunMojo
      */
     // Parameter shared with EclipseMojo
     private File hostedWebapp;
+    
+    /**
+     * The MavenProject executed by the "compile" phase
+     * @parameter expression="${executedProject}"
+     */
+    @SuppressWarnings("unused")
+    private MavenProject executedProject;
 
     /**
      * URL that should be automatically opened in the GWT shell. For example com.myapp.gwt.Module/Module.html
@@ -240,5 +245,16 @@ public class RunMojo
     public void setRunTimeOut( int runTimeOut )
     {
         setTimeOut( runTimeOut );
+    }
+
+    public void setExecutedProject( MavenProject executedProject )
+    {
+        this.executedProject = executedProject;
+    }
+    
+    @Override
+    public MavenProject getProject()
+    {
+        return executedProject;
     }
 }

@@ -117,6 +117,7 @@ public class GenerateAsyncMojo
         }
         if ( generated )
         {
+            getLog().debug( "add compile source root " + generateDirectory );
             addCompileSourceRoot( generateDirectory );
         }
     }
@@ -280,7 +281,7 @@ public class GenerateAsyncMojo
     {
         getLog().debug( "AbstractMojo#getProjectClassLoader()" );
 
-        List<?> compile = project.getCompileClasspathElements();
+        List<?> compile = getProject().getCompileClasspathElements();
         URL[] urls = new URL[compile.size()];
         int i = 0;
         for ( Object object : compile )

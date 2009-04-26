@@ -151,7 +151,7 @@ public class EclipseMojo
                 lib.mkdirs();
 
                 File basedir = new File( localRepository.getBasedir() );
-                Collection<Artifact> artifacts = project.getRuntimeArtifacts();
+                Collection<Artifact> artifacts = getProject().getRuntimeArtifacts();
                 for ( Artifact artifact : artifacts )
                 {
                     File file = new File( basedir, localRepository.pathOf( artifact ) );

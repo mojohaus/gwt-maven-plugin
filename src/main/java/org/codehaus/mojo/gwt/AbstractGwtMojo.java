@@ -108,7 +108,7 @@ public abstract class AbstractGwtMojo
      * @required
      * @readonly
      */
-    protected MavenProject project;
+    private MavenProject project;
 
     // --- Plugin parameters ---------------------------------------------------
 
@@ -203,7 +203,7 @@ public abstract class AbstractGwtMojo
     public Collection<File> getClasspath( String scope, GwtRuntime runtime )
         throws MojoExecutionException, DependencyResolutionRequiredException
     {
-        return classpathBuilder.buildClasspathList( project, scope, runtime, true, true );
+        return classpathBuilder.buildClasspathList( getProject(), scope, runtime, true, true );
     }
 
     /**
@@ -259,7 +259,7 @@ public abstract class AbstractGwtMojo
      */
     private void detectGwtVersion()
     {
-        Collection<Artifact> artifacts = project.getArtifacts();
+        Collection<Artifact> artifacts = getProject().getArtifacts();
         for ( Artifact artifact : artifacts )
         {
             if ( AbstractGwtMojo.GWT_GROUP_ID.equals( artifact.getGroupId() )
@@ -275,9 +275,9 @@ public abstract class AbstractGwtMojo
         }
         if ( gwtVersion == null )
         {
-            if ( project.getDependencyManagement() != null && project.getDependencyManagement().getDependencies() != null )
+            if ( getProject().getDependencyManagement() != null && getProject().getDependencyManagement().getDependencies() != null )
             {
-                Collection<Dependency> dependencyManagement = project.getDependencyManagement().getDependencies();
+                Collection<Dependency> dependencyManagement = getProject().getDependencyManagement().getDependencies();
                 for ( Dependency dependency : dependencyManagement )
                 {
                     if ( AbstractGwtMojo.GWT_GROUP_ID.equals( dependency.getGroupId() )
@@ -298,7 +298,7 @@ public abstract class AbstractGwtMojo
      */
     private void checkGwtDevAsDependency()
     {
-        for ( Iterator iterator = project.getArtifacts().iterator(); iterator.hasNext(); )
+        for ( Iterator iterator = getProject().getArtifacts().iterator(); iterator.hasNext(); )
         {
             Artifact artifact = (Artifact) iterator.next();
             if ( AbstractGwtMojo.GWT_GROUP_ID.equals( artifact.getGroupId() )
@@ -374,7 +374,7 @@ public abstract class AbstractGwtMojo
      */
     protected void addCompileSourceRoot( File path )
     {
-        project.addCompileSourceRoot( path.getAbsolutePath() );
+        getProject().addCompileSourceRoot( path.getAbsolutePath() );
     }
 
     /**
@@ -408,5 +408,10 @@ public abstract class AbstractGwtMojo
     protected ArchiverManager getArchiverManager()
     {
         return archiverManager;
+    }
+
+    protected void setProject( MavenProject project )
+    {
+        this.project = project;
     }
 }

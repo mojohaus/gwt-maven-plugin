@@ -246,7 +246,7 @@ public class TestMojo
     {
         getLog().debug( "AbstractMojo#getProjectClassLoader()" );
 
-        List<?> compile = project.getCompileClasspathElements();
+        List<?> compile = getProject().getCompileClasspathElements();
         URL[] urls = new URL[compile.size()];
         int i = 0;
         for ( Object object : compile )
@@ -269,7 +269,7 @@ public class TestMojo
      */
     protected void addCompileSourceRoot( File path )
     {
-        project.addCompileSourceRoot( path.getAbsolutePath() );
+        getProject().addCompileSourceRoot( path.getAbsolutePath() );
     }
 
     /**
@@ -282,9 +282,9 @@ public class TestMojo
     protected URL[] addProjectClasspathElements( URL[] originalUrls )
         throws MojoExecutionException
     {
-        Collection<?> sources = project.getCompileSourceRoots();
-        Collection<?> resources = project.getResources();
-        Collection<?> dependencies = project.getArtifacts();
+        Collection<?> sources = getProject().getCompileSourceRoots();
+        Collection<?> resources = getProject().getResources();
+        Collection<?> dependencies = getProject().getArtifacts();
         URL[] urls = new URL[originalUrls.length + sources.size() + resources.size() + dependencies.size() + 2];
 
         int i = originalUrls.length;
@@ -297,7 +297,7 @@ public class TestMojo
         try
         {
             urls[i++] = generateDirectory.toURL();
-            urls[i] = new File( project.getBuild().getOutputDirectory() ).toURL();
+            urls[i] = new File( getProject().getBuild().getOutputDirectory() ).toURL();
         }
         catch ( MalformedURLException e )
         {

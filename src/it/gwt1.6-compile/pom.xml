@@ -25,7 +25,8 @@
   <packaging>war</packaging>
   <properties>
     <gwtPluginVersion>@pom.version@</gwtPluginVersion>
-    <gwtVersion>1.6.4</gwtVersion><!-- rev-4528 -->
+    <!--<gwtPluginVersion>1.1-SNAPSHOT</gwtPluginVersion>-->
+    <gwtVersion>1.6.4</gwtVersion>
   </properties>
   <build>
     <pluginManagement>
@@ -49,12 +50,13 @@
           <gwtVersion>${gwtVersion}</gwtVersion>
           <output>${basedir}/src/main/webapp/</output>
           <logLevel>INFO</logLevel>        
-          <runTarget>com.google.gwt.sample.hello.Hello/Hello.html</runTarget>  
+          <runTarget>org.codehaus.mojo.gwt.test.Hello/Hello.html</runTarget>
+          <runTimeOut>20</runTimeOut>  
         </configuration>
         <executions>
           <execution>
-            <id>gwt-compile</id>
             <goals>
+              <goal>generateAsync</goal>
               <goal>compile</goal>
             </goals>
           </execution>
@@ -65,6 +67,13 @@
         <version>2.1-alpha-2</version>
         <configuration>
           <webXml>src/main/webapp/web.xml</webXml>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
         </configuration>
       </plugin>
         

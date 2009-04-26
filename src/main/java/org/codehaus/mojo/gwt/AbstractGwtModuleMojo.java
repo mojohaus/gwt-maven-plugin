@@ -93,7 +93,7 @@ public abstract class AbstractGwtModuleMojo
         if ( modules == null )
         {
             DirectoryScanner scanner = new DirectoryScanner();
-            scanner.setBasedir( project.getBuild().getSourceDirectory() );
+            scanner.setBasedir( getProject().getBuild().getSourceDirectory() );
             scanner.setIncludes( new String[] { "**/*" + GWT_MODULE_EXTENSION } );
             scanner.scan();
 
@@ -101,7 +101,7 @@ public abstract class AbstractGwtModuleMojo
             Set<String> mods = new HashSet<String>();
             mods.addAll( Arrays.asList( scanner.getIncludedFiles() ) );
 
-            Collection<Resource> resources = (Collection<Resource>) project.getResources();
+            Collection<Resource> resources = (Collection<Resource>) getProject().getResources();
             for ( Resource resource : resources )
             {
                 File resourceDirectoryFile = new File( resource.getDirectory() );
@@ -140,7 +140,7 @@ public abstract class AbstractGwtModuleMojo
     protected GwtModule readModule( String name )
         throws MojoExecutionException
     {
-        Collection<String> sourceRoots = project.getCompileSourceRoots();
+        Collection<String> sourceRoots = getProject().getCompileSourceRoots();
         for ( String sourceRoot : sourceRoots )
         {
             File root = new File( sourceRoot );
@@ -151,7 +151,7 @@ public abstract class AbstractGwtModuleMojo
                 return readModule( name, xml );
             }
         }
-        Collection<Resource> resources = (Collection<Resource>) project.getResources();
+        Collection<Resource> resources = (Collection<Resource>) getProject().getResources();
         for ( Resource resource : resources )
         {
             File root = new File( resource.getDirectory() );
@@ -190,7 +190,7 @@ public abstract class AbstractGwtModuleMojo
      */
     protected void addCompileSourceRoot( File path )
     {
-        project.addCompileSourceRoot( path.getAbsolutePath() );
+        getProject().addCompileSourceRoot( path.getAbsolutePath() );
     }
 
 }

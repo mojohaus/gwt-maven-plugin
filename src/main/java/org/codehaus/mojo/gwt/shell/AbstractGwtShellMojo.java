@@ -478,7 +478,7 @@ public abstract class AbstractGwtShellMojo
             try
             {
                 classpath =
-                    buildClasspathUtil.buildClasspathList( project, scope, runtime, sourcesOnPath, resourcesOnPath );
+                    buildClasspathUtil.buildClasspathList( getProject(), scope, runtime, sourcesOnPath, resourcesOnPath );
             }
             catch ( DependencyResolutionRequiredException e )
             {
@@ -521,7 +521,12 @@ public abstract class AbstractGwtShellMojo
             List<String> command = new ArrayList<String>();
             command.addAll( getJvmArgs() );
             command.add( "-classpath" );
-            command.add( quote( StringUtils.join( classpath.iterator(), File.pathSeparator ) ) );
+            List<String> path = new ArrayList<String>( classpath.size() );
+            for ( File file : classpath )
+            {
+                path.add( quote( file.getAbsolutePath() ) );
+            }            
+            command.add( StringUtils.join( path.iterator(), File.pathSeparator ) );
             if ( systemProperties != null )
             {
                 for ( Map.Entry entry : systemProperties.entrySet() )
@@ -564,7 +569,7 @@ public abstract class AbstractGwtShellMojo
             {
                 if ( timeOut > 0 )
                 {
-                    getLog().warn( "Forked JVM has been killed on time-out after " + timeOut + "seconds" );
+                    getLog().warn( "Forked JVM has been killed on time-out after " + timeOut + " seconds" );
                     return;
                 }
                 throw new MojoExecutionException( "Time-out on command line execution :\n" + command );
