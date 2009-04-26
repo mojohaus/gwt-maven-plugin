@@ -140,60 +140,51 @@ public class RunMojo
     public void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
     {
-        try
-        {
-            this.makeCatalinaBase();
-        }
-        catch ( Exception e )
-        {
-            throw new MojoExecutionException( "Unable to build catalina.base", e );
-        }
         if ( !this.getOutput().exists() )
         {
             this.getOutput().mkdirs();
         }
 
-        List<String> args = new ArrayList<String>();
-        Properties env = new Properties();
         String clazz = runtime.getVersion().getShellFQCN();
+        JavaCommand cmd = new JavaCommand( clazz, runtime )
+            .withinScope( Artifact.SCOPE_RUNTIME )
+            .arg( "-gen" )
+            .arg( quote( getGen().getAbsolutePath() ) )
+            .arg( "-logLevel" )
+            .arg( getLogLevel() )
+            .arg( "-style" )
+            .arg( getStyle() )
+            .arg( "-port" )
+            .arg( Integer.toString( getPort() ) )
+            .arg( isNoServer(), "-noserver" );
+        
         switch ( runtime.getVersion() )
         {
             case ONE_DOT_FOUR:
             case ONE_DOT_FIVE:
-                env.setProperty( "catalina.base=", quote( getTomcat().getAbsolutePath() ) );
-                break;
-        }
-        args.add( "-gen" );
-        args.add( quote( getGen().getAbsolutePath() ) );
-        args.add( "-logLevel" );
-        args.add( getLogLevel() );
-        args.add( "-style" );
-        args.add( getStyle() );
-        args.add( "-port" );
-        args.add( Integer.toString( getPort() ) );
-        if ( isNoServer() )
-        {
-            args.add( "-noserver" );
-        }
-
-        switch ( runtime.getVersion() )
-        {
-            case ONE_DOT_FOUR:
-            case ONE_DOT_FIVE:
-                args.add( "-out" );
-                args.add( quote( hostedWebapp.getAbsolutePath() ) );
-                args.add( getRunTarget() );
+                try
+                {
+                    this.makeCatalinaBase();
+                }
+                catch ( Exception e )
+                {
+                    throw new MojoExecutionException( "Unable to build catalina.base", e );
+                }
+                cmd.environment( "catalina.base", quote( getTomcat().getAbsolutePath() ) )
+                    .arg( "-out" )
+                    .arg( quote( hostedWebapp.getAbsolutePath() ) )
+                    .arg( getRunTarget() );
                 break;
             default:
-                args.add( "-war" );
-                args.add( quote( hostedWebapp.getAbsolutePath() ) );
-                args.add( "-startupUrl" );
-                args.add( quote( getStartupUrl() ) );
-                args.add( getRunModule() );
+                cmd.arg( "-war" )
+                    .arg( quote( hostedWebapp.getAbsolutePath() ) )
+                    .arg( "-startupUrl" )
+                    .arg( quote( getStartupUrl() ) )
+                    .arg( getRunModule() );
                 break;
         }
 
-        execute( clazz, Artifact.SCOPE_RUNTIME, runtime, args, null, env );
+        cmd.execute();
     }
 
     /**

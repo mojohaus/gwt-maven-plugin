@@ -112,11 +112,13 @@ public class I18NMojo
             for ( String target : getI18nConstantsBundles() )
             {
                 ensureTargetPackageExists( getGenerateDirectory(), target );
-                List<String> args = new ArrayList<String>();
-                args.add( "-out" );
-                args.add( "\"" + getGenerateDirectory() + "\"" );
-                args.add( target );
-                execute( "com.google.gwt.i18n.tools.I18NSync", Artifact.SCOPE_COMPILE, runtime, args, null, null );
+                
+                new JavaCommand( "com.google.gwt.i18n.tools.I18NSync", runtime )
+                    .withinScope( Artifact.SCOPE_COMPILE )
+                    .arg( "-out" )
+                    .arg( "\"" + getGenerateDirectory() + "\"" )
+                    .arg( target )
+                    .execute();
             }
         }
 
@@ -126,12 +128,14 @@ public class I18NMojo
             for ( String target : getI18nMessagesBundles() )
             {
                 ensureTargetPackageExists( getGenerateDirectory(), target );
-                List<String> args = new ArrayList<String>();
-                args.add( "-createMessages" );
-                args.add( "-out" );
-                args.add( "\"" + getGenerateDirectory() + "\"" );
-                args.add( target );
-                execute( "com.google.gwt.i18n.tools.I18NSync", Artifact.SCOPE_COMPILE, runtime, args, null, null );
+
+                new JavaCommand( "com.google.gwt.i18n.tools.I18NSync", runtime )
+                    .withinScope( Artifact.SCOPE_COMPILE )
+                    .arg( "-out" )
+                    .arg( "\"" + getGenerateDirectory() + "\"" )
+                    .arg( "-createMessages" )
+                    .arg( target )
+                    .execute();
             }
         }
     }

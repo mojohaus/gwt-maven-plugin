@@ -164,17 +164,12 @@ public class TestMojo
         try
         {
             new File( getProject().getBasedir(), out ).mkdirs();
-
-            String clazz = MavenTestRunner.class.getName();
-            List<String> args = new ArrayList<String>();
-            args.add( test );
-
-            Properties system = new Properties();
-            system.setProperty( "surefire.reports", quote( reportsDirectory.getAbsolutePath() ) );
-
             try
             {
-                execute( clazz, Artifact.SCOPE_TEST, runtime, args, system, null );
+                new JavaCommand( MavenTestRunner.class.getName(), runtime )
+                    .arg( test )
+                    .systemProperty( "surefire.reports", quote( reportsDirectory.getAbsolutePath() ) )
+                    .execute();
             }
             catch ( ForkedProcessExecutionException e )
             {

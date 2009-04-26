@@ -361,60 +361,6 @@ public abstract class AbstractGwtShellMojo
     }
 
     /**
-     * Execute a Java Class in a forked process. Build the JVM classpath using the project dependencies as defined by
-     * <code>scope</code> and use <code>runtime</code> to add GWT-SDK libs. Optional env properties are added to he
-     * forked process if set.
-     * 
-     * @param className the java Fully qualified class name to execute in forked JVM
-     * @param scope the dependencies scope
-     * @param runtime the GWT Runtime
-     * @param args java command line arguments (JVM or program arguments)
-     * @param systemProperties system properties (-D) for the forked JVM
-     * @param env environment properties
-     * @throws MojoExecutionException something was wrong :'(
-     * @deprecated use JavaCommand builder
-     */
-    protected void execute( String className, String scope, GwtRuntime runtime, List<String> args,
-                            Properties systemProperties, Properties env )
-        throws MojoExecutionException
-    {
-        Collection<File> classpath;
-        try
-        {
-            classpath = buildClasspathUtil.buildClasspathList( project, scope, runtime, sourcesOnPath, resourcesOnPath );
-        }
-        catch ( DependencyResolutionRequiredException e )
-        {
-            throw new MojoExecutionException( "Failed to build " + scope + " classpath" );
-        }
-        postProcessClassPath( classpath );
-
-        JavaCommand cmd = new JavaCommand( className, runtime ).withinScope( scope );
-        if ( args != null )
-        {
-            for ( String arg : args )
-            {
-                cmd.arg( arg );
-            }
-        }
-        if ( systemProperties != null )
-        {
-            for ( Map.Entry property : systemProperties.entrySet() )
-            {
-                cmd.systemProperty( (String) property.getKey(), (String) property.getValue() );
-            }
-        }
-        if ( env != null )
-        {
-            for ( Map.Entry property : env.entrySet() )
-            {
-                cmd.environment( (String) property.getKey(), (String) property.getValue() );
-            }
-        }
-        cmd.execute();
-    }
-
-    /**
      * hook to post-process the dependency-based classpath
      */
     protected void postProcessClassPath( Collection<File> classpath )
@@ -509,11 +455,11 @@ public abstract class AbstractGwtShellMojo
     public class JavaCommand
     {
         private String className;
-        
+
         private GwtRuntime runtime;
 
         private Collection<File> classpath;
-        
+
         private List<String> args = new ArrayList<String>();
 
         private Properties systemProperties = new Properties();
@@ -526,12 +472,13 @@ public abstract class AbstractGwtShellMojo
             this.runtime = runtime;
         }
 
-        public JavaCommand withinScope( String scope ) 
+        public JavaCommand withinScope( String scope )
             throws MojoExecutionException
         {
             try
             {
-                classpath = buildClasspathUtil.buildClasspathList( project, scope, runtime, sourcesOnPath, resourcesOnPath );
+                classpath =
+                    buildClasspathUtil.buildClasspathList( project, scope, runtime, sourcesOnPath, resourcesOnPath );
             }
             catch ( DependencyResolutionRequiredException e )
             {
@@ -541,15 +488,18 @@ public abstract class AbstractGwtShellMojo
             return this;
         }
 
-        public JavaCommand withInClasspath( Class<?> type )
-        {
-            // TODO
-            return this;
-        }
-
         public JavaCommand arg( String arg )
         {
             args.add( arg );
+            return this;
+        }
+
+        public JavaCommand arg( boolean condition, String arg )
+        {
+            if ( condition )
+            {
+                args.add( arg );
+            }
             return this;
         }
 
@@ -604,9 +554,10 @@ public abstract class AbstractGwtShellMojo
                 {
                     status = CommandLineUtils.executeCommandLine( cmd, out, err );
                 }
+                
                 if ( status != 0 )
                 {
-                    throw new ForkedProcessExecutionException( "Failed to run command " + cmd.toString() );
+                    throw new ForkedProcessExecutionException( "Command [[\n" + cmd.toString() + "\n]] failed with status " + status );
                 }
             }
             catch ( CommandLineTimeOutException e )
@@ -616,12 +567,11 @@ public abstract class AbstractGwtShellMojo
                     getLog().warn( "Forked JVM has been killed on time-out after " + timeOut + "seconds" );
                     return;
                 }
-                throw new MojoExecutionException( "Failed to execute command line " + command );
+                throw new MojoExecutionException( "Time-out on command line execution :\n" + command );
             }
             catch ( CommandLineException e )
             {
-
-                throw new MojoExecutionException( "Failed to execute command line " + command );
+                throw new MojoExecutionException( "Failed to execute command line :\n" + command );
             }
         }
     }

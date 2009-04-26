@@ -72,6 +72,7 @@ public class CompileMojo
         {
             this.getOutput().mkdirs();
         }
+        
         for ( String target : getModules() )
         {
             if ( !compilationRequired( target, getOutput() ) )
@@ -81,36 +82,31 @@ public class CompileMojo
             }
 
             String clazz = runtime.getVersion().getCompilerFQCN();
-            List<String> args = new ArrayList<String>();
-            args.add( "-gen" );
-            args.add( quote( getGen().getAbsolutePath() ) );
-            args.add( "-logLevel" );
-            args.add( getLogLevel() );
-            args.add( "-style" );
-            args.add( getStyle() );
+            JavaCommand cmd = new JavaCommand( clazz, runtime )
+                .withinScope( Artifact.SCOPE_COMPILE )
+                .arg( "-gen" )
+                .arg( quote( getGen().getAbsolutePath() ) )
+                .arg( "-logLevel" )
+                .arg( getLogLevel() )
+                .arg( "-style" )
+                .arg( getStyle() )
+                .arg( isEnableAssertions(), "-ea" );
 
             switch ( runtime.getVersion() )
             {
                 case ONE_DOT_FOUR:
                 case ONE_DOT_FIVE:
-                    args.add( "-out" );
-                    args.add( quote( getOutput().getAbsolutePath() ) );
+                    cmd.arg( "-out" )
+                        .arg( quote( getOutput().getAbsolutePath() ) );
                     break;
                 default:
-                    args.add( "-war" );
-                    args.add( quote( getOutput().getAbsolutePath() ) );
-                    args.add( "-localWorkers" );
-                    args.add( String.valueOf( Runtime.getRuntime().availableProcessors() ) );
+                    cmd.arg( "-war" )
+                        .arg( quote( getOutput().getAbsolutePath() ) )
+                        .arg( "-localWorkers" )
+                        .arg( String.valueOf( Runtime.getRuntime().availableProcessors() ) );
                     break;
             }
-
-            if ( isEnableAssertions() )
-            {
-                args.add( "-ea" );
-            }
-
-            args.add( target );
-            execute( clazz, Artifact.SCOPE_COMPILE, runtime, args, null, null );
+            cmd.arg( target ).execute();
         }
     }
 
