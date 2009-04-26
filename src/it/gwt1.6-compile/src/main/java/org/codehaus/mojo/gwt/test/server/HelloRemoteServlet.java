@@ -22,6 +22,8 @@ package org.codehaus.mojo.gwt.test.server;
 import java.util.Collection;
 import java.util.List;
 
+import javax.servlet.ServletException;
+
 import org.codehaus.mojo.gwt.test.client.HelloService;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -30,6 +32,12 @@ public class HelloRemoteServlet
     extends RemoteServiceServlet
     implements HelloService
 {
+    public void init()
+        throws ServletException
+    {
+        System.out.println( "HelloRemoteServlet started" );
+    }
+    
 
     public void exit()
     {

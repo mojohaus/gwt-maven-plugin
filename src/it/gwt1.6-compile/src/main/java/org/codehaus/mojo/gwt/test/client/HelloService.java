@@ -23,18 +23,21 @@ import java.util.Collection;
 import java.util.List;
 
 import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+@RemoteServiceRelativePath( "Hello" )
 public interface HelloService
     extends RemoteService
 {
     void exit();
-    
+
     // expected : void returnsVoid( String value, AsyncCallback<Void> callback );
     void returnsVoid( String value );
-    
+
     // expected : void returnsPrimitive( String[] values, AsyncCallback<Integer> callback );
     int returnsPrimitive( String[] values );
-    
-    // expected : void returnsGenerics( java.util.List<String> values, AsyncCallback<java.util.Collection<Integer>> callback );
+
+    // expected : void returnsGenerics( java.util.List<String> values, AsyncCallback<java.util.Collection<Integer>>
+    // callback );
     Collection<Integer> returnsGenerics( List<String> values );
 }
