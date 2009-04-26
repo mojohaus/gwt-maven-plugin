@@ -172,7 +172,11 @@ public class TestMojo
             Properties system = new Properties();
             system.setProperty( "surefire.reports", quote( reportsDirectory.getAbsolutePath() ) );
 
-            if ( execute( clazz, Artifact.SCOPE_TEST, runtime, args, system, null ) != 0 )
+            try
+            {
+                execute( clazz, Artifact.SCOPE_TEST, runtime, args, system, null );
+            }
+            catch ( ForkedProcessExecutionException e )
             {
                 failures++;
             }
