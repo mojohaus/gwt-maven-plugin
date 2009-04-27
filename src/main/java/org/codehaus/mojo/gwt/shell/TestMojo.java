@@ -23,22 +23,14 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.surefire.booter.output.ForkingStreamConsumer;
-import org.apache.maven.surefire.booter.output.StandardOutputConsumer;
-import org.apache.maven.surefire.booter.shade.org.codehaus.plexus.util.cli.CommandLineUtils;
-import org.apache.maven.surefire.booter.shade.org.codehaus.plexus.util.cli.Commandline;
-import org.apache.maven.surefire.booter.shade.org.codehaus.plexus.util.cli.StreamConsumer;
 import org.apache.maven.surefire.report.ReporterManager;
-import org.codehaus.mojo.gwt.AbstractGwtMojo;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.test.MavenTestRunner;
 import org.codehaus.mojo.gwt.test.TestTemplate;
@@ -167,6 +159,7 @@ public class TestMojo
             try
             {
                 new JavaCommand( MavenTestRunner.class.getName(), runtime )
+                    .withinScope( Artifact.SCOPE_TEST )
                     .arg( test )
                     .systemProperty( "surefire.reports", quote( reportsDirectory.getAbsolutePath() ) )
                     .execute();
