@@ -22,9 +22,11 @@
  */
 package org.codehaus.mojo.gwt.shell;
 
+import static org.apache.maven.artifact.Artifact.SCOPE_COMPILE;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -72,7 +74,7 @@ public class CompileMojo
         {
             this.getOutput().mkdirs();
         }
-        
+
         for ( String target : getModules() )
         {
             if ( !compilationRequired( target, getOutput() ) )
@@ -129,16 +131,18 @@ public class CompileMojo
         StaleSourceScanner scanner = new StaleSourceScanner();
         scanner.addSourceMapping( singleTargetMapping );
 
-        for ( Object sourceRoot : getProject().getCompileSourceRoots() )
+        Collection<File> compileSourceRoots = new HashSet<File>();
+        buildClasspathUtil.addSourcesWithActiveProjects( getProject(), compileSourceRoots, SCOPE_COMPILE );
+        buildClasspathUtil.addResourcesWithActiveProjects( getProject(), compileSourceRoots, SCOPE_COMPILE );
+        for ( File sourceRoot : compileSourceRoots )
         {
-            File rootFile = new File( sourceRoot.toString() );
-            if ( !rootFile.isDirectory() )
+            if ( !sourceRoot.isDirectory() )
             {
                 continue;
             }
             try
             {
-                return !scanner.getIncludedSources( rootFile, output ).isEmpty();
+                return !scanner.getIncludedSources( sourceRoot, output ).isEmpty();
             }
             catch ( InclusionScanException e )
             {

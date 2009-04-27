@@ -19,7 +19,9 @@ package org.codehaus.mojo.gwt.shell;
  * under the License.
  */
 
-import static org.apache.maven.artifact.Artifact.*;
+import static org.apache.maven.artifact.Artifact.SCOPE_COMPILE;
+import static org.apache.maven.artifact.Artifact.SCOPE_RUNTIME;
+import static org.apache.maven.artifact.Artifact.SCOPE_TEST;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -145,13 +147,13 @@ public class ClasspathBuilder
 
     /**
      * Add all sources and resources also with active (maven reactor active) referenced project sources and resources.
-     * Addresses issue no. 147.
      *
      * @param project
      * @param items
      * @param scope
      */
-    private void addSourcesWithActiveProjects( final MavenProject project, final Set<File> items, final String scope )
+    public void addSourcesWithActiveProjects( final MavenProject project, final Collection<File> items,
+                                              final String scope )
     {
         final List<Artifact> scopeArtifacts = getScopeArtifacts( project, scope );
 
@@ -174,13 +176,13 @@ public class ClasspathBuilder
 
     /**
      * Add all sources and resources also with active (maven reactor active) referenced project sources and resources.
-     * Addresses issue no. 147.
      *
      * @param project
      * @param items
      * @param scope
      */
-    private void addResourcesWithActiveProjects( final MavenProject project, final Set<File> items, final String scope )
+    public void addResourcesWithActiveProjects( final MavenProject project, final Collection<File> items,
+                                                final String scope )
     {
         final List<Artifact> scopeArtifacts = getScopeArtifacts( project, scope );
 
@@ -288,7 +290,7 @@ public class ClasspathBuilder
      * @param items Classpath items.
      * @param sourceRoots
      */
-    private void addSources( final Set<File> items, final List sourceRoots )
+    private void addSources( final Collection<File> items, final List sourceRoots )
     {
         for ( Iterator it = sourceRoots.iterator(); it.hasNext(); )
         {
@@ -302,7 +304,7 @@ public class ClasspathBuilder
      * @param items Classpath items.
      * @param resources
      */
-    private void addResources( final Set<File> items, final List resources )
+    private void addResources( final Collection<File> items, final List resources )
     {
         for ( Iterator it = resources.iterator(); it.hasNext(); )
         {
