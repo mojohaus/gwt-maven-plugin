@@ -378,9 +378,9 @@ public abstract class AbstractGwtShellMojo
                 extra.add( extraArg );
             }
         }
-        if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( extraJvmArgs.contains( "-XstartOnFirstThread" ) ) )
+        if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( !extraJvmArgs.contains( "-XstartOnFirstThread" ) ) )
         {
-            extra.add( " -XstartOnFirstThread " );
+            extra.add( "-XstartOnFirstThread" );
         }
         return extra;
     }
