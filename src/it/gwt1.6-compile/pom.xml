@@ -47,7 +47,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <configuration>
-          <gwtVersion>${gwtVersion}</gwtVersion>
+          <!-- GWT version detected from dependencies -->
           <output>${basedir}/src/main/webapp/</output>
           <logLevel>INFO</logLevel>
           <runTarget>org.codehaus.mojo.gwt.test.Hello/Hello.html</runTarget>
