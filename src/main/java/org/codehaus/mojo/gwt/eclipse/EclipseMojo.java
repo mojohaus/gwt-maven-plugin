@@ -38,6 +38,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
 import org.codehaus.mojo.gwt.GwtRuntime;
+import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.plexus.util.StringUtils;
 
 import freemarker.template.Configuration;
@@ -63,8 +64,19 @@ public class EclipseMojo
     private EclipseUtil eclipseUtil;
 
     /**
+     * Extra JVM arguments that are passed to the GWT-Maven generated scripts (for compiler, shell, etc - typically use
+     * -Xmx512m here, or -XstartOnFirstThread, etc).
+     * <p>
+     * Can be set from command line using '-Dgwt.extraJvmArgs=...', defaults to setting max Heap size to be large enough
+     * for most GWT use cases.
+     * 
+     * @parameter expression="${gwt.extraJvmArgs}" default-value="-Xmx512m"
+     */
+    private String extraJvmArgs;
+
+    /**
      * The currently executed project (phase=generate-resources).
-     *
+     * 
      * @parameter expression="${executedProject}"
      * @readonly
      */
@@ -218,6 +230,7 @@ public class EclipseMojo
         context.put( "out", outputDirectory.getAbsolutePath().substring( basedir + 1 ) );
         context.put( "war", hostedWebapp.getAbsolutePath().substring( basedir + 1 ) );
         context.put( "additionalArguments", noserver ? "-noserver -port " + port : "" );
+        context.put( "extraJvmArgs", getExtraJvmArgs() );
         context.put( "project", eclipseUtil.getProjectName( getProject() ) );
         context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath().replace( '\\', '/' ) );
 
@@ -238,6 +251,19 @@ public class EclipseMojo
         {
             throw new MojoExecutionException( "Unable to merge freemarker template", te );
         }
+    }
+
+    /**
+     * @return
+     */
+    protected String getExtraJvmArgs()
+    {
+        String extra = extraJvmArgs;
+        if ( PlatformUtil.onMac() && !extraJvmArgs.contains( "-XstartOnFirstThread" ) )
+        {
+            extra += " -XstartOnFirstThread";
+        }
+        return extra;
     }
 
 }

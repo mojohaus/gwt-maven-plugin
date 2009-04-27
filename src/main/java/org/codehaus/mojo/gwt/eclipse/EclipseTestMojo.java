@@ -32,6 +32,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.gwt.GwtRuntime;
+import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.mojo.gwt.test.TestMojo;
 import org.codehaus.mojo.gwt.test.TestTemplate;
 
@@ -55,6 +56,17 @@ public class EclipseTestMojo
      * @component
      */
     private EclipseUtil eclipseUtil;
+
+    /**
+     * Extra JVM arguments that are passed to the GWT-Maven generated scripts (for compiler, shell, etc - typically use
+     * -Xmx512m here, or -XstartOnFirstThread, etc).
+     * <p>
+     * Can be set from command line using '-Dgwt.extraJvmArgs=...', defaults to setting max Heap size to be large enough
+     * for most GWT use cases.
+     * 
+     * @parameter expression="${gwt.extraJvmArgs}" default-value="-Xmx512m"
+     */
+    private String extraJvmArgs;
 
     /**
      * The currently executed project (phase=generate-resources).
@@ -121,6 +133,7 @@ public class EclipseTestMojo
         context.put( "test", fqcn );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", testOutputDirectory.getAbsolutePath().substring( basedir + 1 ) );
+        context.put( "extraJvmArgs", getExtraJvmArgs() );
         context.put( "project", eclipseUtil.getProjectName( getProject() ) );
         context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath() );
 
@@ -141,5 +154,18 @@ public class EclipseTestMojo
         {
             throw new MojoExecutionException( "Unable to merge freemarker template", te );
         }
+    }
+
+    /**
+     * @return
+     */
+    protected String getExtraJvmArgs()
+    {
+        String extra = extraJvmArgs;
+        if ( PlatformUtil.onMac() && !extraJvmArgs.contains( "-XstartOnFirstThread" ) )
+        {
+            extra += " -XstartOnFirstThread";
+        }
+        return extra;
     }
 }
