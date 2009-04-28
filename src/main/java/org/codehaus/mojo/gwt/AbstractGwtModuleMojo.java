@@ -39,10 +39,6 @@ import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 public abstract class AbstractGwtModuleMojo
     extends AbstractGwtMojo
 {
-
-    /**
-     *
-     */
     public static final String GWT_MODULE_EXTENSION = ".gwt.xml";
 
     /**
@@ -54,28 +50,12 @@ public abstract class AbstractGwtModuleMojo
     private String[] modules;
 
     /**
-     * A single GWT module (Shortcut for modules)
+     * A single GWT module. Shortcut for &lt;modules&gt; or option to specify a single module from command line
      * 
      * @parameter expression="${gwt.module}"
      */
-    private String module; // NOPMD
+    private String module;
 
-    /**
-     *
-     */
-    public AbstractGwtModuleMojo()
-    {
-        super();
-    }
-
-    /**
-     * @param module the module to set
-     */
-    public void setModule( String module )
-    {
-        // Note : Plexus will use this setter to inject dependency. The 'module' attribute is unused
-        this.modules = new String[] { module };
-    }
 
     /**
      * Return the configured modules or scan the project source/resources folder to find them
