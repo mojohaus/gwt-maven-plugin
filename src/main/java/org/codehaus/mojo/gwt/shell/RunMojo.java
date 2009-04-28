@@ -49,17 +49,24 @@ public class RunMojo
      */
     // Parameter shared with EclipseMojo
     private File hostedWebapp;
-    
+
     /**
      * The MavenProject executed by the "compile" phase
      * @parameter expression="${executedProject}"
      */
-    @SuppressWarnings("unused")
     private MavenProject executedProject;
 
     /**
-     * URL that should be automatically opened in the GWT shell. For example com.myapp.gwt.Module/Module.html
-     *
+     * URL that should be automatically opened in the GWT shell. For example com.myapp.gwt.Module/Module.html.
+     * <p>
+     * When the host page is outside the module "public" folder (for example, at webapp root), the module MUST be
+     * specified (using a single &lt;module&gt; in configuration or by setting <code>-Dgwt.module=..</code>) and the
+     * runTarget parameter can only contain the host page URI.
+     * <p>
+     * When the GWT module host page is part of the module "public" folder, the runTarget MAY define the full GWT module
+     * path (<code>com.myapp.gwt.Module/Module.html</code>) that will be automatically converted according to the
+     * <code>rename-to</code> directive into <code>renamed/Module.html</code>.
+     * 
      * @parameter expression="${runTarget}"
      * @required
      */
@@ -105,9 +112,9 @@ public class RunMojo
     public String getRunModule()
     throws MojoExecutionException
     {
+        String[] modules = getModules();
         if (isNoServer())
         {
-            String[] modules = getModules();
             if (modules.length != 1)
             {
                 getLog().error(
@@ -116,8 +123,18 @@ public class RunMojo
             }
             return modules[0];
         }
+        if ( modules.length == 1 )
+        {
+            // A single module is set, no ambiguity
+            return modules[0];
+        }
         int dash = runTarget.indexOf( '/' );
-        return runTarget.substring( 0, dash );
+        if ( dash > 0 )
+        {
+            return runTarget.substring( 0, dash );
+        }
+        // The runTarget MUST start with the full GWT module path
+        throw new MojoExecutionException( "You MUST specify the GWT module to run using -Dgwt.module" );
     }
 
     /**
@@ -132,9 +149,18 @@ public class RunMojo
         }
         int dash = runTarget.indexOf( '/' );
         String module = getRunModule();
-        String renameTo = readModule( module ).getRenameTo();
-        String modulePath = ( renameTo != null ? renameTo : module );
-        return modulePath + '/' + runTarget.substring( dash + 1 );
+        if ( dash > 0 )
+        {
+            String prefix = runTarget.substring( 0, dash );
+            if ( prefix.equals( module ) )
+            {
+                // runTarget includes the GWT module full path. Lets apply the rename-to directive
+                String renameTo = readModule( module ).getRenameTo();
+                String modulePath = ( renameTo != null ? renameTo : module );
+                return modulePath + '/' + runTarget.substring( dash + 1 );
+            }
+        }
+        return runTarget;
     }
 
     protected String getFileName()
@@ -162,7 +188,7 @@ public class RunMojo
             .arg( "-port" )
             .arg( Integer.toString( getPort() ) )
             .arg( isNoServer(), "-noserver" );
-        
+
         switch ( runtime.getVersion() )
         {
             case ONE_DOT_FOUR:
@@ -251,7 +277,7 @@ public class RunMojo
     {
         this.executedProject = executedProject;
     }
-    
+
     @Override
     public MavenProject getProject()
     {
