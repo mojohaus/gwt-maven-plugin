@@ -155,7 +155,7 @@ public class CompileMojo
             }
             try
             {
-                if ( scanner.getIncludedSources( sourceRoot, output ).isEmpty() )
+                if ( !scanner.getIncludedSources( sourceRoot, output ).isEmpty() )
                 {
                     return true;
                 }
