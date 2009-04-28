@@ -55,6 +55,14 @@ public class CompileMojo
      */
     private boolean skip;
 
+    /**
+     * Don't try to detect if GWT compilation is up-to-date and can be skipped.
+     * 
+     * @parameter expression="${gwt.compiler.force}" default-value="false"
+     */
+    private boolean force;
+
+
     /** Creates a new instance of CompileMojo */
     public CompileMojo()
     {
@@ -126,6 +134,11 @@ public class CompileMojo
     private boolean compilationRequired( String module, File output )
         throws MojoExecutionException
     {
+        if ( force )
+        {
+            return true;
+        }
+
         String outputTarget = module + "/" + module + ".nocache.js";
         SingleTargetSourceMapping singleTargetMapping = new SingleTargetSourceMapping( ".java", outputTarget );
         StaleSourceScanner scanner = new StaleSourceScanner();
@@ -142,7 +155,10 @@ public class CompileMojo
             }
             try
             {
-                return !scanner.getIncludedSources( sourceRoot, output ).isEmpty();
+                if ( scanner.getIncludedSources( sourceRoot, output ).isEmpty() )
+                {
+                    return true;
+                }
             }
             catch ( InclusionScanException e )
             {
