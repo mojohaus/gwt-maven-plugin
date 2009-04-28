@@ -125,7 +125,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>1.5.9-SNAPSHOT</version>
+      <version>1.5.9</version>
     </dependency>
     <dependency>
       <groupId>com.thoughtworks.qdox</groupId>
@@ -321,20 +321,5 @@
       <url>dav:https://dav.codehaus.org/mojo/gwt-maven-plugin/${project.version}</url>
     </site>
   </distributionManagement>
-
-  <!--  TODO remove when p-u 1.5.9 is released -->
-  <repositories>
-    <repository>
-      <id>plexus.snapshots</id>
-      <name>plexus.snapshots</name>
-      <url>http://oss.sonatype.org/content/repositories/plexus-snapshots/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
 </project>
