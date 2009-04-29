@@ -57,7 +57,7 @@ public class CompileMojo
 
     /**
      * Don't try to detect if GWT compilation is up-to-date and can be skipped.
-     * 
+     *
      * @parameter expression="${gwt.compiler.force}" default-value="false"
      */
     private boolean force;
@@ -83,6 +83,31 @@ public class CompileMojo
             this.getOutput().mkdirs();
         }
 
+        String clazz = runtime.getVersion().getCompilerFQCN();
+        JavaCommand cmd = new JavaCommand( clazz, runtime )
+            .withinScope( Artifact.SCOPE_COMPILE )
+            .arg( "-gen" )
+            .arg( quote( getGen().getAbsolutePath() ) )
+            .arg( "-logLevel" )
+            .arg( getLogLevel() )
+            .arg( "-style" )
+            .arg( getStyle() )
+            .arg( isEnableAssertions(), "-ea" );
+
+        switch ( runtime.getVersion() )
+        {
+            case ONE_DOT_FOUR:
+            case ONE_DOT_FIVE:
+                cmd.arg( "-out" )
+                    .arg( quote( getOutput().getAbsolutePath() ) );
+                break;
+            default:
+                cmd.arg( "-war" )
+                    .arg( quote( getOutput().getAbsolutePath() ) )
+                    .arg( "-localWorkers" )
+                    .arg( String.valueOf( Runtime.getRuntime().availableProcessors() ) );
+                break;
+        }
         for ( String target : getModules() )
         {
             if ( !compilationRequired( target, getOutput() ) )
@@ -90,41 +115,16 @@ public class CompileMojo
                 getLog().info( target + " is up to date. GWT compilation skipped" );
                 continue;
             }
-
-            String clazz = runtime.getVersion().getCompilerFQCN();
-            JavaCommand cmd = new JavaCommand( clazz, runtime )
-                .withinScope( Artifact.SCOPE_COMPILE )
-                .arg( "-gen" )
-                .arg( quote( getGen().getAbsolutePath() ) )
-                .arg( "-logLevel" )
-                .arg( getLogLevel() )
-                .arg( "-style" )
-                .arg( getStyle() )
-                .arg( isEnableAssertions(), "-ea" );
-
-            switch ( runtime.getVersion() )
-            {
-                case ONE_DOT_FOUR:
-                case ONE_DOT_FIVE:
-                    cmd.arg( "-out" )
-                        .arg( quote( getOutput().getAbsolutePath() ) );
-                    break;
-                default:
-                    cmd.arg( "-war" )
-                        .arg( quote( getOutput().getAbsolutePath() ) )
-                        .arg( "-localWorkers" )
-                        .arg( String.valueOf( Runtime.getRuntime().availableProcessors() ) );
-                    break;
-            }
-            cmd.arg( target ).execute();
+            cmd.arg( target );
         }
+        cmd.execute();
     }
 
     /**
      * Try to find out, if there are stale sources. If aren't some, we don't have to compile... ...this heuristic
      * doesn't take into account, that there could be updated dependencies. But for this case, as 'clean compile' could
      * be executed which would force a compilation.
-     * 
+     *
      * @param module Name of the GWT module to compile
      * @param output Output path
      * @return true if compilation is required (i.e. stale sources are found)
