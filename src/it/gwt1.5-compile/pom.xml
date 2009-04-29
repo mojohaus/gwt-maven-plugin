@@ -57,6 +57,7 @@
             <id>gwt-compile</id>
             <goals>
               <goal>compile</goal>
+              <goal>generateAsync</goal>
             </goals>
           </execution>
         </executions>
