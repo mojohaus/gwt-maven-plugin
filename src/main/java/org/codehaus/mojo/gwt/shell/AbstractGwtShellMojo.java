@@ -371,14 +371,14 @@ public abstract class AbstractGwtShellMojo
     private List<String> getJvmArgs()
     {
         List<String> extra = new ArrayList<String>();
-        if ( extraJvmArgs != null )
+        if ( getExtraJvmArgs() != null )
         {
-            for ( String extraArg : extraJvmArgs.split( " " ) )
+            for ( String extraArg : getExtraJvmArgs().split( " " ) )
             {
                 extra.add( extraArg );
             }
         }
-        if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( !extraJvmArgs.contains( "-XstartOnFirstThread" ) ) )
+        if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( !getExtraJvmArgs().contains( "-XstartOnFirstThread" ) ) )
         {
             extra.add( "-XstartOnFirstThread" );
         }
