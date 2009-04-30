@@ -66,7 +66,7 @@ public class RunMojo
      * When the GWT module host page is part of the module "public" folder, the runTarget MAY define the full GWT module
      * path (<code>com.myapp.gwt.Module/Module.html</code>) that will be automatically converted according to the
      * <code>rename-to</code> directive into <code>renamed/Module.html</code>.
-     * 
+     *
      * @parameter expression="${runTarget}"
      * @required
      */
@@ -179,6 +179,8 @@ public class RunMojo
         String clazz = runtime.getVersion().getShellFQCN();
         JavaCommand cmd = new JavaCommand( clazz, runtime )
             .withinScope( Artifact.SCOPE_RUNTIME )
+            .arg( runtime.getVersion().getWebOutputArgument() )
+            .arg( quote( hostedWebapp.getAbsolutePath() ) )
             .arg( "-gen" )
             .arg( quote( getGen().getAbsolutePath() ) )
             .arg( "-logLevel" )
@@ -202,14 +204,10 @@ public class RunMojo
                     throw new MojoExecutionException( "Unable to build catalina.base", e );
                 }
                 cmd.environment( "catalina.base", quote( getTomcat().getAbsolutePath() ) )
-                    .arg( "-out" )
-                    .arg( quote( hostedWebapp.getAbsolutePath() ) )
                     .arg( getRunTarget() );
                 break;
             default:
-                cmd.arg( "-war" )
-                    .arg( quote( hostedWebapp.getAbsolutePath() ) )
-                    .arg( "-startupUrl" )
+                cmd.arg( "-startupUrl" )
                     .arg( quote( getStartupUrl() ) )
                     .arg( getRunModule() );
                 break;

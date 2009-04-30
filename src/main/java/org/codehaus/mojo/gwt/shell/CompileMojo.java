@@ -62,6 +62,13 @@ public class CompileMojo
      */
     private boolean force;
 
+    /**
+     * On GWT 1.6+, number of parallel processes used to compile GWT premutations. Defaults to
+     * platform available processors number.
+     * @parameter
+     */
+    private int localWorkers;
+
 
     /** Creates a new instance of CompileMojo */
     public CompileMojo()
@@ -83,6 +90,24 @@ public class CompileMojo
             this.getOutput().mkdirs();
         }
 
+        String[] modules = getModules();
+        if (runtime.getVersion().supportMultiModuleCompile())
+        {
+            compile( runtime, modules );
+        }
+        else
+        {
+            for ( String module : modules )
+            {
+                compile( runtime, new String[] { module } );
+            }
+        }
+
+    }
+
+    private void compile( GwtRuntime runtime, String[] modules )
+        throws MojoExecutionException
+    {
         String clazz = runtime.getVersion().getCompilerFQCN();
         JavaCommand cmd = new JavaCommand( clazz, runtime )
             .withinScope( Artifact.SCOPE_COMPILE )
@@ -92,23 +117,16 @@ public class CompileMojo
             .arg( getLogLevel() )
             .arg( "-style" )
             .arg( getStyle() )
-            .arg( isEnableAssertions(), "-ea" );
+            .arg( isEnableAssertions(), "-ea" )
+            .arg( runtime.getVersion().getWebOutputArgument() )
+            .arg( quote( getOutput().getAbsolutePath() ) );
 
-        switch ( runtime.getVersion() )
+        if ( runtime.getVersion().supportParallelCompile() )
         {
-            case ONE_DOT_FOUR:
-            case ONE_DOT_FIVE:
-                cmd.arg( "-out" )
-                    .arg( quote( getOutput().getAbsolutePath() ) );
-                break;
-            default:
-                cmd.arg( "-war" )
-                    .arg( quote( getOutput().getAbsolutePath() ) )
-                    .arg( "-localWorkers" )
-                    .arg( String.valueOf( Runtime.getRuntime().availableProcessors() ) );
-                break;
+            cmd.arg( "-localWorkers" )
+               .arg( String.valueOf( getLocalWorkers() ) );
         }
-        for ( String target : getModules() )
+        for ( String target : modules )
         {
             if ( !compilationRequired( target, getOutput() ) )
             {
@@ -118,6 +136,15 @@ public class CompileMojo
             cmd.arg( target );
         }
         cmd.execute();
+    }
+
+    private int getLocalWorkers()
+    {
+        if ( localWorkers > 0 )
+        {
+            return localWorkers;
+        }
+        return Runtime.getRuntime().availableProcessors();
     }
 
     /**

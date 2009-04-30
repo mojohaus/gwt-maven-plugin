@@ -43,6 +43,25 @@ public enum GwtVersion
         {
             return EmbeddedServer.TOMCAT;
         }
+
+        @Override
+        public boolean supportMultiModuleCompile()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean supportParallelCompile()
+        {
+            return false;
+        }
+
+        @Override
+        public String getWebOutputArgument()
+        {
+            return "-out";
+        }
+
     },
     ONE_DOT_FIVE
     {
@@ -62,6 +81,24 @@ public enum GwtVersion
         public EmbeddedServer getEmbeddedServer()
         {
             return EmbeddedServer.TOMCAT;
+        }
+
+        @Override
+        public boolean supportMultiModuleCompile()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean supportParallelCompile()
+        {
+            return false;
+        }
+
+        @Override
+        public String getWebOutputArgument()
+        {
+            return "-out";
         }
     },
     ONE_DOT_SIX
@@ -91,6 +128,21 @@ public enum GwtVersion
         return EmbeddedServer.JETTY;
     }
 
+    public boolean supportMultiModuleCompile()
+    {
+        return true;
+    }
+
+    public boolean supportParallelCompile()
+    {
+        return true;
+    }
+
+    public String getWebOutputArgument()
+    {
+        return "-war";
+    }
+
     static GwtVersion fromMavenVersion( String version )
     {
         if ( version.startsWith( "1.4" ) )
@@ -107,4 +159,6 @@ public enum GwtVersion
         }
         return FUTURE;
     }
+
+
 }
