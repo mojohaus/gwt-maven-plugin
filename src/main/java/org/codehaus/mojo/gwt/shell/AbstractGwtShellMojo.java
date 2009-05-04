@@ -135,6 +135,8 @@ public abstract class AbstractGwtShellMojo
      * @deprecated use extraJvmArgs
      * @parameter expression="${google.webtoolkit.extrajvmargs}"
      */
+    @SuppressWarnings( "unused" )
+    @Deprecated
     private String extraArgs;
 
     /**
@@ -371,14 +373,15 @@ public abstract class AbstractGwtShellMojo
     private List<String> getJvmArgs()
     {
         List<String> extra = new ArrayList<String>();
-        if ( getExtraJvmArgs() != null )
+        String userExtraJvmArgs = getExtraJvmArgs();
+        if ( userExtraJvmArgs != null )
         {
-            for ( String extraArg : getExtraJvmArgs().split( " " ) )
+            for ( String extraArg : userExtraJvmArgs.split( " " ) )
             {
                 extra.add( extraArg );
             }
         }
-        if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( !getExtraJvmArgs().contains( "-XstartOnFirstThread" ) ) )
+        if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( !extra.contains( "-XstartOnFirstThread" ) ) )
         {
             extra.add( "-XstartOnFirstThread" );
         }
