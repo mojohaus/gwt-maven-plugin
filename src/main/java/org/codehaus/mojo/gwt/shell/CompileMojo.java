@@ -108,6 +108,7 @@ public class CompileMojo
     private void compile( GwtRuntime runtime, String[] modules )
         throws MojoExecutionException
     {
+        boolean upToDate = true;
         String clazz = runtime.getVersion().getCompilerFQCN();
         JavaCommand cmd = new JavaCommand( clazz, runtime )
             .withinScope( Artifact.SCOPE_COMPILE )
@@ -134,8 +135,12 @@ public class CompileMojo
                 continue;
             }
             cmd.arg( target );
+            upToDate = false;
         }
-        cmd.execute();
+        if ( !upToDate )
+        {
+            cmd.execute();
+        }
     }
 
     private int getLocalWorkers()
