@@ -12,13 +12,13 @@ Setup Maven for GWT development
 
  Regardless of which "mode" you use, <<automatic>>, or <<manual>>, you also need to configure gwt-maven-plugin itself, of course.
 
- Also, as a convenience it helps to define a property for the GWT version (so you can change it in one place later to upgrade).
+ Also, as a convenience, it helps to define a property for the GWT version (so you can change it in one place later to upgrade).
 
  For example:
 
 +--
     <properties>
-       <gwt.version>1.6.0</gwt.version>
+        <gwt.version>1.6.0</gwt.version>
     </properties>
 
     <plugin>
@@ -38,8 +38,8 @@ Setup Maven for GWT development
 
 * Getting the Plugin
 
-  Getting the plugin is simple. It is deployed in maven default repository "central", so you don't have
-  to do anything !
+  Getting the plugin is simple. It is deployed in Maven default repository "central", so you don't have
+  to do anything!
 
 
 * Handling GWT
@@ -53,7 +53,7 @@ Setup Maven for GWT development
 ** Automatic Mode Setup
 
   If you are going to do automatic setup, you need to include the GWT dependencies in your POM. The
-  plugin will detect this version and use it internally.
+  plugin will detect its version and use it internally.
 
   For example:
 

@@ -17,11 +17,11 @@ Frequently Asked Questions
 
 * How does this plugin compare to other maven / gwt plugins ?
 
-  This plugin, beeing part of the Mojo Project, can benefict for a large community of maven developers. It's async interface
+  This plugin, being part of the Mojo Project, can benefict for a large community of maven developers. Its async interface
   generation feature is AFAIK not supported by other plugins.
 
 * I get strange NoSuchMethodError running my application unit tests !
 
-  <<<gwt-dev>>> JAR includes many libraries, including some apache commons-* that you may use in your project with more
-  recent version. Don't define gwt-dev as a dependency, the plugin will resolve it when necessary for you based on your
+  <<<gwt-dev>>> JAR includes many libraries, including some Apache commons-* that you may use in your project with more
+  recent version. Don't define <<<gwt-dev>>> as a dependency, the plugin will resolve it when necessary for you based on your
   <<<gwt-user>>> version.
