@@ -1,10 +1,10 @@
  ------
-GWT Maven Plugin Usage
+ GWT Maven Plugin Usage
  ------
  ------
  ------
 
-Configuring Google Web Toolkit support for maven
+Configuring Google Web Toolkit support for Maven
 
 * Compile GWT application into JavaScript
 
@@ -122,7 +122,7 @@ Configuring Google Web Toolkit support for maven
 
 * Setup hosted mode browser
 
-  The {{{eclipse-mojo.html}eclipse}} goal can be used to create an eclipse launch configuration for executing the GWT
+  The {{{eclipse-mojo.html}eclipse}} goal can be used to create an Eclipse launch configuration for executing the GWT
   module in hosted browser mode. The required native libraries are also downloaded and installed in
   the user local repository. This goal is not intended to be part of a build phase, but to be executed from
   command line <<<mvn gwt:eclipse>>>.
@@ -132,23 +132,23 @@ Configuring Google Web Toolkit support for maven
 
 * Setup GWTTestCase to run in Eclipse
 
-  The {{{eclipseTest-mojo.html}eclipseTest}} goal can be used to create an eclipse launch configuration for executing
+  The {{{eclipseTest-mojo.html}eclipseTest}} goal can be used to create an Eclipse launch configuration for executing
   the GWTTestCase-based unit tests. The required native libraries are also downloaded and installed in
-  the user local repository. Simply run <<<mvn gwt:eclipseTest>>>
+  the user local repository. Simply run <<<mvn gwt:eclipseTest>>>.
 
-  To avoid conflicts with unit tests, we recommand to follow the naming convention to prefix
+  To avoid conflicts with unit tests, we recommend to follow the naming convention to prefix
   your GWT tests with ''GwtTest''
 
 
-* Run GWTTestCase & GWTTestSuite inside maven
+* Run GWTTestCase & GWTTestSuite inside Maven
 
-  GWTTestCase requires some complex setup that makes them difficult to run in maven with the
-  surefire plugin. Such tests also are long and start the whole GWT module, so they are not
+  GWTTestCase requires some complex setup that makes it difficult to run in Maven with the
+  Surefire plugin. Such tests also are long and start the whole GWT module, so they are not
   ''unit'' but ''integration'' tests.
 
-  The {{{test-mojo.html}test}} goal can be used to run GWTTestCase during the intergation-test
+  The {{{test-mojo.html}test}} goal can be used to run GWTTestCase during the integration-test
   phase. It will fork a process with the required arguments to run the test, and will report
-  on the console the result. It will also create the standard surefire-reports to be used
+  on the console the result. It will also create the standard Surefire reports to be used
   by project site reporting.
 
 +---+
@@ -181,5 +181,3 @@ Configuring Google Web Toolkit support for maven
 
   See {{{testing.html}Testing}} for a detailled description of testing with GWT and Maven, and
   suggestion about using GwtTestSuite.
-
-

@@ -1,12 +1,12 @@
  ------
-Generate asynchronous interfaces for GWT-RPC services
+ Generate asynchronous interfaces for GWT-RPC services
  ------
  ------
  ------
 
 
-  GWT-maven-plugin can generate asyncrhonous interface for your GWT-RPC services. Considering the following
-  Server-side RPC interface :
+  GWT-maven-plugin can generate asynchronous interface for your GWT-RPC services. Considering the following
+  Server-side RPC interface:
 
 +---+
   import com.google.gwt.user.client.rpc.RemoteService;
@@ -20,7 +20,7 @@ Generate asynchronous interfaces for GWT-RPC services
 
   .. the plugin will automagically generate the asynchrounous interface used on client-side code. Thanks to this
   feature, you don't have to write and maintain this boring code. As a bonus, the generated code includes an utility
-  class to retrieve the RPC proxy from client-side code :
+  class to retrieve the RPC proxy from client-side code:
 
 +---+
 @RemoteServiceRelativePath( "HelloWorld" )
@@ -40,12 +40,12 @@ public interface HelloWorldServiceAsync
   implementation.
 
   The plugin will use @RemoteServiceRelativePath annotation on the service interface to set the
-  service URI in this utility class. In previous example, the service will be binded to URI
+  service URI in this utility class. In previous example, the service will be bound to URI
   <<<[module]/HelloWorld>>>. If not present, the service URI is constructed from interface
   name applying the <<<rpcPattern>>> format. Setting this parameter to "<<<{}.rpc>>>" will create
   an Util class to retrieve the service on URI <<<[module]/HelloWorldService.rpc>>>.
 
-  To enable this feature, simply include the generateAsync goal in your POM.xml :
+  To enable this feature, simply include the <<<generateAsync>>> goal in your POM.xml:
 
 +---+
 <project>
@@ -78,5 +78,4 @@ public interface HelloWorldServiceAsync
   The <<<rpcExtension>>> is used to configure the URL pattern used on the server to publish the GWT-RPC services. It will
   be used by the generator to create helper code (see later).
 
-  The <<<failOnError>>> parameter can also be helpfull is you have issue with the generator.
-
+  The <<<failOnError>>> parameter can also be helpfull if you have issue with the generator.

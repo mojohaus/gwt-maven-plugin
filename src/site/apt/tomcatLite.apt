@@ -9,7 +9,7 @@ Configuring Tomcat Lite (GWT 1.5)
   most developers are used to. It's also an older version of Tomcat, 5.0.28, and some of the
   configuration is different than 6.x or 5.5.x.
 
-  See the {{{examples/simpledatasample}simpledatasample}} sample application for an reference of all of the features discussed here.
+  See the {{{examples/simpledatasample}simpledatasample}} sample application for a reference of all of the features discussed here.
 
 
 * Embedded Tomcat structure
@@ -37,13 +37,13 @@ Configuring Tomcat Lite (GWT 1.5)
 
   You will notice 3 .xml files in that structure.
 
-  The first, <<<conf/web.xml>>> is a superset web.xml that has some mime types and such in it, you don't need to worry about
+  The first, <<<conf/web.xml>>>, is a superset web.xml that has some mime types and such in it. You don't need to worry about
   that one 99% of the time.
 
-  The second, <<<conf/gwt/localhost/ROOT.xml>>> is the GWT shell <<<context.xml>>> file. You <<can>> configure a Tomcat
+  The second, <<<conf/gwt/localhost/ROOT.xml>>>, is the GWT shell <<<context.xml>>> file. You <<can>> configure a Tomcat
   specific context.xml for the shell, manually, or automatically with gwt-maven-plugin (see the context.xml section below).
 
-  The third, <<<webapps/ROOT/WEB-INF/web.xml>>> is the GWT shell <<<web.xml>>> deployment descriptor file. This is the one
+  The third, <<<webapps/ROOT/WEB-INF/web.xml>>>, is the GWT shell <<<web.xml>>> deployment descriptor file. This is the one
   you want to configure for the shell, either manually, or automatically with gwt-maven-plugin (see the web.xml section below).
 
 * web.xml for the Shell
@@ -73,12 +73,12 @@ Configuring Tomcat Lite (GWT 1.5)
 
  This addition lets the shell function normally by proxying RPC requests to the correct classes (without needing specific entries
  for each while in the shell). The advantage here with gwt-maven-plugin is that the REST of your source web.xml will also be there,
- you can have other servlets, servlet filters, and anything else. (Everthing you configure has to also be available on the
+ you can have other servlets, servlet filters, and anything else. (Everthing you configure has to be also available on the
  classpath for the shell, of course. For example connection pools, Spring, etc - but that's easy with gwt-maven-plugin - just add those things
  as dependencies to your POM and gwt-maven-plugin will make sure they are on the classpath for the shell).
 
  Note that the default GWTSHellServlet mapping URL (or "url-pattern") is "/*", which is fine for most cases. Nevertheless, if you do wish to change
- this for special circumstances you can by using the "shellServletMappingURL" configuration parameter.
+ this for special circumstances, you can by using the "shellServletMappingURL" configuration parameter.
 
  When you HAVE a source web.xml file, whether or not you use mergewebxml, it is used for the GWT shell.
 
@@ -91,32 +91,32 @@ Configuring Tomcat Lite (GWT 1.5)
  This merging is a combination of your <source> web.xml file (which is never modified by gwt-maven-plugin), your GWT module
  descriptor (also never modified by gwt-maven-plugin), and an output <deploy> ready build web.xml file.
 
- This goal allows you to <<not>> have to define all your GWT RPC servlets in your source web.xml file, but you can still
+ This goal allows you <<not>> to have to define all your GWT RPC servlets in your source web.xml file, but you can still
  have a source web.xml file for other stuff (see the previous section). Then at build time, the merge step makes
  individual servlet web.xml entries for every GWT-RPC servlet it encounters (from your GWT module).
 
- To enable this you need to have the {{{mergewebxml-mojo.html}mergewebxml}}} goal present in the executions section of the plugin configuration.
+ To enable this, you need to have the {{{mergewebxml-mojo.html}mergewebxml}}} goal present in the <<<executions>>> section of the plugin configuration.
 
  You can also not use this, if you do not prefer, by simply <<not>> including the {{{mergewebxml-mojo.html}mergewebxml}}} goal.
 
  Note that the default mapping URL (or <<<url-pattern>>>) for a merged servlet entry is <<</modulename/servletpath>>>, where the module name
  is prepended to the servlet path from your GWT module - this is fine for most cases.
- Nevertheless, if you do wish to change this you can set the <<<webXmlPathAsIs>>> configuration parameter to true, and then the exact path
+ Nevertheless, if you do wish to change this, you can set the <<<webXmlPathAsIs>>> configuration parameter to true, and then the exact path
  in your GWT module will be used (nothing will be prepended).
 
- If you do you use {{{mergewebxml-mojo.html}mergewebxml}}} the output file will be <<<${project.build.dir}/web.xml>>> (usually that means <<<target/web.xml>>>).
+ If you do use {{{mergewebxml-mojo.html}mergewebxml}}}, the output file will be <<<${project.build.dir}/web.xml>>> (usually that means <<<target/web.xml>>>).
 
  The last thing you need to do in order to USE this file with your WAR, is to configure the war plugin to use it.
  This can be done as follows:
 
 +--
-   <plugin>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-war-plugin</artifactId>
-      <configuration>
-         <webXml>target/web.xml</webXml>
-      </configuration>
-   </plugin>
+  <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-war-plugin</artifactId>
+    <configuration>
+      <webXml>target/web.xml</webXml>
+    </configuration>
+  </plugin>
 +--
 
 
@@ -130,7 +130,7 @@ Configuring Tomcat Lite (GWT 1.5)
  one for use with the GWT shell, and one for production deployment Tomcat.
 
  Second, you have to use the gwt-maven-plugin <<<contextXml>>> parameter to configure gwt-maven-plugin to use your source context.xml file
- with the embedded Tomcat server. There is no default for this parameter (because there is no regular place for a Tomcat
+ with the embedded Tomcat server. There is no default value for this parameter (because there is no regular place for a Tomcat
  specific file like context.xml). If you set your contextXml parameter though, to a reasonable source location like <<<src/main/webapp/META-INF/contextGwt.xml>>>,
  then it will be used to replace the shell ROOT.xml file. (Again, you probably want a different <<<src/main/webapp/META-INF/context.xml>>> for regular Tomcat use).
 
@@ -142,7 +142,7 @@ Configuring Tomcat Lite (GWT 1.5)
  <<<WEB-INF/applicationContext.xml>>> or <<<WEB-INF/persistence.xml>>> for the shell (Spring usually looks at the classpath too, rather than just a relative file location,
  but this is just a general example).
 
- If that is the case you can generally use the Ant Run plugin to manipulate the embedded Tomcat structure as needed, for example:
+ If that is the case, you can generally use the antrun plugin to manipulate the embedded Tomcat structure as needed, for example:
 
 +--
   <plugin>
@@ -166,14 +166,14 @@ Configuring Tomcat Lite (GWT 1.5)
   </plugin>
 +--
 
-* -noserver option
+* <<<-noserver>>> option
 
  Many people prefer not to try to configure the embedded GWT Tomcat instance, and instead prefer to use the GWT <<<-noserver>>> option.  Keep in
  mind that with gwt-maven-plugin this is still possible. Just use the <<<noserver>>> parameter in your plugin configuration, and gwt-maven-plugin will
  pass <<<-noserver>>> to the shell, and not configure anything related to the embedded Tomcat.
 
- (Keep in mind that though noserver is a necessity in some situations, it also has some drawbacks of it's own. Refreshing the shell when
- you are using noserver will not update the server side, of course. Also, GWTTestCase based tests will not work at all with a nosever
- setup - the JUnitShell does not have a noserver option.)
+ (Keep in mind that though <<<noserver>>> is a necessity in some situations, it also has some drawbacks of its own. Refreshing the shell when
+ you are using <<<noserver>>> will not update the server side, of course. Also, GWTTestCase based tests will not work at all with a <<<noserver>>>
+ setup - the JUnitShell does not have a <<<noserver>>> option.)
 
 

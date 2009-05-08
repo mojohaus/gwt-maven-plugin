@@ -1,5 +1,5 @@
  ------
-Generate i18n message bundle interfaces
+ Generate i18n message bundle interfaces
  ------
  ------
  ------
@@ -7,7 +7,7 @@ Generate i18n message bundle interfaces
 
   GWT-maven-plugin can run the GWT
   {{{http://code.google.com/docreader/#p=google-web-toolkit-doc-1-5&t=DevGuideInternationalization}i18n interfaces generator}}
-  for your messages bundles. To enable this feature, simply include the i18n goal in your POM.xml :
+  for your messages bundles. To enable this feature, simply include the i18n goal in your <<<pom.xml>>>:
 
 +---+
 <project>
@@ -37,7 +37,7 @@ Generate i18n message bundle interfaces
 </project>
 +---+
 
-  If your application uses more than one bundle, you can nest multiple <<<resourceBundle>>> elements :
+  If your application uses more than one bundle, you can nest multiple <<<resourceBundle>>> elements:
 
 +---+
 <project>
@@ -80,4 +80,3 @@ Generate i18n message bundle interfaces
   You can also configure the plugin using the <<<constantsWithLookup>>> parameter to use
   {{{http://google-web-toolkit.googlecode.com/svn/javadoc/1.5/com/google/gwt/i18n/client/ConstantsWithLookup.html}ConstantsWithLookup}}
   interface.
-

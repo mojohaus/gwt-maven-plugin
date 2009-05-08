@@ -18,21 +18,21 @@ Setup Maven for GWT development
 
 +--
     <properties>
-        <gwt.version>1.6.0</gwt.version>
+      <gwt.version>1.6.0</gwt.version>
     </properties>
 
     <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-            <execution>
-                <goals>
-                    <goal>compile</goal>
-                    <goal>generateAsync</goal>
-                </goals>
-            </execution>
-        </executions>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>gwt-maven-plugin</artifactId>
+      <version>1.1</version>
+      <executions>
+        <execution>
+          <goals>
+            <goal>compile</goal>
+            <goal>generateAsync</goal>
+          </goals>
+        </execution>
+      </executions>
     </plugin>
 +--
 
@@ -73,16 +73,16 @@ Setup Maven for GWT development
   </dependency>
   +--
 
-   Don't define <<<gwt-dev>>> as project dependency : this JAR has many common libraries packaged taht may conflict with
-   the ones defined for your project, resulting in incomprehensible NoSuchMethodError. The gwt-maven-plugin will
+   Don't define <<<gwt-dev>>> as project dependency: this JAR has many common libraries packaged that may conflict with
+   the ones defined for your project, resulting in uncomprehensible <<<NoSuchMethodError>>>s. The gwt-maven-plugin will
    automagically resolve the required dependency based on your declared <<<gwt-user>>> dependency.
 
-  For a complete automatic mode POM example see the {{{examples.html}Examples}} page, specifically:
+  For a complete automatic mode POM example, see the {{{examples.html}Examples}} page, specifically:
   {{{examples/simple.html}the simple one}}.
 
 ** Manual Setup
 
-  If you are going to setup GWT manually, for example if you want to test latests build or a patched one,
+  If you are going to setup GWT manually, for example if you want to test latest build or a patched one,
   you will need to first unpackage it (http://code.google.com/webtoolkit/download.html).
   Then, you will need to tell gwt-maven-plugin where GWT is. This can be done with the <<<gwtHome>>> plugin
   configuration parameter <or> the <<<google.webtoolkit.home>>> property (this property is unset for automatic mode,
@@ -96,10 +96,10 @@ Setup Maven for GWT development
 
   You can also use the <<<${env.GWT_HOME}>>> syntax to refer to an OS environment variable.
 
-  For manual mode you also still need the GWT dependencies defined (these are required because
+  For manual mode, you also need the GWT dependencies defined (these are required because
   plugins and goals other than gwt-maven-plugin need them, like the standard compiler).
 
-  Note that with manual mode even though the dependencies are still needed, the difference is that the source
+  Note that with manual mode, even though the dependencies are still needed, the difference is that the source
   of the dependencies can be your locally installed GWT location (GWT_HOME), rather than a Maven repository,
   and there is no separate step to unpack the native libraries (they are already in gwtHome).
 
@@ -111,39 +111,37 @@ Setup Maven for GWT development
     <google.webtoolkit.home>${env.GWT_HOME}</google.webtoolkit.home>
   </property>
 
-    <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-servlet</artifactId>
-        <version>custom</version>
-        <scope>system</scope>
-        <systemPath>${env.GWT_HOME}/gwt-servlet.jar</systemPath>
-    </dependency>
-    <dependency>
-        <groupId>com.google.gwt</groupId>
-        <artifactId>gwt-user</artifactId>
-        <version>custom</version>
-        <scope>system</scope>
-        <systemPath>${env.GWT_HOME}/gwt-user.jar</systemPath>
-    </dependency>
+  <dependency>
+    <groupId>com.google.gwt</groupId>
+    <artifactId>gwt-servlet</artifactId>
+    <version>custom</version>
+    <scope>system</scope>
+    <systemPath>${env.GWT_HOME}/gwt-servlet.jar</systemPath>
+  </dependency>
+  <dependency>
+    <groupId>com.google.gwt</groupId>
+    <artifactId>gwt-user</artifactId>
+    <version>custom</version>
+    <scope>system</scope>
+    <systemPath>${env.GWT_HOME}/gwt-user.jar</systemPath>
+  </dependency>
 
-    . . . .
+  . . . .
 
-    <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>gwt-maven-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-            <execution>
-                <goals>
-                    <goal>compile</goal>
-                    <goal>generateAsync</goal>
-                </goals>
-            </execution>
-        </executions>
-    </plugin>
+  <plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>gwt-maven-plugin</artifactId>
+    <version>1.1</version>
+    <executions>
+      <execution>
+        <goals>
+          <goal>compile</goal>
+          <goal>generateAsync</goal>
+        </goals>
+      </execution>
+    </executions>
+  </plugin>
 +--
 
-  For a complete manual mode POM example see the {{{examples.html}Examples}} page, specifically:
+  For a complete manual mode POM example, see the {{{examples.html}Examples}} page, specifically:
   {{{examples/with-gwthome.html}project with gwthome}}.
-
-

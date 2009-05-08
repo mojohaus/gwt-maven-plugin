@@ -1,14 +1,14 @@
  ------
-Configure Eclipse IDE
+ Configure Eclipse IDE
  ------
  ------
  ------
 
 
-  GWT-maven-plugin can configure Eclipse for out-of-th-box development with GWT. 
+  GWT-maven-plugin can configure Eclipse for out-of-the-box development with GWT.
   The plugin will scan your project for GWT modules and/or GWTTestCases and generate a launch configuration
   to run the hosted mode browser.
-  
+
 +---+
 <project>
   [...]
@@ -24,7 +24,7 @@ Configure Eclipse IDE
             <goals>
               <goal>eclipse</goal>
             </goals>
-          </execution>          
+          </execution>
         </executions>
       </plugin>
       [...]
@@ -32,18 +32,18 @@ Configure Eclipse IDE
   </build>
   [...]
 </project>
-+---+  
++---+
 
-  If you want to create a lanch configuration for a single module, use the command line option :
-  
-+---+  
+  If you want to create a lanch configuration for a single module, use the command line option:
+
++---+
   -Dgwt.module=[Module]
-+---+  
++---+
 
-  
-  You can also request the plugin to generate lanch configuration for your GWTTestCase-based integration 
+
+  You can also request the plugin to generate lanch configuration for your GWTTestCase-based integration
   tests.
-  
+
 +---+
 <project>
   [...]
@@ -59,18 +59,18 @@ Configure Eclipse IDE
             <goals>
               <goal>eclipseTest</goal>
             </goals>
-          </execution>          
+          </execution>
         </executions>
       [...]
     </plugins>
   </build>
   [...]
 </project>
-+---+ 
++---+
 
-  If you want to create a lanch configuration for a single test, or a subset of your GWT Tests, 
-  use the command line option to override the includes/ecludes patterns :
-  
-+---+  
+  If you want to create a lanch configuration for a single test, or a subset of your GWT Tests,
+  use the command line option to override the includes/excludes patterns:
+
++---+
   -Dgwt.tests.includes=**/*MyGwtTest.java -Dgwt.tests.excludes=**/*Skip*
-+---+  
++---+
