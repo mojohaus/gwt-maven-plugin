@@ -93,6 +93,7 @@ public class EclipseMojo
      * Location of the compiled classes.
      *
      * @parameter default-value="${project.build.outputDirectory}"
+     * @required
      * @readOnly
      */
     private File buildOutputDirectory;
@@ -162,12 +163,10 @@ public class EclipseMojo
                 getLog().info( "create exploded Jetty webapp in " + hostedWebapp );
                 lib.mkdirs();
 
-                File basedir = new File( localRepository.getBasedir() );
                 Collection<Artifact> artifacts = getProject().getRuntimeArtifacts();
                 for ( Artifact artifact : artifacts )
                 {
-                    File file = new File( basedir, localRepository.pathOf( artifact ) );
-                    FileUtils.copyFileToDirectory( file, lib );
+                    FileUtils.copyFileToDirectory( artifact.getFile(), lib );
                 }
 
             }
