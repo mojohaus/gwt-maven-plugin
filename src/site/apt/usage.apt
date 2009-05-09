@@ -1,5 +1,5 @@
  ------
- GWT Maven Plugin Usage
+GWT Maven Plugin Usage
  ------
  ------
  ------
@@ -43,7 +43,7 @@ Configuring Google Web Toolkit support for Maven
   You can also configure compilation for multiple modules by nesting them inside a ''<modules>'' element. If none is
   set, the plugin will scan project source and resources directories for ''.gwt.xml'' module files.
 
-  See {{{examples/compile.html}examples}} for more details.
+  See {{{user-guide/compiler.html}user guide}} for more details.
 
 * Generate Async interface for GWT-RPC services
 
@@ -51,7 +51,7 @@ Configuring Google Web Toolkit support for Maven
   RemoteInterface found in the project. To avoid a full scan, only Java source files that matches a
   pattern (defaults to ''**/*Service.java'') are checked.
 
-  See {{{examples/asyn.html}examples}} for more details.
+  See {{{user-guide/async.html}user guide}} for more details.
 
 +---+
 <project>
@@ -88,7 +88,7 @@ Configuring Google Web Toolkit support for Maven
   ResourceBundles specified in configuration. You can specify the "constantsWithLookup" or "message" parameters to
   choose the interface hierarchy (Message or Constants) to use, "Message" beeing used by default.
 
-  See {{{examples/i18n.html}examples}} for more details.
+  See {{{user-guide/i18n.html}user guide}} for more details.
 
 +---+
 <project>
@@ -127,7 +127,7 @@ Configuring Google Web Toolkit support for Maven
   the user local repository. This goal is not intended to be part of a build phase, but to be executed from
   command line <<<mvn gwt:eclipse>>>.
 
-  See {{{examples/eclipse.html}examples}} for more details.
+  See {{{user-guide/hosted.html}user guide}} for more details.
 
 
 * Setup GWTTestCase to run in Eclipse
@@ -179,5 +179,7 @@ Configuring Google Web Toolkit support for Maven
   This plugin declaration could be part of a profile, so that it gets only enabled on
   continuous integration server, as such test execution is long and will penalize the developper.
 
-  See {{{testing.html}Testing}} for a detailled description of testing with GWT and Maven, and
+  See {{{user-guide/testing.html}user guide}} for a detailled description of testing with GWT and Maven, and
   suggestion about using GwtTestSuite.
+
+

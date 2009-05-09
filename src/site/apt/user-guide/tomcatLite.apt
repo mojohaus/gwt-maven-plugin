@@ -9,9 +9,6 @@ Configuring Tomcat Lite (GWT 1.5)
   most developers are used to. It's also an older version of Tomcat, 5.0.28, and some of the
   configuration is different than 6.x or 5.5.x.
 
-  See the {{{examples/simpledatasample}simpledatasample}} sample application for a reference of all of the features discussed here.
-
-
 * Embedded Tomcat structure
 
   The first thing to be aware of is that GWT generates a <<<tomcat>>> directory (CATALINA_BASE)
@@ -95,7 +92,7 @@ Configuring Tomcat Lite (GWT 1.5)
  have a source web.xml file for other stuff (see the previous section). Then at build time, the merge step makes
  individual servlet web.xml entries for every GWT-RPC servlet it encounters (from your GWT module).
 
- To enable this, you need to have the {{{mergewebxml-mojo.html}mergewebxml}}} goal present in the <<<executions>>> section of the plugin configuration.
+ To enable this you need to have the {{{mergewebxml-mojo.html}mergewebxml}}} goal present in the <<<executions>>> section of the plugin configuration.
 
  You can also not use this, if you do not prefer, by simply <<not>> including the {{{mergewebxml-mojo.html}mergewebxml}}} goal.
 
@@ -104,19 +101,19 @@ Configuring Tomcat Lite (GWT 1.5)
  Nevertheless, if you do wish to change this, you can set the <<<webXmlPathAsIs>>> configuration parameter to true, and then the exact path
  in your GWT module will be used (nothing will be prepended).
 
- If you do use {{{mergewebxml-mojo.html}mergewebxml}}}, the output file will be <<<${project.build.dir}/web.xml>>> (usually that means <<<target/web.xml>>>).
+ If you do you use {{{mergewebxml-mojo.html}mergewebxml}}}, the output file will be <<<${project.build.dir}/web.xml>>> (usually that means <<<target/web.xml>>>).
 
  The last thing you need to do in order to USE this file with your WAR, is to configure the war plugin to use it.
  This can be done as follows:
 
 +--
-  <plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-war-plugin</artifactId>
-    <configuration>
-      <webXml>target/web.xml</webXml>
-    </configuration>
-  </plugin>
+   <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-war-plugin</artifactId>
+      <configuration>
+         <webXml>target/web.xml</webXml>
+      </configuration>
+   </plugin>
 +--
 
 
@@ -142,7 +139,8 @@ Configuring Tomcat Lite (GWT 1.5)
  <<<WEB-INF/applicationContext.xml>>> or <<<WEB-INF/persistence.xml>>> for the shell (Spring usually looks at the classpath too, rather than just a relative file location,
  but this is just a general example).
 
- If that is the case, you can generally use the antrun plugin to manipulate the embedded Tomcat structure as needed, for example:
+ If that is the case, you can generally use the 
+ {{{http://maven.apache.org/plugins/maven-antrun-plugin/}antrun plugin}} to manipulate the embedded Tomcat structure as needed, for example:
 
 +--
   <plugin>
@@ -173,7 +171,7 @@ Configuring Tomcat Lite (GWT 1.5)
  pass <<<-noserver>>> to the shell, and not configure anything related to the embedded Tomcat.
 
  (Keep in mind that though <<<noserver>>> is a necessity in some situations, it also has some drawbacks of its own. Refreshing the shell when
- you are using <<<noserver>>> will not update the server side, of course. Also, GWTTestCase based tests will not work at all with a <<<noserver>>>
+ you are using <<<noserver>>> will not update the server side, of course. Also, GWTTestCase based tests will not work at all with a nosever
  setup - the JUnitShell does not have a <<<noserver>>> option.)
 
 

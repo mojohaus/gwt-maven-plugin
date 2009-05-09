@@ -1,5 +1,5 @@
  ------
- Testing Support
+Testing Support
  ------
  ------
 
@@ -22,38 +22,52 @@ Testing GWT code with Maven
  goal in your plugin configuration executions, and you should invoke <<<mvn test>>>.
 
 +--
-  <executions>
-    <execution>
-      <goals>
-        <goal>compile</goal>
-        <goal>test</goal>
-      </goals>
-    </execution>
-  </executions>
+<project>
+  [...]
+  <build>
+    <plugins>
+      [...]
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+	      <execution>
+    	    <goals>
+       		  <goal>test</goal>
+       	 	</goals>
+          </execution>
+        </executions>
+      </plugin>
+      [...]
+    </plugins>
+  </build>
+  [...]
+</project>        
 +--
 
 * Separate GwtTest tests from standard unit tests
 
  Because you will likely want to run <<both>> Surefire and gwt-maven-plugin based tests
- (for regular server side JUnit tests with Surefire, and for client model and controller tests with GWT),
+ (for regular server side JUnit tests with Surefire, and for client model and controller tests with GWT)
  you need to distinguish these tests from each other. This is done using a naming convention.
 
  You can configure the Surefire plugin (responsible for running
- tests during Maven build) to skip the GwtTests using some naming patterns:
+ tests during maven build) to skip the GwtTests using some naming patterns :
 
 +--
-  <plugin>
-    <artifactId>maven-surefire-plugin</artifactId>
-    <version>2.4.3</version>
-    <configuration>
-      <excludes>
-        <exclude>**/*GwtTest.java</exclude>
-      </excludes>
-    </configuration>
-  </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.4.3</version>
+        <configuration>
+          <excludes>
+            <exclude>**/*GwtTest.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
 +--
 
- A simpler way to separate classic and GWT tests is to name latest <<<GwtTest"Something.java>>> - they
+ A simplier way to separate classic and GWT tests is to name latests <<<GwtTest"Something.java>>> - they
  <start with> <<<"GwtTest">>>. Surefire looks for tests that are named <<<Something"Test".java>>> by default - they
  <end with> <<<"Test">>>.
 
@@ -63,27 +77,22 @@ Testing GWT code with Maven
  To configure the plugin to use such a naming convention, set the <<<includes>>> plugin parameter.
 
 +--
-  <plugin>
-    <groupId>org.codehaus.mojo</groupId>
-    <artifactId>gwt-maven-plugin</artifactId>
-    <version>1.1</version>
-    <configuration>
-      <includes>**/CustomPattern*.java</includes>
-    </configuration>
-    <executions>
-      <execution>
-        <goals>
-          <goal>compile</goal>
-          <goal>generateAsync</goal>
-          <goal>test</goal>
-        </goals>
-      </execution>
-    </executions>
-  </plugin>
+        <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>1.1</version>
+                <configuration>
+                  <includes>**/CustomPattern*.java</includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+        </plugin>
 +--
-
- Look at the full source for the {{{examples/test}Test sample}} for reference.
-
 
 * Test results output
 
@@ -106,3 +115,36 @@ Testing GWT code with Maven
  start <or> end with <<<Test>>>. For example <<<MyClassTestGwt.java>>>. This way, gwt-maven-plugin picks up the <<<Suite>>>, and runs it,
  but does not also run individual tests (and Surefire does not pick it up either)
 
+* Run GWTTestCase during "test" phase
+ 
+ We do not consider GWTTestCase to be unit test as they require the whole GWT Module to run. For this reason, the <<<test>>> goal is
+ bound by default to <<<integration-test>>> phase. But this is only our point of view and you may want to run such test during the 
+ standard <<<test>>> phase. To do this, you just need to define a dedicated <<<execution>>> and to override the default phase
+ 
++--
+<project>
+  [...]
+  <build>
+    <plugins>
+      [...]
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+	      <execution>
+	        <id>test</id>
+    	    <goals>
+       		  <goal>test</goal>
+       	 	</goals>
+       	 	<phase>test</phase>
+          </execution>
+        </executions>
+      </plugin>
+      [...]
+    </plugins>
+  </build>
+  [...]
+</project>        
++--
+ 

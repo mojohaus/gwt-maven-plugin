@@ -1,0 +1,82 @@
+ -------
+ Configuring the Hosted mode server
+ -------
+ -------
+
+Configuring the Hosted mode server
+
+  Another aspect of gwt-maven-plugin to be familiar with it can help you configure the
+  embedded Servlet container GWT uses in the Hosted Mode shell - Tomcat Lite or Jetty (since 1.6).
+
+* Jetty (GWT 1.6)
+
+  Jetty is used as a lightweight servlet engine for GWT 1.6+ Hosted mode.
+
+  Jetty requires a standard servlet 2.4 webapp structure to run. To match this requirement, the gwt-maven-plugin
+  uses a hosted mode testing webapp folder : <<<war>>>. This convention is set to match the Google Eclipse plugin
+  requirement. The <<<hostedWebapp>>> parameter can be used to override this value if you don't car about Google 
+  Eclipse Plugin.
+  
+  This folder must contain the project a ready-to-run exploded WAR web application structure. This meand your runtime 
+  dependencies must be copied to <<<WEB-INF/lib>>> and your classes to <<<WEB-INF/classes>>>.
+  
+** Using Eclipse      
+  
+  Project dependencies are copied by the plugin when generating the Hosted mode launch scripts (<<<mvn gwt:eclipse>>>).
+  To match the second requirement, configure your POM to set the ouputDirectory to <<<war/WEB-INF/classes>>>.
+  Don't forget to exclude both folders from your SCM, using <<<svn:ignore>>> property or equivalent !
+    
+  With this setup, when you change some java source code, your IDE compiler will update the webapp classes folder
+  and you can see changes in the hosted browser with a simple refresh.
+  
+** Using command line  
+  
+  You can use <<<mvn gwt:run>>> to launch the hosted mode from command line. In such case, the plugin will copy 
+  runtime dependencies to <<<${hostedWebapp}/WEB-INF/lib>>> and your compiled classes to 
+  <<<${hostedWebapp}/WEB-INF/classes>>>.
+  
+** Distinction between hostedWebapp and maven-war-plugin webappDirectory  
+  
+  The {{{http://maven.apache.org/plugins/maven-war-plugin}maven-war-plugin}} defines a webappDirectory 
+  (defaults to <<<src/main/webapp>>> to host the static web application structure, including the <<<web.xml>>>
+  deployment descriptor.
+    
+  All server-side components used in hosted mode need to be configured in <<<${hostedWebapp}/WEB-INF/web.xml>>>. 
+  The hosted mode is designed for testing only, and you should not use it to deploy all your server-side frameworks.
+  Your application will in many case use a complex setup with a database, many frameworks like Spring and Hibernate, 
+  and some other out-of-testing stuff like use authentication.
+  
+  Having a distinct webapp directory for hosted mode and for the generated war is helpfull in this case. This can help
+  to debug the web application as it is easier to use stub RPC services and servlets.
+
+  If you want to test your GWT client with a "real" server-side webapp, run the hosted browser with the <<<-noserver>>> 
+  option set and start your webapp in a standalone process, for example using 
+  {{{http://mojo.codehaus.org/tomcat-maven-plugin/run-mojo.htm}tomcat:run}} or
+  {{{http://jetty.mortbay.org/jetty/maven-plugin/run-mojo.html}jetty:rnu}} goals.
+  
+  If you still want to use the same webapp directory for hosted mode and target WAR, you can simply change the 
+  maven-war-plugin configuration :
+  
++--
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.1-beta-1</version>
+        <configuration>
+          <warSourceDirectory>war</warSourceDirectory>
+        </configuration>
+      </plugin>
++--
+   
+  
+ 
+
+
+
+* Tomcat Lite (GWT 1.5)
+
+  Tomcat Lite is a stripped down version of Tomcat that works a bit differently than what
+  most developers are used to. It's also an older version of Tomcat, 5.0.28, and some of the
+  configuration is different than 6.x or 5.5.x.
+
+  The old documentation about Tomcat Lite has moved {{{tomcatLite.html}here}}.
+

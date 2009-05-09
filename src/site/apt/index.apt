@@ -22,11 +22,11 @@ Google Web Toolkit Maven Plugin (gwt-maven-plugin)
 
 * More Details on Specific Goals and Features
 
- * {{{testing.html}Testing Support}}
+ * {{{user-guide/testing.html}Testing Support}}
 
- * {{{hosted.html}Hosted server Configuration}}
+ * {{{user-guide/hosted.html}Hosted server Configuration}}
 
- * {{{archetype.html}Using the Archetype}}
+ * {{{user-guide/archetype.html}Using the Archetype}}
 
 
 * History
