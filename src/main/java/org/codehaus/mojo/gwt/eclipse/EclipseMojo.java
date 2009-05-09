@@ -18,10 +18,10 @@ package org.codehaus.mojo.gwt.eclipse;
  * specific language governing permissions and limitations
  * under the License.
  */
+
 import static org.codehaus.mojo.gwt.EmbeddedServer.JETTY;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Collection;
@@ -40,6 +40,7 @@ import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.plexus.util.StringUtils;
+import org.codehaus.plexus.util.WriterFactory;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -47,7 +48,7 @@ import freemarker.template.TemplateException;
 
 /**
  * Goal which creates Eclipse lauch configurations for GWT modules.
- * 
+ *
  * @goal eclipse
  * @execute phase=generate-resources
  * @requiresDependencyResolution compile
@@ -69,14 +70,14 @@ public class EclipseMojo
      * <p>
      * Can be set from command line using '-Dgwt.extraJvmArgs=...', defaults to setting max Heap size to be large enough
      * for most GWT use cases.
-     * 
+     *
      * @parameter expression="${gwt.extraJvmArgs}" default-value="-Xmx512m"
      */
     private String extraJvmArgs;
 
     /**
      * The currently executed project (phase=generate-resources).
-     * 
+     *
      * @parameter expression="${executedProject}"
      * @readonly
      */
@@ -235,8 +236,8 @@ public class EclipseMojo
 
         try
         {
-            Writer configWriter = new FileWriter( launchFile );
-            Template template = cfg.getTemplate( "launch.fm" );
+            Writer configWriter = WriterFactory.newXmlWriter( launchFile );
+            Template template = cfg.getTemplate( "launch.fm", "UTF-8" );
             template.process( context, configWriter );
             configWriter.flush();
             configWriter.close();

@@ -20,12 +20,13 @@ package org.codehaus.mojo.gwt.webxml;
  */
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.codehaus.plexus.util.WriterFactory;
 import org.jdom.Comment;
 import org.jdom.Content;
 import org.jdom.Document;
@@ -131,7 +132,7 @@ public class GwtWebInfProcessor {
 
     /**
      * Return List of ServletDescriptor from gwt module file.
-     * 
+     *
      * @param gwtModFile
      * @param webXmlServletPath
      * @return
@@ -405,8 +406,8 @@ public class GwtWebInfProcessor {
         this.insertServlets();
 
         XMLOutputter out = new XMLOutputter( Format.getPrettyFormat() );
-        FileWriter writer = new FileWriter( this.destination );
-        out.output( this.webXml, new FileWriter( this.destination ) );
+        Writer writer = WriterFactory.newXmlWriter( this.destination );
+        out.output( this.webXml, writer );
         writer.flush();
         writer.close();
 

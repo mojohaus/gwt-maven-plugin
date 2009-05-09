@@ -44,7 +44,7 @@ import com.thoughtworks.qdox.model.JavaSource;
 
 /**
  * Goal which generate Asyn interface.
- * 
+ *
  * @goal generateAsync
  * @phase generate-sources
  * @requiresDependencyResolution compile
@@ -69,7 +69,7 @@ public class GenerateAsyncMojo
 
     /**
      * Pattern for GWT service interface
-     * 
+     *
      * @parameter default-value="**\/*Service.java"
      */
     private String servicePattern;
@@ -78,14 +78,14 @@ public class GenerateAsyncMojo
      * A (MessageFormat) Pattern to get the GWT-RPC servlet URL based on service interface name. For example to
      * "{0}.rpc" if you want to map GWT-RPC calls to "*.rpc" in web.xml, for example when using Spring dispatch servlet
      * to handle RPC requests.
-     * 
+     *
      * @parameter default-value="{0}" expression="${gwt.rpcPattern}"
      */
     private String rpcPattern;
 
     /**
      * Stop the build on error
-     * 
+     *
      * @parameter default-value="false" expression="${maven.gwt.failOnError}"
      */
     private boolean failOnError;
@@ -157,7 +157,7 @@ public class GenerateAsyncMojo
     {
         JavaDocBuilder builder = new JavaDocBuilder();
         builder.getClassLibrary().addClassLoader( getProjectClassLoader() );
-        builder.addSource( new FileReader( source ) );
+        builder.addSource( new FileReader( source ) ); // TODO: use source encoding instead of platform encoding
         name = name.substring( 0, name.length() - 5 ) + "Async";
 
         JavaClass clazz = builder.getClasses()[0];
@@ -180,7 +180,7 @@ public class GenerateAsyncMojo
 
         File out = new File( generateDirectory, name + ".java" );
         out.getParentFile().mkdirs();
-        PrintWriter writer = new PrintWriter( out );
+        PrintWriter writer = new PrintWriter( out ); // TODO: use source encoding instead of platform encoding
 
         JavaSource javaSource = builder.getSources()[0];
         writer.println( "package " + javaSource.getPackage().getName() + ";" );

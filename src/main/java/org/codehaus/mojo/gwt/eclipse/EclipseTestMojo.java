@@ -35,6 +35,7 @@ import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.mojo.gwt.test.TestMojo;
 import org.codehaus.mojo.gwt.test.TestTemplate;
+import org.codehaus.plexus.util.WriterFactory;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -42,7 +43,7 @@ import freemarker.template.TemplateException;
 
 /**
  * Goal which creates Eclipse lauch configurations for GWTTestCases.
- * 
+ *
  * @goal eclipseTest
  * @execute phase=generate-test-resources
  * @version $Id$
@@ -63,14 +64,14 @@ public class EclipseTestMojo
      * <p>
      * Can be set from command line using '-Dgwt.extraJvmArgs=...', defaults to setting max Heap size to be large enough
      * for most GWT use cases.
-     * 
+     *
      * @parameter expression="${gwt.extraJvmArgs}" default-value="-Xmx512m"
      */
     private String extraJvmArgs;
 
     /**
      * The currently executed project (phase=generate-resources).
-     * 
+     *
      * @parameter expression="${executedProject}"
      * @readonly
      */
@@ -78,7 +79,7 @@ public class EclipseTestMojo
 
     /**
      * Location of the file.
-     * 
+     *
      * @parameter default-value="${project.build.directory}/www-test"
      */
     private File testOutputDirectory;
@@ -139,8 +140,8 @@ public class EclipseTestMojo
 
         try
         {
-            Writer configWriter = new FileWriter( launchFile );
-            Template template = cfg.getTemplate( "test-launch.fm" );
+            Writer configWriter = WriterFactory.newXmlWriter( launchFile );
+            Template template = cfg.getTemplate( "test-launch.fm", "UTF-8" );
             template.process( context, configWriter );
             configWriter.flush();
             configWriter.close();

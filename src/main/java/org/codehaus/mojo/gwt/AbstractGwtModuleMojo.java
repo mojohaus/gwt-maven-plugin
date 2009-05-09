@@ -20,7 +20,6 @@ package org.codehaus.mojo.gwt;
  */
 
 import java.io.File;
-import java.io.FileReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,6 +28,7 @@ import java.util.Set;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.DirectoryScanner;
+import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
@@ -43,7 +43,7 @@ public abstract class AbstractGwtModuleMojo
 
     /**
      * The project GWT modules. If not set, the plugin will scan the project for <code>.gwt.xml</code> files.
-     * 
+     *
      * @parameter
      * @alias compileTargets
      */
@@ -51,7 +51,7 @@ public abstract class AbstractGwtModuleMojo
 
     /**
      * A single GWT module. Shortcut for &lt;modules&gt; or option to specify a single module from command line
-     * 
+     *
      * @parameter expression="${gwt.module}"
      */
     private String module;
@@ -154,7 +154,7 @@ public abstract class AbstractGwtModuleMojo
     {
         try
         {
-            Xpp3Dom dom = Xpp3DomBuilder.build( new FileReader( xml ) );
+            Xpp3Dom dom = Xpp3DomBuilder.build( ReaderFactory.newXmlReader( xml ) );
             return new GwtModule( name, dom );
         }
         catch ( Exception e )

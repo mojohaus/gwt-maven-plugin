@@ -20,10 +20,10 @@ package org.codehaus.mojo.gwt.eclipse;
  */
 
 import java.io.File;
-import java.io.FileReader;
 
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
+import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
@@ -37,7 +37,7 @@ public class EclipseUtil
 {
     /**
      * Read the Eclipse project name for .project file. Fall back to artifactId on error
-     * 
+     *
      * @return project name in eclipse workspace
      */
     public String getProjectName( MavenProject project )
@@ -45,7 +45,7 @@ public class EclipseUtil
         File dotProject = new File( project.getBasedir(), ".project" );
         try
         {
-            Xpp3Dom dom = Xpp3DomBuilder.build( new FileReader( dotProject ) );
+            Xpp3Dom dom = Xpp3DomBuilder.build( ReaderFactory.newXmlReader( dotProject ) );
             return dom.getChild( "name" ).getValue();
         }
         catch ( Exception e )

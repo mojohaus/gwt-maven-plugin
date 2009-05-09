@@ -336,7 +336,7 @@ public class ClasspathBuilder
             Collection<File> files =
                 buildClasspathList( configuration.getProject(), SCOPE_COMPILE, runtime,
                                     configuration.getSourcesOnPath(), configuration.getResourcesOnPath() );
-            writer = new PrintWriter( classpath );
+            writer = new PrintWriter( classpath );  // TODO: is platform encoding the encoding of choice?
             for ( File f : files )
             {
                 writer.println( f.getAbsolutePath() );
