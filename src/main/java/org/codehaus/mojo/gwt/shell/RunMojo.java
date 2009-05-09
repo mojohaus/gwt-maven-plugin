@@ -20,6 +20,8 @@ package org.codehaus.mojo.gwt.shell;
  */
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -93,6 +95,16 @@ public class RunMojo
      */
     private File tomcat;
 
+    /**
+     * Location of the compiled classes.
+     *
+     * @parameter default-value="${project.build.outputDirectory}"
+     * @required
+     * @readOnly
+     */
+    private File buildOutputDirectory;
+    
+    
     /**
      * Source Tomcat context.xml for GWT shell - copied to /gwt/localhost/ROOT.xml (used as the context.xml for the
      * SHELL - requires Tomcat 5.0.x format - hence no default).
@@ -207,6 +219,7 @@ public class RunMojo
                     .arg( getRunTarget() );
                 break;
             default:
+                setupExplodedWar();
                 cmd.arg( "-startupUrl" )
                     .arg( quote( getStartupUrl() ) )
                     .arg( getRunModule() );
@@ -216,12 +229,53 @@ public class RunMojo
         cmd.execute();
     }
 
+    private void setupExplodedWar()
+    throws MojoExecutionException
+    {
+        getLog().info( "create exploded Jetty webapp in " + hostedWebapp );
+        
+        File classes = new File( hostedWebapp, "WEB-INF/classes" );
+        classes.mkdirs();
+        
+        if ( !buildOutputDirectory.getAbsolutePath().equals( classes.getAbsolutePath() ) )
+        {
+            getLog().warn( "Your POM <build><outputdirectory> does not match your "
+                                + "hosted webapp WEB-INF/classes folder for GWT Hosted browser to see your classes." );
+            try
+            {
+                FileUtils.copyDirectory( buildOutputDirectory, classes );            
+            }
+            catch ( IOException e )
+            {
+                throw new MojoExecutionException( "Failed to copy classes to " + classes , e );
+            }
+        }
+        
+        
+        File lib = new File( hostedWebapp, "WEB-INF/lib" );
+        lib.mkdirs();
+
+        Collection<Artifact> artifacts = getProject().getRuntimeArtifacts();
+        for ( Artifact artifact : artifacts )
+        {
+            try
+            {
+                FileUtils.copyFileToDirectory( artifact.getFile(), lib );
+            }
+            catch ( IOException e )
+            {
+                throw new MojoExecutionException( "Failed to copy runtime dependency " + artifact, e );
+            }
+        }
+        
+    }
+
     /**
      * Create embedded GWT tomcat base dir based on properties.
      *
      * @throws Exception
      */
-    public void makeCatalinaBase()
+    private void makeCatalinaBase()
         throws Exception
     {
         getLog().debug( "make catalina base for embedded Tomcat" );
