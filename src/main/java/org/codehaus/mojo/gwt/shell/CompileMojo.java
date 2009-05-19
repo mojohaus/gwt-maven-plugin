@@ -26,21 +26,15 @@ import static org.apache.maven.artifact.Artifact.SCOPE_COMPILE;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.plexus.compiler.util.scan.AbstractSourceInclusionScanner;
 import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SingleTargetSourceMapping;
-import org.codehaus.plexus.compiler.util.scan.mapping.SourceMapping;
 
 /**
  * Invokes the GWTCompiler for the project source.
