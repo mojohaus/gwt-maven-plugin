@@ -205,7 +205,7 @@ public abstract class AbstractGwtShellMojo
     {
         Artifact plugin =
             artifactFactory.createArtifact( "org.codehaus.mojo", "gwt-maven-plugin", version, Artifact.SCOPE_COMPILE,
-                                            "maven-plugin" );
+                "maven-plugin" );
         String localPath = localRepository.pathOf( plugin );
         return new File( localRepository.getBasedir(), localPath );
     }
@@ -414,11 +414,12 @@ public abstract class AbstractGwtShellMojo
 
     protected String quote( String arg )
     {
-        return "\"" + arg + "\"";
+        return StringUtils.quoteAndEscape( arg, '"' );
     }
 
     /**
      * plexus-util hack to run a command WITHOUT a shell
+     * 
      * @see PLXUTILS-107
      */
     private class JavaShell
@@ -478,7 +479,8 @@ public abstract class AbstractGwtShellMojo
             try
             {
                 classpath =
-                    buildClasspathUtil.buildClasspathList( getProject(), scope, runtime, sourcesOnPath, resourcesOnPath );
+                    buildClasspathUtil.buildClasspathList( getProject(), scope, runtime, sourcesOnPath,
+                        resourcesOnPath, getProjectArtifacts() );
             }
             catch ( DependencyResolutionRequiredException e )
             {
@@ -542,10 +544,9 @@ public abstract class AbstractGwtShellMojo
                 String[] arguments = (String[]) command.toArray( new String[command.size()] );
 
                 // On windows, the default Shell will fall into command line length limitation issue
-                // On Unixes, not using a Shell breaks the classpath (NoClassDefFoundError: com/google/gwt/dev/Compiler).
-                Commandline cmd = PlatformUtil.onWindows()
-                    ? new Commandline( new JavaShell() )
-                    : new Commandline();
+                // On Unixes, not using a Shell breaks the classpath (NoClassDefFoundError:
+                // com/google/gwt/dev/Compiler).
+                Commandline cmd = PlatformUtil.onWindows() ? new Commandline( new JavaShell() ) : new Commandline();
 
                 cmd.setExecutable( getJavaCommand() );
                 cmd.addArguments( arguments );
@@ -569,7 +570,8 @@ public abstract class AbstractGwtShellMojo
 
                 if ( status != 0 )
                 {
-                    throw new ForkedProcessExecutionException( "Command [[\n" + cmd.toString() + "\n]] failed with status " + status );
+                    throw new ForkedProcessExecutionException( "Command [[\n" + cmd.toString()
+                        + "\n]] failed with status " + status );
                 }
             }
             catch ( CommandLineTimeOutException e )
@@ -587,4 +589,5 @@ public abstract class AbstractGwtShellMojo
             }
         }
     }
+
 }

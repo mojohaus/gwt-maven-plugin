@@ -118,8 +118,8 @@ public class GenerateAsyncMojo
         }
         if ( generated )
         {
-            getLog().debug( "add compile source root " + generateDirectory );
-            addCompileSourceRoot( generateDirectory );
+            getLog().debug( "add compile source root " + getGenerateDirectory() );
+            addCompileSourceRoot( getGenerateDirectory() );
         }
     }
 
@@ -178,7 +178,7 @@ public class GenerateAsyncMojo
         String className = clazz.getName();
         getLog().debug( "generate Async interface for " + className );
 
-        File out = new File( generateDirectory, name + ".java" );
+        File out = new File( getGenerateDirectory(), name + ".java" );
         out.getParentFile().mkdirs();
         PrintWriter writer = new PrintWriter( out ); // TODO: use source encoding instead of platform encoding
 

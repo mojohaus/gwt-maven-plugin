@@ -20,22 +20,18 @@ package org.codehaus.mojo.gwt.shell;
  */
 
 import static org.apache.maven.artifact.Artifact.SCOPE_COMPILE;
+import static org.apache.maven.artifact.Artifact.SCOPE_PROVIDED;
 import static org.apache.maven.artifact.Artifact.SCOPE_RUNTIME;
+import static org.apache.maven.artifact.Artifact.SCOPE_SYSTEM;
 import static org.apache.maven.artifact.Artifact.SCOPE_TEST;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.jar.JarEntry;
-import java.util.jar.JarOutputStream;
-import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -63,15 +59,16 @@ public class ClasspathBuilder
      * so that the script writers can get the dependencies they need regardless of the Maven scopes (still want to use
      * the Maven scopes for everything else Maven, but for GWT-Maven we need to access deps differently - directly at
      * times).
-     *
-     * @param mojo
+     * 
+     * @param project The maven project the Mojo is running for
      * @param scope
-     * @param runtime TODO
+     * @param runtime
+     * @param artifacts the project artifacts (all scopes)
      * @return file collection for classpath
      * @throws DependencyResolutionRequiredException
      */
     public Collection<File> buildClasspathList( final MavenProject project, final String scope, GwtRuntime runtime,
-                                                boolean sourcesOnPath, boolean resourcesOnPath )
+                                                boolean sourcesOnPath, boolean resourcesOnPath, Set<Artifact> artifacts )
         throws DependencyResolutionRequiredException, MojoExecutionException
     {
         // FIXME what are sourcesOnPath & resourcesOnPath for ?
@@ -107,36 +104,44 @@ public class ClasspathBuilder
         if ( scope.equals( SCOPE_TEST ) )
         {
             // Add all project dependencies in classpath
-            for ( Iterator it = project.getTestClasspathElements().iterator(); it.hasNext(); )
+            for ( Artifact artifact : artifacts )
             {
-                items.add( new File( it.next().toString() ) );
+                items.add( artifact.getFile() );
             }
         }
         else if ( scope.equals( SCOPE_COMPILE ) )
         {
             // Add all project dependencies in classpath
-            for ( Iterator it = project.getCompileClasspathElements().iterator(); it.hasNext(); )
+            for ( Artifact artifact : artifacts )
             {
-                items.add( new File( it.next().toString() ) );
-            }
-        }
-        else if ( scope.equals( SCOPE_RUNTIME ) )
-        {
-            // Add all dependencies BUT "TEST" as we need PROVIDED ones to setup the execution
-            // GWTShell
-            for ( Iterator<Artifact> it = project.getArtifacts().iterator(); it.hasNext(); )
-            {
-                Artifact artifact = it.next();
-                if ( !artifact.getScope().equals( SCOPE_TEST ) )
+                String artifactScope = artifact.getScope();
+                if ( SCOPE_COMPILE.equals( artifactScope ) || SCOPE_PROVIDED.equals( artifactScope )
+                    || SCOPE_SYSTEM.equals( artifactScope ) )
                 {
                     items.add( artifact.getFile() );
                 }
             }
         }
+        else if ( scope.equals( SCOPE_RUNTIME ) )
+        {
+            // Add all dependencies BUT "TEST" as we need PROVIDED ones to setup the execution
+            // GWTShell that is NOT a full JEE server
+            for ( Artifact artifact : artifacts )
+            {
+                if ( !artifact.getScope().equals( SCOPE_TEST ) && artifact.getArtifactHandler().isAddedToClasspath() )
+                {
+                    items.add( artifact.getFile() );
+                }
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException( "unsupported scope " + scope );
+        }
 
         items.add( runtime.getGwtDevJar() );
 
-        getLogger().debug( "SCRIPT INJECTION CLASSPATH LIST" );
+        getLogger().debug( "GWT SDK execution classpath :" );
         for ( File f : items )
         {
             getLogger().debug( "   " + f.getAbsolutePath() );
@@ -324,135 +329,5 @@ public class ClasspathBuilder
     private String getProjectReferenceId( final String groupId, final String artifactId, final String version )
     {
         return groupId + ":" + artifactId + ":" + version;
-    }
-
-    public File writeClassPathFile( GwtShellScriptConfiguration configuration, GwtRuntime runtime )
-        throws MojoExecutionException
-    {
-        File classpath = new File( configuration.getBuildDir(), "gwt.classpath" );
-        PrintWriter writer = null;
-        try
-        {
-            Collection<File> files =
-                buildClasspathList( configuration.getProject(), SCOPE_COMPILE, runtime,
-                                    configuration.getSourcesOnPath(), configuration.getResourcesOnPath() );
-            writer = new PrintWriter( classpath );  // TODO: is platform encoding the encoding of choice?
-            for ( File f : files )
-            {
-                writer.println( f.getAbsolutePath() );
-            }
-            return classpath;
-
-        }
-        catch ( Exception e )
-        {
-            throw new MojoExecutionException( "Error creating classpath script - " + classpath, e );
-        }
-        finally
-        {
-            if ( writer != null )
-            {
-                writer.close();
-            }
-        }
-    }
-
-    public void writeClassPathVariable( final GwtShellScriptConfiguration mojo, File file, final String scope,
-                                        GwtRuntime runtime, PrintWriter writer, String variableDefinition )
-        throws MojoExecutionException
-    {
-        try
-        {
-            /*
-             * Still an issue here with long classpath on windows. No workaround found yet.
-             */
-            Collection<File> classpath =
-                buildClasspathList( mojo.getProject(), scope, runtime, mojo.getSourcesOnPath(),
-                                    mojo.getResourcesOnPath() );
-            writer.print( variableDefinition );
-
-            Iterator<File> it = classpath.iterator();
-            while ( it.hasNext() )
-            {
-                writer.print( "\"" + it.next().getAbsolutePath() + "\"" );
-                if ( it.hasNext() )
-                {
-                    writer.print( File.pathSeparator );
-                }
-            }
-            writer.println();
-        }
-        catch ( DependencyResolutionRequiredException e )
-        {
-            throw new MojoExecutionException( "Error creating script - " + file, e );
-        }
-    }
-
-    /**
-     * Create a jar with just a manifest containing a Main-Class entry for Booing and a Class-Path entry for all
-     * classpath elements.
-     *
-     * @param classPath List&lt;String> of all classpath elements.
-     * @return
-     * @throws IOException
-     */
-    public File createBooterJar( GwtShellScriptConfiguration configuration, GwtRuntime runtime, File pluginArtifact,
-                                 String mainClass )
-        throws MojoExecutionException
-    {
-        try
-        {
-            File file = new File( configuration.getBuildDir(), "gwt.booter.jar" );
-            if ( !configuration.getLog().isDebugEnabled() )
-            {
-                file.deleteOnExit();
-            }
-            FileOutputStream fos = new FileOutputStream( file );
-            JarOutputStream jos = new JarOutputStream( fos );
-            jos.setLevel( JarOutputStream.STORED );
-            JarEntry je = new JarEntry( "META-INF/MANIFEST.MF" );
-            jos.putNextEntry( je );
-
-            Collection<File> files =
-                buildClasspathList( configuration.getProject(), SCOPE_COMPILE, runtime,
-                                    configuration.getSourcesOnPath(), configuration.getResourcesOnPath() );
-
-            Manifest man = new Manifest();
-
-            StringBuilder cp = new StringBuilder();
-            if ( pluginArtifact != null )
-            {
-                cp.append( pluginArtifact.toURI().toURL().toExternalForm() ).append( " " );
-            }
-
-            for ( File classPathEntry : files )
-            {
-                String extForm = classPathEntry.toURI().toURL().toExternalForm();
-                cp.append( extForm );
-                // NOTE: if File points to a directory, this entry MUST end in '/'.
-                if ( classPathEntry.isDirectory() && !extForm.endsWith( "/" ) )
-                {
-                    cp.append( '/' );
-                }
-                cp.append( " " );
-            }
-
-            man.getMainAttributes().putValue( "Manifest-Version", "1.0" );
-            man.getMainAttributes().putValue( "Class-Path", cp.toString().trim() );
-            man.getMainAttributes().putValue( "Main-Class", mainClass );
-
-            man.write( jos );
-            jos.close();
-
-            return file;
-        }
-        catch ( DependencyResolutionRequiredException e )
-        {
-            throw new MojoExecutionException( e.getMessage(), e );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( e.getMessage(), e );
-        }
     }
 }

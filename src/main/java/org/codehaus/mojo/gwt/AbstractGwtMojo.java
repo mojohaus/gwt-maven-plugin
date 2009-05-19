@@ -25,6 +25,7 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -110,6 +111,13 @@ public abstract class AbstractGwtMojo
      */
     private MavenProject project;
 
+    /**
+     * @parameter expression="${project.artifacts}"
+     * @readolny
+     * @required
+     */
+    private Set<Artifact> artifacts;
+
     // --- Plugin parameters ---------------------------------------------------
 
     /**
@@ -134,7 +142,7 @@ public abstract class AbstractGwtMojo
      * @parameter default-value="${project.build.directory}/generated-sources/gwt"
      * @required
      */
-    protected File generateDirectory;
+    private File generateDirectory;
 
     //------------------------------
     // Plexus Lifecycle
@@ -203,7 +211,7 @@ public abstract class AbstractGwtMojo
     public Collection<File> getClasspath( String scope, GwtRuntime runtime )
         throws MojoExecutionException, DependencyResolutionRequiredException
     {
-        return classpathBuilder.buildClasspathList( getProject(), scope, runtime, true, true );
+        return classpathBuilder.buildClasspathList( getProject(), scope, runtime, true, true, artifacts );
     }
 
     /**
@@ -400,6 +408,7 @@ public abstract class AbstractGwtMojo
     {
         if (!generateDirectory.exists())
         {
+            getLog().debug( "Creating target directory " + generateDirectory.getAbsolutePath() );
             generateDirectory.mkdirs();
         }
         return generateDirectory;
@@ -413,5 +422,10 @@ public abstract class AbstractGwtMojo
     protected void setProject( MavenProject project )
     {
         this.project = project;
+    }
+
+    public Set<Artifact> getProjectArtifacts()
+    {
+        return artifacts;
     }
 }

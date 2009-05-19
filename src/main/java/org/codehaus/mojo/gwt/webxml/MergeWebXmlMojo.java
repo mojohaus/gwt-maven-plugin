@@ -35,7 +35,7 @@ import org.codehaus.mojo.gwt.shell.AbstractGwtWebMojo;
 
 /**
  * Merges GWT servlet elements into deployment descriptor (and non GWT servlets into shell).
- * 
+ *
  * @goal mergewebxml
  * @phase process-resources
  * @requiresDependencyResolution compile
@@ -130,9 +130,9 @@ public class MergeWebXmlMojo
 
     /**
      * Helper hack for classpath problems, used as a fallback.
-     * 
+     *
      * @param runtime TODO
-     * 
+     *
      * @return
      */
     protected ClassLoader fixThreadClasspath( GwtRuntime runtime )
@@ -146,7 +146,8 @@ public class MergeWebXmlMojo
             ClassRealm realm = root.createChildRealm( "gwt-project" );
 
             Collection classpath = buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE,
-                                                                          runtime, sourcesOnPath, resourcesOnPath );
+                                                                          runtime, sourcesOnPath, resourcesOnPath,
+                                                                          getProjectArtifacts() );
             for ( Iterator it = classpath.iterator(); it.hasNext(); )
             {
                 realm.addConstituent( ( (File) it.next() ).toURI().toURL() );
@@ -162,6 +163,6 @@ public class MergeWebXmlMojo
             e.printStackTrace();
             throw new RuntimeException( e );
         }
-    }    
-    
+    }
+
 }

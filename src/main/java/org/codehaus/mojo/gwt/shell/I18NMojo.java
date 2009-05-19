@@ -21,8 +21,6 @@
 package org.codehaus.mojo.gwt.shell;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -31,7 +29,7 @@ import org.codehaus.mojo.gwt.GwtRuntime;
 
 /**
  * Creates I18N interfaces for constants and messages files.
- * 
+ *
  * @goal i18n
  * @phase process-resources
  * @requiresDependencyResolution compile
@@ -45,7 +43,7 @@ public class I18NMojo
 {
     /**
      * List of resourceBundles that should be used to generate i18n Messages interfaces.
-     * 
+     *
      * @parameter
      * @alias i18nMessagesNames
      */
@@ -53,15 +51,14 @@ public class I18NMojo
 
     /**
      * Shortcut for a single i18nMessagesBundle
-     * 
+     *
      * @parameter
      */
-    @SuppressWarnings("unused")
     private String i18nMessagesBundle;
 
     /**
      * List of resourceBundles that should be used to generate i18n Constants interfaces.
-     * 
+     *
      * @parameter
      * @alias i18nConstantsNames
      */
@@ -69,50 +66,54 @@ public class I18NMojo
 
     /**
      * Shortcut for a single i18nConstantsBundle
-     * 
+     *
      * @parameter
      */
-    @SuppressWarnings("unused")
     private String i18nConstantsBundle;
 
     /**
      * List of resourceBundles that should be used to generate i18n ConstantsWithLookup interfaces.
-     * 
+     *
      * @parameter
      */
     private String[] i18nConstantsWithLookupBundles;
 
     /**
      * Shortcut for a single i18nConstantsWithLookupBundle
-     * 
+     *
      * @parameter
      */
-    @SuppressWarnings("unused")
     private String i18nConstantsWithLookupBundle;
 
     public void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
     {
+        setup();
 
-        if ( i18nMessagesBundles == null && i18nConstantsBundles == null && i18nConstantsWithLookupBundles == null )
+        // constants with lookup
+        if ( i18nConstantsWithLookupBundles != null )
         {
-            throw new MojoExecutionException(
-                                              "neither i18nConstantsBundles, i18nMessagesBundles nor i18nConstantsWithLookupBundles present, cannot execute i18n goal" );
-        }
-
-        if ( !generateDirectory.exists() )
-        {
-            getLog().debug( "Creating target directory " + generateDirectory.getAbsolutePath() );
-            generateDirectory.mkdirs();
-        }
-
-       // constants
-        if ( getI18nConstantsBundles() != null )
-        {
-            for ( String target : getI18nConstantsBundles() )
+            for ( String target : i18nConstantsWithLookupBundles )
             {
                 ensureTargetPackageExists( getGenerateDirectory(), target );
-                
+
+                new JavaCommand( "com.google.gwt.i18n.tools.I18NSync", runtime )
+                    .withinScope( Artifact.SCOPE_COMPILE )
+                    .arg( "-out" )
+                    .arg( "\"" + getGenerateDirectory() + "\"" )
+                    .arg( "-createConstantsWithLookup" )
+                    .arg( target )
+                    .execute();
+            }
+        }
+
+        // constants
+        if ( i18nConstantsBundles != null )
+        {
+            for ( String target : i18nConstantsBundles )
+            {
+                ensureTargetPackageExists( getGenerateDirectory(), target );
+
                 new JavaCommand( "com.google.gwt.i18n.tools.I18NSync", runtime )
                     .withinScope( Artifact.SCOPE_COMPILE )
                     .arg( "-out" )
@@ -123,9 +124,9 @@ public class I18NMojo
         }
 
         // messages
-        if ( getI18nMessagesBundles() != null )
+        if ( i18nMessagesBundles != null )
         {
-            for ( String target : getI18nMessagesBundles() )
+            for ( String target : i18nMessagesBundles )
             {
                 ensureTargetPackageExists( getGenerateDirectory(), target );
 
@@ -137,6 +138,33 @@ public class I18NMojo
                     .arg( target )
                     .execute();
             }
+        }
+    }
+
+
+    private void setup()
+        throws MojoExecutionException
+    {
+        if ( i18nConstantsWithLookupBundles == null && i18nConstantsWithLookupBundle != null )
+        {
+            i18nConstantsWithLookupBundles = new String[] { i18nConstantsWithLookupBundle };
+        }
+
+        if ( i18nConstantsBundles == null && i18nConstantsBundle != null )
+        {
+            i18nConstantsBundles = new String[] { i18nConstantsBundle };
+        }
+
+        if ( i18nMessagesBundles == null && i18nMessagesBundle != null )
+        {
+            i18nMessagesBundles = new String[] { i18nMessagesBundle };
+        }
+
+        if ( i18nMessagesBundles == null && i18nConstantsBundles == null && i18nConstantsWithLookupBundles == null )
+        {
+            throw new MojoExecutionException(
+                "neither i18nConstantsBundles, i18nMessagesBundles nor i18nConstantsWithLookupBundles present. \n"
+                + "Cannot execute i18n goal" );
         }
     }
 
@@ -153,34 +181,4 @@ public class I18NMojo
         }
     }
 
-
-    public void setI18nConstantsWithLookupBundle( String i18nConstantsWithLookupBundle )
-    {
-        this.i18nConstantsWithLookupBundles = new String[] { i18nConstantsWithLookupBundle };
-    }
-
-    public void setI18ConstantsBundle( String i18nConstantsBundle )
-    {
-        this.i18nConstantsBundles = new String[] { i18nConstantsBundle };
-    }
-
-    public void setI18nMessagesBundle( String i18nMessagesBundle )
-    {
-        this.i18nMessagesBundles = new String[] { i18nMessagesBundle };
-    }
-
-    public String[] getI18nMessagesBundles()
-    {
-        return i18nMessagesBundles;
-    }
-
-    public String[] getI18nConstantsBundles()
-    {
-        return i18nConstantsBundles;
-    }
-
-    public String[] getI18nConstantsWithLookupBundles()
-    {
-        return i18nConstantsWithLookupBundles;
-    }
 }

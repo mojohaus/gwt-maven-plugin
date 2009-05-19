@@ -296,7 +296,7 @@ public class TestMojo
         i = addClasspathElements( dependencies, urls, i );
         try
         {
-            urls[i++] = generateDirectory.toURL();
+            urls[i++] = getGenerateDirectory().toURL();
             urls[i] = new File( getProject().getBuild().getOutputDirectory() ).toURL();
         }
         catch ( MalformedURLException e )

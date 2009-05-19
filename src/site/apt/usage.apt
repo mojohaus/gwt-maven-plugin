@@ -22,11 +22,11 @@ Configuring Google Web Toolkit support for Maven
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <version>1.1</version>
+        <configuration>
+          <module>com.mycompany.gwt.Module</module>
+        </configuration>
         <executions>
           <execution>
-            <configuration>
-              <module>com.mycompany.gwt.Module</module>
-            </configuration>
             <goals>
               <goal>compile</goal>
             </goals>
@@ -63,11 +63,11 @@ Configuring Google Web Toolkit support for Maven
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <version>1.1</version>
+        <configuration>
+          <servicePattern>**/gwt/**/*Service.java</servicePattern>
+        </configuration>
         <executions>
           <execution>
-            <configuration>
-              <servicePattern>**/gwt/**/*Service.java</servicePattern>
-            </configuration>
             <goals>
               <goal>compile</goal>
               <goal>generateAsync</goal>
@@ -100,15 +100,14 @@ Configuring Google Web Toolkit support for Maven
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <version>1.1</version>
+        <configuration>
+          <i18nMessagesBundle>com.mycompany.MyApp</i18nMessagesBundle>
+        </configuration>
         <executions>
           <execution>
             <goals>
               <goal>i18n</goal>
             </goals>
-            <configuration>
-              <resourceBundle>com.mycompany.MyApp</resourceBundle>
-              <message>true</message>
-            </configuration>
           </execution>
         </executions>
       </plugin>
