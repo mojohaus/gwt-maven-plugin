@@ -56,6 +56,9 @@
     <contributor>
       <name>Robert Scholte</name>
     </contributor>
+    <contributor>
+      <name>Stefan Hübner</name>
+    </contributor>
   </contributors>
   <mailingLists>
     <mailingList>
@@ -321,5 +324,14 @@
       <url>dav:https://dav.codehaus.org/mojo/gwt-maven-plugin/${project.version}</url>
     </site>
   </distributionManagement>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>apache.snapshots</id>
+      <url>https://repository.apache.org/content/repositories/snapshots</url>
+      <snapshots><enabled>true</enabled></snapshots>
+      <releases><enabled>false</enabled></releases>
+    </pluginRepository>
+  </pluginRepositories>
 
 </project>
