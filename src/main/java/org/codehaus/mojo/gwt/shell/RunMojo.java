@@ -32,10 +32,10 @@ import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Goal which run a GWT module in the GWT Hosted mode.
- *
+ * 
  * @goal run
  * @execute phase=compile
- * @requiresDependencyResolution compile
+ * @requiresDependencyResolution runtime
  * @description Runs the the project in the GWT Hosted mode for development.
  * @author ccollins
  * @author cooper
@@ -103,8 +103,8 @@ public class RunMojo
      * @readOnly
      */
     private File buildOutputDirectory;
-    
-    
+
+
     /**
      * Source Tomcat context.xml for GWT shell - copied to /gwt/localhost/ROOT.xml (used as the context.xml for the
      * SHELL - requires Tomcat 5.0.x format - hence no default).
@@ -215,7 +215,7 @@ public class RunMojo
                 {
                     throw new MojoExecutionException( "Unable to build catalina.base", e );
                 }
-                cmd.environment( "catalina.base", quote( getTomcat().getAbsolutePath() ) )
+                cmd.systemProperty( "catalina.base", quote( getTomcat().getAbsolutePath() ) )
                     .arg( getRunTarget() );
                 break;
             default:
@@ -233,25 +233,25 @@ public class RunMojo
     throws MojoExecutionException
     {
         getLog().info( "create exploded Jetty webapp in " + hostedWebapp );
-        
+
         File classes = new File( hostedWebapp, "WEB-INF/classes" );
         classes.mkdirs();
-        
+
         if ( !buildOutputDirectory.getAbsolutePath().equals( classes.getAbsolutePath() ) )
         {
             getLog().warn( "Your POM <build><outputdirectory> does not match your "
                                 + "hosted webapp WEB-INF/classes folder for GWT Hosted browser to see your classes." );
             try
             {
-                FileUtils.copyDirectory( buildOutputDirectory, classes );            
+                FileUtils.copyDirectory( buildOutputDirectory, classes );
             }
             catch ( IOException e )
             {
                 throw new MojoExecutionException( "Failed to copy classes to " + classes , e );
             }
         }
-        
-        
+
+
         File lib = new File( hostedWebapp, "WEB-INF/lib" );
         lib.mkdirs();
 
@@ -267,7 +267,7 @@ public class RunMojo
                 throw new MojoExecutionException( "Failed to copy runtime dependency " + artifact, e );
             }
         }
-        
+
     }
 
     /**
