@@ -178,6 +178,8 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * Forked process execution timeOut. Usefull to avoid maven to hang in continuous integration server.
+     * 
+     * @parameter
      */
     private int timeOut;
 

@@ -33,6 +33,7 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.codehaus.mojo.gwt.it</groupId>
@@ -54,6 +55,10 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <workspace>${basedir}/..</workspace>
+          <runTarget>org.codehaus.mojo.gwt.test.Hello/hello.html</runTarget>
+        </configuration>
       </plugin>
     </plugins>
   </build>

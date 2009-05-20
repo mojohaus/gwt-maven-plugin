@@ -20,9 +20,11 @@ package org.codehaus.mojo.gwt;
  */
 
 import java.io.File;
+import java.io.FileReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +37,9 @@ import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.model.Dependency;
+import org.apache.maven.model.Model;
 import org.apache.maven.model.Resource;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -49,6 +53,7 @@ import org.codehaus.plexus.component.repository.exception.ComponentLookupExcepti
 import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
+import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
  * Abstract Support class for all GWT-related operations. Provide GWT runtime resolution based on plugin configuration
@@ -415,6 +420,86 @@ public abstract class AbstractGwtMojo
     @SuppressWarnings( "unchecked" )
     public Set<Artifact> getProjectArtifacts()
     {
-        return project.getArtifacts();
+        // return project.getArtifacts();
+
+        Set<Artifact> localArtifacts = getWorkspaceArtifacts();
+
+        Set<Artifact> artifacts = new HashSet<Artifact>();
+        for ( Artifact artifact : (Set<Artifact>) project.getArtifacts() )
+        {
+            boolean isLocal = false;
+            for ( Artifact localArtifact : localArtifacts )
+            {
+                if ( artifact.getGroupId().equals( localArtifact.getGroupId() )
+                    && artifact.getArtifactId().equals( localArtifact.getArtifactId() )
+                    && artifact.getVersion().equals( localArtifact.getVersion() )
+                    && artifact.getType().equals( localArtifact.getType() ) )
+                {
+                    localArtifact.setScope( artifact.getScope() );
+                    artifacts.add( localArtifact );
+                    isLocal = true;
+                    break;
+                }
+            }
+            if ( !isLocal )
+            {
+                artifacts.add( artifact );
+            }
+        }
+        return artifacts;
+    }
+
+    /**
+     * Local workspace path to search for local project matching dependent artifacts. Eclispe users may set this to
+     * ${eclipse.workspace} to match the maven-eclipse-plugin configuration.
+     * 
+     * @parameter
+     */
+    private File workspace;
+
+    protected Set<Artifact> getWorkspaceArtifacts()
+    {
+        Set<Artifact> artifacts = new HashSet<Artifact>();
+        if ( workspace == null )
+        {
+            return artifacts;
+        }
+        DirectoryScanner scanner = new DirectoryScanner();
+        scanner.setBasedir( workspace );
+        scanner.setIncludes( new String[] { "**/pom.xml" } );
+        scanner.scan();
+        for ( String path : scanner.getIncludedFiles() )
+        {
+            File pom = new File( workspace, path );
+            try
+            {
+                Model model = new MavenXpp3Reader().read( new FileReader( pom ) );
+
+                String groupId = model.getGroupId() != null ? model.getGroupId() : model.getParent().getGroupId();
+                String artifactId = model.getArtifactId();
+                String version = model.getVersion() != null ? model.getVersion() : model.getParent().getVersion();
+                String type = model.getPackaging() != null ? model.getPackaging() : "jar";
+
+                Artifact artifact =
+                    artifactFactory.createArtifact( groupId, artifactId, version, Artifact.SCOPE_COMPILE, type );
+
+                String outputDirectory = model.getBuild().getOutputDirectory();
+                if ( outputDirectory == null )
+                {
+                    outputDirectory = "target/classes";
+                }
+                getLog().debug(
+                    "Artifact " + artifact + " will point to local project " + pom.getParentFile().getAbsoluteFile() );
+                artifact.setFile( new File( pom.getParentFile(), outputDirectory ) );
+                artifacts.add( artifact );
+            }
+            catch ( Exception e )
+            {
+                getLog().debug( "Failed to parse candidate project POM " + pom );
+                continue;
+            }
+        }
+
+        return artifacts;
     }
 }
