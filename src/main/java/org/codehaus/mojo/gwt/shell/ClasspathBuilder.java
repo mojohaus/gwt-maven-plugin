@@ -103,6 +103,8 @@ public class ClasspathBuilder
 
         if ( scope.equals( SCOPE_TEST ) )
         {
+            items.add( new File( project.getBuild().getTestOutputDirectory() ) );
+
             // Add all project dependencies in classpath
             for ( Artifact artifact : artifacts )
             {
@@ -245,7 +247,8 @@ public class ClasspathBuilder
      * @param scope
      * @return
      */
-    private List getSourceRoots( final MavenProject project, final String scope )
+    @SuppressWarnings( "unchecked" )
+    private List<String> getSourceRoots( final MavenProject project, final String scope )
     {
         if ( SCOPE_COMPILE.equals( scope ) || SCOPE_RUNTIME.equals( scope ) )
         {
@@ -253,7 +256,7 @@ public class ClasspathBuilder
         }
         else if ( SCOPE_TEST.equals( scope ) )
         {
-            List sourceRoots = new ArrayList();
+            List<String> sourceRoots = new ArrayList<String>();
             sourceRoots.addAll( project.getTestCompileSourceRoots() );
             sourceRoots.addAll( project.getCompileSourceRoots() );
             return sourceRoots;
