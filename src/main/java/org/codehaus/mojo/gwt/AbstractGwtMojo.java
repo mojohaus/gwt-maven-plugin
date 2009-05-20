@@ -53,7 +53,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
 /**
  * Abstract Support class for all GWT-related operations. Provide GWT runtime resolution based on plugin configuration
  * and/or project dependencies. Creates the runtime dependencies list to be used by GWT tools.
- *
+ * 
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @version $Id$
  */
@@ -110,13 +110,6 @@ public abstract class AbstractGwtMojo
      * @readonly
      */
     private MavenProject project;
-
-    /**
-     * @parameter expression="${project.artifacts}"
-     * @readolny
-     * @required
-     */
-    private Set<Artifact> artifacts;
 
     // --- Plugin parameters ---------------------------------------------------
 
@@ -211,7 +204,7 @@ public abstract class AbstractGwtMojo
     public Collection<File> getClasspath( String scope, GwtRuntime runtime )
         throws MojoExecutionException, DependencyResolutionRequiredException
     {
-        return classpathBuilder.buildClasspathList( getProject(), scope, runtime, true, true, artifacts );
+        return classpathBuilder.buildClasspathList( getProject(), scope, runtime, true, true, getProjectArtifacts() );
     }
 
     /**
@@ -419,13 +412,9 @@ public abstract class AbstractGwtMojo
         return archiverManager;
     }
 
-    protected void setProject( MavenProject project )
-    {
-        this.project = project;
-    }
-
+    @SuppressWarnings( "unchecked" )
     public Set<Artifact> getProjectArtifacts()
     {
-        return artifacts;
+        return project.getArtifacts();
     }
 }

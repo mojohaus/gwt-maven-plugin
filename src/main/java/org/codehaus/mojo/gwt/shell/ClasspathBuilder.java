@@ -112,6 +112,7 @@ public class ClasspathBuilder
         else if ( scope.equals( SCOPE_COMPILE ) )
         {
             // Add all project dependencies in classpath
+            getLogger().debug( "candidate artifacts : " + artifacts.size() );
             for ( Artifact artifact : artifacts )
             {
                 String artifactScope = artifact.getScope();
@@ -128,6 +129,7 @@ public class ClasspathBuilder
             // GWTShell that is NOT a full JEE server
             for ( Artifact artifact : artifacts )
             {
+                getLogger().debug( "candidate artifact : " + artifact );
                 if ( !artifact.getScope().equals( SCOPE_TEST ) && artifact.getArtifactHandler().isAddedToClasspath() )
                 {
                     items.add( artifact.getFile() );

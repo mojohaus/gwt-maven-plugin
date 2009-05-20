@@ -35,7 +35,7 @@ import org.codehaus.plexus.util.FileUtils;
  * 
  * @goal run
  * @execute phase=compile
- * @requiresDependencyResolution runtime
+ * @requiresDependencyResolution test
  * @description Runs the the project in the GWT Hosted mode for development.
  * @author ccollins
  * @author cooper
@@ -255,7 +255,7 @@ public class RunMojo
         File lib = new File( hostedWebapp, "WEB-INF/lib" );
         lib.mkdirs();
 
-        Collection<Artifact> artifacts = getProject().getRuntimeArtifacts();
+        Collection<Artifact> artifacts = getProjectArtifacts();
         for ( Artifact artifact : artifacts )
         {
             try
