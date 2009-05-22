@@ -57,7 +57,7 @@
         </executions>
         <configuration>
           <workspace>${basedir}/..</workspace>
-          <runTarget>org.codehaus.mojo.gwt.test.Hello/hello.html</runTarget>
+          <runTarget>org.codehaus.mojo.gwt.test.Hello/Hello.html</runTarget>
         </configuration>
       </plugin>
     </plugins>

@@ -260,7 +260,11 @@ public class RunMojo
         {
             try
             {
-                FileUtils.copyFileToDirectory( artifact.getFile(), lib );
+                // Using m2eclipse with "resolve workspace dependencies" the artifact is the buildOutputDirectory
+                if ( ! artifact.getFile().isDirectory() )
+                {
+                    FileUtils.copyFileToDirectory( artifact.getFile(), lib );
+                }
             }
             catch ( IOException e )
             {

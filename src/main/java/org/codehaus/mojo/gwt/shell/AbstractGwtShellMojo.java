@@ -416,7 +416,7 @@ public abstract class AbstractGwtShellMojo
 
     protected String quote( String arg )
     {
-        return StringUtils.quoteAndEscape( arg, '"' );
+        return '"' + arg + '"';
     }
 
     /**
