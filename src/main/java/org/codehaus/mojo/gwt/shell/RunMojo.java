@@ -183,11 +183,6 @@ public class RunMojo
     public void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
     {
-        if ( !this.getOutput().exists() )
-        {
-            this.getOutput().mkdirs();
-        }
-
         String clazz = runtime.getVersion().getShellFQCN();
         JavaCommand cmd = new JavaCommand( clazz, runtime )
             .withinScope( Artifact.SCOPE_RUNTIME )
