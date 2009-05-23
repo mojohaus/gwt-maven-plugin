@@ -57,7 +57,7 @@
           <execution>
             <goals>
               <goal>generateAsync</goal>
-              <goal>compile</goal>
+              <goal>inplace</goal>
             </goals>
           </execution>
         </executions>

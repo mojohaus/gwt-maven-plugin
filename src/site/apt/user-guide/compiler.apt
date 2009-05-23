@@ -107,23 +107,19 @@ Compile GWT application into JavaScript
 
 * Compiler output directory
 
-  gwt-maven-plugin use by default the web application source directory <<<src/main/webapp>>> as output folder. 
-  One of Maven principle is
-  to always put files created during build in the <<<buildDirectory>>> (<<<target>>>) folder. Please note this is only a 
-  principle, and not a requirement : pragmatic developers created the 
-  {{{http://maven.apache.org/plugins/maven-war-plugin/inplace-mojo.html}war:inplace}}
-  goal to setup an explosed WAR structure in the source folder for rapid JEE development without the time-consuming 
+  There is two Mojos to handle GWT compilation process : {{{compiler}}} and {{{inplace}}}.
+  
+  <<Compiler>> is a simple integration of GWTCompiler in the maven build process and will output in the project build directory
+  where the maven-war-plugin is expected to create the exploded webapplication before packaging it as a WAR.
+   
+  <<Inplace>> use the web application source directory <<<src/main/webapp>>> as output folder. 
+  to match the  {{{http://maven.apache.org/plugins/maven-war-plugin/inplace-mojo.html}war:inplace}} goal. This one
+  setup an explosed WAR structure in the source folder for rapid JEE development without the time-consuming 
   package/deploy/restart cycle.
-  
-  GWTCompiler output default-value is set to match multiple considerations :
-  
-  From the maven-war-plugin point of view, the generated JavaScript files are static resources that are expected in the
-  <<<warSourceDirectory>>>. Until maven-war-plugin has a release to support the maven 2.1 <<<prepare-package>>> phase, there is no
-  clean way to plugin into WAR packaging to add the compiler output to the exploded webapp.
   
   Using this folder is also very usefull for those of us that run a server using 
   {{{http://mojo.codehaus.org/tomcat-maven-plugin/run-mojo.htm}tomcat:run}} or
-  {{{http://jetty.mortbay.org/jetty/maven-plugin/run-mojo.html}jetty:rnu}} goals. Those plugins don't require any packaging
+  {{{http://jetty.mortbay.org/jetty/maven-plugin/run-mojo.html}jetty:run}} goals. Those plugins don't require any packaging
   to launch the webapp, and handle nicelly Maven dependencies and classes without requirement for a <<<WEB-INF/lib>>> and 
   <<<WEB-INF/classes>>>. With this default GWTCompiler output directory, the application can be run as is with no packaging
   requirement.

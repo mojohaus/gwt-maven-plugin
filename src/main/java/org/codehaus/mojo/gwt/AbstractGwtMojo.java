@@ -209,7 +209,7 @@ public abstract class AbstractGwtMojo
     public Collection<File> getClasspath( String scope, GwtRuntime runtime )
         throws MojoExecutionException, DependencyResolutionRequiredException
     {
-        return classpathBuilder.buildClasspathList( getProject(), scope, runtime, true, true, getProjectArtifacts() );
+        return classpathBuilder.buildClasspathList( getProject(), scope, runtime, getProjectArtifacts() );
     }
 
     /**

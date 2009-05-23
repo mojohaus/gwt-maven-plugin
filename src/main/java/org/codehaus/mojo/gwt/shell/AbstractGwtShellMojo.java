@@ -50,7 +50,6 @@ import org.codehaus.plexus.util.cli.shell.Shell;
  */
 public abstract class AbstractGwtShellMojo
     extends AbstractGwtModuleMojo
-    implements GwtShellScriptConfiguration
 {
     /**
      * @component
@@ -72,14 +71,6 @@ public abstract class AbstractGwtShellMojo
      * @parameter expression="${project.build.directory}"
      */
     private File buildDir;
-
-    /**
-     * Location on filesystem where GWT will write output files (-out option to GWTCompiler).
-     *
-     * @parameter expression="${gwt.war}" default-value="${basedir}/src/main/webapp"
-     * @alias outputDirectory
-     */
-    private File output;
 
     /**
      * Location on filesystem where GWT will write generated content for review (-gen option to GWTCompiler).
@@ -277,15 +268,6 @@ public abstract class AbstractGwtShellMojo
         return this.noServer;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getOutput()
-     */
-    public File getOutput()
-    {
-        return this.output;
-    }
 
     /**
      * {@inheritDoc}
@@ -481,8 +463,7 @@ public abstract class AbstractGwtShellMojo
             try
             {
                 classpath =
-                    buildClasspathUtil.buildClasspathList( getProject(), scope, runtime, sourcesOnPath,
-                        resourcesOnPath, getProjectArtifacts() );
+                    buildClasspathUtil.buildClasspathList( getProject(), scope, runtime, getProjectArtifacts() );
             }
             catch ( DependencyResolutionRequiredException e )
             {
