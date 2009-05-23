@@ -28,7 +28,6 @@ import static org.apache.maven.artifact.Artifact.SCOPE_TEST;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,36 +66,25 @@ public class ClasspathBuilder
      * @return file collection for classpath
      * @throws DependencyResolutionRequiredException
      */
+    @SuppressWarnings("unchecked")
     public Collection<File> buildClasspathList( final MavenProject project, final String scope, GwtRuntime runtime,
-                                                boolean sourcesOnPath, boolean resourcesOnPath, Set<Artifact> artifacts )
+                                                Set<Artifact> artifacts )
         throws DependencyResolutionRequiredException, MojoExecutionException
     {
-        // FIXME what are sourcesOnPath & resourcesOnPath for ?
-
-
         getLogger().info( "establishing classpath list (scope = " + scope + ")" );
 
         Set<File> items = new LinkedHashSet<File>();
 
-        // inject GWT jars and relative native libs for all scopes
-        // (gwt-user and gwt-dev should be scoped provided to keep them out of
-        // other maven stuff - not end up in war, etc - this util is only used for GWT-Maven scripts)
-        // TODO filter the rest of the stuff so we don't double add these
-
-        // add sources
-        if ( sourcesOnPath )
-        {
-            addSourcesWithActiveProjects( project, items, scope );
-        }
-
-        // add resources
-        if ( resourcesOnPath )
-        {
-            addResourcesWithActiveProjects( project, items, scope );
-        }
-
-        // add classes dir
         items.add( new File( project.getBuild().getOutputDirectory() ) );
+        
+        // Note : Don't call addSourceWithActiveProject as a GWT dependency MUST be a valid GWT library module :
+        // * include java sources in the JAR as resources
+        // * define a gwt.xml module file to declare the required inherits
+        // addSourceWithActiveProject would make some java sources available to GWT compiler that should not be accessible in
+        // a non-reactor build, making the build less deterministic and encouraging bad design.
+        
+        addSources( items, project.getCompileSourceRoots() );
+        addResources( items, project.getResources() );
 
         // Use our own ClasspathElements fitering, as for RUNTIME we need to include PROVIDED artifacts,
         // that is not the default Maven policy, as RUNTIME is used here to build the GWTShell execution classpath
@@ -104,6 +92,8 @@ public class ClasspathBuilder
         if ( scope.equals( SCOPE_TEST ) )
         {
             items.add( new File( project.getBuild().getTestOutputDirectory() ) );
+            addSources( items, project.getTestCompileSourceRoots() );
+            addResources( items, project.getTestResources() );
 
             // Add all project dependencies in classpath
             for ( Artifact artifact : artifacts )
@@ -275,7 +265,7 @@ public class ClasspathBuilder
      * @return
      */
     @SuppressWarnings( "unchecked" )
-    private List<Artifact> getResources( final MavenProject project, final String scope )
+    private List<Resource> getResources( final MavenProject project, final String scope )
     {
         if ( SCOPE_COMPILE.equals( scope ) || SCOPE_RUNTIME.equals( scope ) )
         {
@@ -283,7 +273,7 @@ public class ClasspathBuilder
         }
         else if ( SCOPE_TEST.equals( scope ) )
         {
-            List<Artifact> resources = new ArrayList<Artifact>();
+            List<Resource> resources = new ArrayList<Resource>();
             resources.addAll( project.getTestResources() );
             resources.addAll( project.getResources() );
             return resources;
@@ -300,11 +290,11 @@ public class ClasspathBuilder
      * @param items Classpath items.
      * @param sourceRoots
      */
-    private void addSources( final Collection<File> items, final List sourceRoots )
+    private void addSources( final Collection<File> items, final Collection<String> sourceRoots )
     {
-        for ( Iterator it = sourceRoots.iterator(); it.hasNext(); )
+        for ( String path : sourceRoots )
         {
-            items.add( new File( it.next().toString() ) );
+            items.add( new File( path ) );
         }
     }
 
@@ -314,12 +304,11 @@ public class ClasspathBuilder
      * @param items Classpath items.
      * @param resources
      */
-    private void addResources( final Collection<File> items, final List resources )
+    private void addResources( final Collection<File> items, final Collection<Resource> resources )
     {
-        for ( Iterator it = resources.iterator(); it.hasNext(); )
+        for ( Resource resource : resources )
         {
-            Resource r = (Resource) it.next();
-            items.add( new File( r.getDirectory() ) );
+            items.add( new File( resource.getDirectory() ) );
         }
     }
 
