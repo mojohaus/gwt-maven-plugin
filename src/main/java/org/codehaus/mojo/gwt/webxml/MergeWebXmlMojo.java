@@ -146,8 +146,7 @@ public class MergeWebXmlMojo
             ClassRealm realm = root.createChildRealm( "gwt-project" );
 
             Collection classpath = buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE,
-                                                                          runtime, sourcesOnPath, resourcesOnPath,
-                                                                          getProjectArtifacts() );
+                                                                          runtime, getProjectArtifacts() );
             for ( Iterator it = classpath.iterator(); it.hasNext(); )
             {
                 realm.addConstituent( ( (File) it.next() ).toURI().toURL() );
