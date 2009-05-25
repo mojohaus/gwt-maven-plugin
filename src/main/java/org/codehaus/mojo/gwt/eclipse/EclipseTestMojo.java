@@ -20,7 +20,6 @@ package org.codehaus.mojo.gwt.eclipse;
  */
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
@@ -32,9 +31,9 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.shell.PlatformUtil;
 import org.codehaus.mojo.gwt.test.TestMojo;
 import org.codehaus.mojo.gwt.test.TestTemplate;
+import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.WriterFactory;
 
 import freemarker.template.Configuration;
@@ -163,7 +162,7 @@ public class EclipseTestMojo
     protected String getExtraJvmArgs()
     {
         String extra = extraJvmArgs;
-        if ( PlatformUtil.onMac() && !extraJvmArgs.contains( "-XstartOnFirstThread" ) )
+        if ( Os.isFamily( Os.FAMILY_MAC ) && !extraJvmArgs.contains( "-XstartOnFirstThread" ) )
         {
             extra += " -XstartOnFirstThread";
         }

@@ -47,6 +47,13 @@ public class MergeWebXmlMojo
     extends AbstractGwtWebMojo
 {
 
+    /**
+     * Location on filesystem where project should be built.
+     * 
+     * @parameter expression="${project.build.directory}"
+     */
+    private File buildDir;
+
     /** Creates a new instance of MergeWebXmlMojo */
     public MergeWebXmlMojo()
     {
@@ -62,8 +69,8 @@ public class MergeWebXmlMojo
             this.getLog().info(
                                 "copy source web.xml - " + this.getWebXml()
                                     + " to build dir (source web.xml required if mergewebxml execution is enabled)"
-                                    + this.getBuildDir().getAbsolutePath() );
-            File destination = new File( this.getBuildDir(), "web.xml" );
+                                    + buildDir.getAbsolutePath() );
+            File destination = new File( buildDir, "web.xml" );
             if ( !destination.exists() )
             {
                 destination.getParentFile().mkdirs();
@@ -145,7 +152,7 @@ public class MergeWebXmlMojo
             ClassRealm root = world.newRealm( "gwt-plugin", Thread.currentThread().getContextClassLoader() );
             ClassRealm realm = root.createChildRealm( "gwt-project" );
 
-            Collection classpath = buildClasspathUtil.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE,
+            Collection classpath = classpathBuilder.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE,
                                                                           runtime, getProjectArtifacts() );
             for ( Iterator it = classpath.iterator(); it.hasNext(); )
             {

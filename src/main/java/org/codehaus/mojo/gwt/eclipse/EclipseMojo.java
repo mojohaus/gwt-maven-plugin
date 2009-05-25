@@ -38,7 +38,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.shell.PlatformUtil;
+import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.WriterFactory;
 
@@ -82,13 +82,6 @@ public class EclipseMojo
      * @readonly
      */
     private MavenProject executedProject;
-
-    /**
-     * Location of the file.
-     *
-     * @parameter default-value="${basedir}/src/main/webapp"
-     */
-    private File outputDirectory;
 
     /**
      * Location of the compiled classes.
@@ -154,10 +147,8 @@ public class EclipseMojo
                 File classes = new File( hostedWebapp, "WEB-INF/classes" );
                 if ( !buildOutputDirectory.getAbsolutePath().equals( classes.getAbsolutePath() ) )
                 {
-                    getLog().error(
-                                    "Your POM <build><outputdirectory> must match your "
-                                        + "hosted webapp WEB-INF/classes folder for GWT Hosted browser to see your classes." );
-                    throw new MojoExecutionException( "Configuration does not match GWT Hosted mode requirements" );
+                    getLog().warn( "Your POM <build><outputdirectory> must match your "
+                        + "hosted webapp WEB-INF/classes folder for GWT Hosted browser to see your classes." );
                 }
 
                 File lib = new File( hostedWebapp, "WEB-INF/lib" );
@@ -227,7 +218,7 @@ public class EclipseMojo
 
         context.put( "page", page );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
-        context.put( "out", outputDirectory.getAbsolutePath().substring( basedir + 1 ) );
+        context.put( "out", getOutputDirectory().getAbsolutePath().substring( basedir + 1 ) );
         context.put( "war", hostedWebapp.getAbsolutePath().substring( basedir + 1 ) );
         context.put( "additionalArguments", noserver ? "-noserver -port " + port : "" );
         context.put( "extraJvmArgs", getExtraJvmArgs() );
@@ -259,7 +250,7 @@ public class EclipseMojo
     protected String getExtraJvmArgs()
     {
         String extra = extraJvmArgs;
-        if ( PlatformUtil.onMac() && !extraJvmArgs.contains( "-XstartOnFirstThread" ) )
+        if ( Os.isFamily( Os.FAMILY_MAC ) && !extraJvmArgs.contains( "-XstartOnFirstThread" ) )
         {
             extra += " -XstartOnFirstThread";
         }

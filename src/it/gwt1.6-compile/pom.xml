@@ -29,26 +29,14 @@
     <gwtVersion>1.6.4</gwtVersion>
   </properties>
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>gwt-maven-plugin</artifactId>
-          <version>${gwtPluginVersion}</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-war-plugin</artifactId>
-          <version>2.1-alpha-2</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
     <plugins>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
+        <version>${gwtPluginVersion}</version>
         <configuration>
           <!-- GWT version detected from dependencies -->
-          <output>${basedir}/src/main/webapp/</output>
+          <inplace>true</inplace>
           <logLevel>INFO</logLevel>
           <runTarget>org.codehaus.mojo.gwt.test.Hello/Hello.html</runTarget>
           <runTimeOut>20</runTimeOut>
@@ -57,17 +45,10 @@
           <execution>
             <goals>
               <goal>generateAsync</goal>
-              <goal>inplace</goal>
+              <goal>compile</goal>
             </goals>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>2.1-alpha-2</version>
-        <configuration>
-          <webXml>war/WEB-INF/web.xml</webXml>
-        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>

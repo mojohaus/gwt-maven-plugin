@@ -1,5 +1,7 @@
 package org.codehaus.mojo.gwt;
 
+import java.io.File;
+
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 /*
@@ -31,14 +33,77 @@ public class GwtModule
 
     private String name;
 
-    public GwtModule( String name, Xpp3Dom xml )
+    private File file;
+
+    public GwtModule( String name, Xpp3Dom xml, File file )
     {
         this.name = name;
         this.xml = xml;
+        this.file = file;
     }
 
     public String getRenameTo()
     {
         return xml.getAttribute( "rename-to" );
+    }
+
+
+
+    public String getPublic()
+    {
+         Xpp3Dom node = xml.getChild( "public" );
+         return ( node == null ? "public" : node.getAttribute( "path" ) );
+    }
+
+    public String[] getSuperSources()
+    {
+        Xpp3Dom nodes[] = xml.getChildren( "super-source" );
+        if ( nodes == null )
+        {
+            return new String[0];
+        }
+        String[] superSources = new String[nodes.length];
+        int i = 0;
+        for ( Xpp3Dom node : nodes )
+        {
+            String path = node.getAttribute( "path" );
+            if ( path == null )
+            {
+                path = "";
+            }
+            superSources[i++] = path;
+        }
+        return superSources;
+    }
+
+    public String[] getSources()
+    {
+        Xpp3Dom nodes[] = xml.getChildren( "source" );
+        if ( nodes == null )
+        {
+            return new String[0];
+        }
+        String[] sources = new String[nodes.length];
+        int i = 0;
+        for ( Xpp3Dom node : nodes )
+        {
+            sources[i++] = node.getAttribute( "path" );
+        }
+        return sources;
+    }
+
+    public File getDirectory()
+    {
+        return file.getParentFile();
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public String getPackage()
+    {
+        return name.substring( 0, name.lastIndexOf( '.' ) );
     }
 }

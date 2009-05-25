@@ -18,8 +18,8 @@
  */
 assert new File(basedir, 'target/classes').exists();
 assert new File(basedir, 'target/gwt-compile-1.0-SNAPSHOT/org.codehaus.mojo.gwt.test.Hello').exists();
-assert new File(basedir, 'src/main/webapp/org.codehaus.mojo.gwt.test.Hello/org.codehaus.mojo.gwt.test.Hello.nocache.js').exists();
+assert new File(basedir, 'target/gwt-compile-1.0-SNAPSHOT/org.codehaus.mojo.gwt.test.Hello/org.codehaus.mojo.gwt.test.Hello.nocache.js').exists();
 assert new File(basedir, 'target/gwt-compile-1.0-SNAPSHOT/com.google.gwt.sample.hello.Hello').exists();
-assert new File(basedir, 'src/main/webapp/com.google.gwt.sample.hello.Hello/com.google.gwt.sample.hello.Hello.nocache.js').exists();
+assert new File(basedir, 'target/gwt-compile-1.0-SNAPSHOT/com.google.gwt.sample.hello.Hello/com.google.gwt.sample.hello.Hello.nocache.js').exists();
 
 return true;

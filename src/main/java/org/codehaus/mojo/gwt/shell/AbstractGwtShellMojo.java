@@ -26,12 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
 import org.codehaus.mojo.gwt.GwtRuntime;
+import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
 import org.codehaus.plexus.util.cli.CommandLineTimeOutException;
@@ -54,23 +54,7 @@ public abstract class AbstractGwtShellMojo
     /**
      * @component
      */
-    protected ClasspathBuilder buildClasspathUtil;
-
-    /**
-     * Map of of plugin artifacts.
-     *
-     * @parameter expression="${plugin.version}"
-     * @required
-     * @readonly
-     */
-    private String version;
-
-    /**
-     * Location on filesystem where project should be built.
-     *
-     * @parameter expression="${project.build.directory}"
-     */
-    private File buildDir;
+    protected ClasspathBuilder classpathBuilder;
 
     /**
      * Location on filesystem where GWT will write generated content for review (-gen option to GWTCompiler).
@@ -100,15 +84,6 @@ public abstract class AbstractGwtShellMojo
     private String style;
 
     /**
-     * Prevents the embedded GWT Tomcat server from running (even if a port is specified).
-     * <p>
-     * Can be set from command line using '-Dgwt.noserver=...'
-     *
-     * @parameter default-value="false" expression="${gwt.noserver}"
-     */
-    private boolean noServer;
-
-    /**
      * Extra JVM arguments that are passed to the GWT-Maven generated scripts (for compiler, shell, etc - typically use
      * -Xmx512m here, or -XstartOnFirstThread, etc).
      * <p>
@@ -129,34 +104,6 @@ public abstract class AbstractGwtShellMojo
     @SuppressWarnings( "unused" )
     @Deprecated
     private String extraArgs;
-
-    /**
-     * Whether or not to add compile source root to classpath.
-     *
-     * @parameter default-value="true"
-     */
-    protected boolean sourcesOnPath;
-
-    /**
-     * Whether or not to add resources root to classpath.
-     *
-     * @parameter default-value="true"
-     */
-    protected boolean resourcesOnPath;
-
-    /**
-     * Whether or not to enable assertions in generated scripts (-ea).
-     *
-     * @parameter default-value="false"
-     */
-    private boolean enableAssertions;
-
-    /**
-     * Specifies the mapping URL to be used with the shell servlet.
-     *
-     * @parameter default-value="/*"
-     */
-    private String shellServletMappingURL;
 
     /**
      * Option to specify the jvm (or path to the java executable) to use with the forking scripts. For the default, the
@@ -191,123 +138,32 @@ public abstract class AbstractGwtShellMojo
     protected abstract void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException;
 
-    /**
-     * @return The File path to the plugin JAR artifact in the local repository
-     */
-    public File getPluginJar()
-    {
-        Artifact plugin =
-            artifactFactory.createArtifact( "org.codehaus.mojo", "gwt-maven-plugin", version, Artifact.SCOPE_COMPILE,
-                "maven-plugin" );
-        String localPath = localRepository.pathOf( plugin );
-        return new File( localRepository.getBasedir(), localPath );
-    }
 
     public void setExtraArgs( String extraArgs )
     {
         this.extraJvmArgs = extraArgs;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isEnableAssertions()
-     */
-    public boolean isEnableAssertions()
-    {
-        return this.enableAssertions;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getBuildDir()
-     */
-    public File getBuildDir()
-    {
-        return this.buildDir;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getExtraJvmArgs()
-     */
     public String getExtraJvmArgs()
     {
         return this.extraJvmArgs;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getGen()
-     */
     public File getGen()
     {
         return this.gen;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getLogLevel()
-     */
     public String getLogLevel()
     {
         return this.logLevel;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isNoServer()
-     */
-    public boolean isNoServer()
-    {
-        return this.noServer;
-    }
-
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getStyle()
-     */
     public String getStyle()
     {
         return this.style;
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getShellServletMappingURL()
-     */
-    public String getShellServletMappingURL()
-    {
-        return this.shellServletMappingURL;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getSourcesOnPath()
-     */
-    public boolean getSourcesOnPath()
-    {
-        return this.sourcesOnPath;
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getResourcesOnPath()
-     */
-    public boolean getResourcesOnPath()
-    {
-        return resourcesOnPath;
-    }
 
     /**
      * A plexus-util StreamConsumer to redirect messages to plugin log
@@ -341,11 +197,6 @@ public abstract class AbstractGwtShellMojo
         this.jvm = jvm;
     }
 
-    public String getVersion()
-    {
-        return this.version;
-    }
-
     /**
      * hook to post-process the dependency-based classpath
      */
@@ -365,7 +216,7 @@ public abstract class AbstractGwtShellMojo
                 extra.add( extraArg );
             }
         }
-        if ( PlatformUtil.OS_NAME.startsWith( "mac" ) && ( !extra.contains( "-XstartOnFirstThread" ) ) )
+        if ( Os.isFamily( Os.FAMILY_MAC ) && ( !extra.contains( "-XstartOnFirstThread" ) ) )
         {
             extra.add( "-XstartOnFirstThread" );
         }
@@ -463,7 +314,7 @@ public abstract class AbstractGwtShellMojo
             try
             {
                 classpath =
-                    buildClasspathUtil.buildClasspathList( getProject(), scope, runtime, getProjectArtifacts() );
+                    classpathBuilder.buildClasspathList( getProject(), scope, runtime, getProjectArtifacts() );
             }
             catch ( DependencyResolutionRequiredException e )
             {
@@ -529,7 +380,8 @@ public abstract class AbstractGwtShellMojo
                 // On windows, the default Shell will fall into command line length limitation issue
                 // On Unixes, not using a Shell breaks the classpath (NoClassDefFoundError:
                 // com/google/gwt/dev/Compiler).
-                Commandline cmd = PlatformUtil.onWindows() ? new Commandline( new JavaShell() ) : new Commandline();
+                Commandline cmd =
+                    Os.isFamily( Os.FAMILY_WINDOWS ) ? new Commandline( new JavaShell() ) : new Commandline();
 
                 cmd.setExecutable( getJavaCommand() );
                 cmd.addArguments( arguments );

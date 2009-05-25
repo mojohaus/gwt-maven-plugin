@@ -1,5 +1,7 @@
 package org.codehaus.mojo.gwt.shell;
 
+import org.codehaus.plexus.util.Os;
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -26,6 +28,11 @@ package org.codehaus.mojo.gwt.shell;
  */
 public class ArtifactNameUtil
 {
+    public static final String WINDOWS = "windows";
+
+    public static final String LINUX = "linux";
+
+    public static final String MAC = "mac";
 
     /**
      * Util for artifact and platform names stuff.
@@ -43,15 +50,15 @@ public class ArtifactNameUtil
      */
     public static final String getPlatformName()
     {
-        if ( PlatformUtil.onWindows() )
+        if ( Os.isFamily( Os.FAMILY_WINDOWS ) )
         {
-            return PlatformUtil.WINDOWS;
+            return WINDOWS;
         }
-        if ( PlatformUtil.onMac() )
+        if ( Os.isFamily( Os.FAMILY_MAC ) )
         {
-            return PlatformUtil.MAC;
+            return MAC;
         }
-        return PlatformUtil.LINUX;
+        return LINUX;
     }
 
     /**
@@ -61,11 +68,11 @@ public class ArtifactNameUtil
      */
     public static final String guessDevJarName()
     {
-        if ( PlatformUtil.OS_NAME.startsWith( PlatformUtil.WINDOWS ) )
+        if ( Os.isFamily( Os.FAMILY_WINDOWS ) )
         {
             return "gwt-dev-windows.jar";
         }
-        else if ( PlatformUtil.OS_NAME.startsWith( PlatformUtil.MAC ) )
+        else if ( Os.isFamily( Os.FAMILY_MAC ) )
         {
             return "gwt-dev-mac.jar";
         }

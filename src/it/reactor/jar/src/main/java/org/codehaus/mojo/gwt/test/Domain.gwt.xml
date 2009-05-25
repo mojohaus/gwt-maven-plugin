@@ -19,7 +19,9 @@
  */
 -->
 <!DOCTYPE module PUBLIC "//gwt-module/" "http://google-web-toolkit.googlecode.com/svn/tags/1.6.2/distro-source/core/src/gwt-module.dtd">
+<!-- START SNIPPET: domain-module -->
 <module>
   <inherits name="com.google.gwt.user.User"/>
   <source path="domain"/>
 </module>
+<!-- END SNIPPET: domain-module -->

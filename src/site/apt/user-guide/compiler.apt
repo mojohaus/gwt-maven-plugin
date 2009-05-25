@@ -40,7 +40,7 @@ Compile GWT application into JavaScript
 
 * Configure GWT modules
 
-  The <<<module>>> paramter can be used to define a single module in your application. You can also configure 
+  The <<<module>>> paramter can be used to define a single module in your application. You can also configure
   compilation for multiple modules by nesting them inside a ''<modules>'' element. If none is
   set, the plugin will automagically scan project source and resources directories for ''.gwt.xml'' module files.
 
@@ -51,21 +51,21 @@ Compile GWT application into JavaScript
 
   By default, the GWT compiler is run with WARN logging. If you have compilation issues, you may want it to
   be more verbose. Simply add a command line option :
-  
-+---+  
+
++---+
   -Dgwt.logLevel=[LOGLEVEL]
-+---+  
++---+
 
   Where LOGLEVEL can be ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL
-  
+
   The compiler style is set to its default value (<<<OBFUSCATED>>>) to generate compact javascript. You can override this
   for debugging purpose of the generated javascript by running with command line option :
-  
-+---+  
+
++---+
   -Dgwt.style=[PRETTY|DETAILED]
-+---+    
-  
-  The compiler will output the generated javascript in the project output folder (<<<${project.build.directory}/${project.build.finalName}>>>). 
++---+
+
+  The compiler will output the generated javascript in the project output folder (<<<${project.build.directory}/${project.build.finalName}>>>).
   For a WAR project, this matches the exploded web application root. You can override this behaviour by setting the ''outputDirectory''
   parameter. For example, you may want to configure output to <<<${basedir}/src/main/webapp>>> if you have configured your servlet container
   to use the {{{http://maven.apache.org/plugins/maven-war-plugin/inplace-mojo.html}"inplace"}} mode of the war plugin.
@@ -73,9 +73,9 @@ Compile GWT application into JavaScript
 * Compilation process failing
 
   You may get compilation errors due to <<<OutOfMemoryException>>> or <<<StackOverflowException>>>. The compilation and
-  permutation process used by GWTCompiler is a high memory consumer, with many recursive steps. You can get rid of those 
+  permutation process used by GWTCompiler is a high memory consumer, with many recursive steps. You can get rid of those
   errors by setting the JVM parameters used to create the child process where GWT compilation occurs :
-  
+
 +--
 <project>
   [...]
@@ -103,26 +103,26 @@ Compile GWT application into JavaScript
   [...]
 </project>
 +--
-  
+
 
 * Compiler output directory
 
-  There is two Mojos to handle GWT compilation process : {{{compiler}}} and {{{inplace}}}.
-  
-  <<Compiler>> is a simple integration of GWTCompiler in the maven build process and will output in the project build directory
-  where the maven-war-plugin is expected to create the exploded webapplication before packaging it as a WAR.
-   
-  <<Inplace>> use the web application source directory <<<src/main/webapp>>> as output folder. 
+  The compile goal is used to run the GWTCompiler and generate the JavaScript application. This mojo can switch
+  beetween to modes : <standard> or <inplace>.
+
+  <<Standard>> uses simple integration of GWTCompiler in the maven build process and will output in the project build
+  directory where the maven-war-plugin is expected to create the exploded web-application before packaging it as a WAR.
+
+  <<Inplace>> use the web application source directory <<<src/main/webapp>>> as output folder.
   to match the  {{{http://maven.apache.org/plugins/maven-war-plugin/inplace-mojo.html}war:inplace}} goal. This one
-  setup an explosed WAR structure in the source folder for rapid JEE development without the time-consuming 
+  setup an explosed WAR structure in the source folder for rapid JEE development without the time-consuming
   package/deploy/restart cycle.
-  
-  Using this folder is also very usefull for those of us that run a server using 
+
+  Using this folder is also very usefull for those of us that run a server using
   {{{http://mojo.codehaus.org/tomcat-maven-plugin/run-mojo.htm}tomcat:run}} or
   {{{http://jetty.mortbay.org/jetty/maven-plugin/run-mojo.html}jetty:run}} goals. Those plugins don't require any packaging
-  to launch the webapp, and handle nicelly Maven dependencies and classes without requirement for a <<<WEB-INF/lib>>> and 
+  to launch the webapp, and handle nicelly Maven dependencies and classes without requirement for a <<<WEB-INF/lib>>> and
   <<<WEB-INF/classes>>>. With this default GWTCompiler output directory, the application can be run as is with no packaging
   requirement.
-  
-  
-  
+
+

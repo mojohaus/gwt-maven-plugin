@@ -19,8 +19,10 @@
  */
 -->
 <!DOCTYPE module PUBLIC "//gwt-module/" "http://google-web-toolkit.googlecode.com/svn/tags/1.6.2/distro-source/core/src/gwt-module.dtd">
+<!-- START SNIPPET: hello-module -->
 <module>
   <inherits name="com.google.gwt.user.User"/>
   <inherits name="org.codehaus.mojo.gwt.test.Domain"/>
   <entry-point class="org.codehaus.mojo.gwt.test.client.Hello"/>
 </module>
+<!-- END SNIPPET: hello-module -->

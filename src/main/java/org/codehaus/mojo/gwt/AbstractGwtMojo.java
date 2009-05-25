@@ -20,11 +20,9 @@ package org.codehaus.mojo.gwt;
  */
 
 import java.io.File;
-import java.io.FileReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -37,9 +35,7 @@ import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.model.Dependency;
-import org.apache.maven.model.Model;
 import org.apache.maven.model.Resource;
-import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -53,7 +49,6 @@ import org.codehaus.plexus.component.repository.exception.ComponentLookupExcepti
 import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
-import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
  * Abstract Support class for all GWT-related operations. Provide GWT runtime resolution based on plugin configuration
@@ -141,6 +136,35 @@ public abstract class AbstractGwtMojo
      * @required
      */
     private File generateDirectory;
+
+    /**
+     * Location on filesystem where GWT will write output files (-out option to GWTCompiler).
+     * 
+     * @parameter expression="${gwt.war}" default-value="${project.build.directory}/${project.build.finalName}"
+     * @alias outputDirectory
+     */
+    private File webappDirectory;
+
+    /**
+     * Location of the web application static resources (same as maven-war-plugin parameter)
+     * 
+     * @parameter default-value="${basedir}/src/main/webapp"
+     */
+    private File warSourceDirectory;
+
+    /**
+     * Select the place where GWT application is built. In <code>inplace</code> mode, the warSourceDirectory is used to
+     * match the same use case of the war plugin.
+     * 
+     * @parameter default-value="false" expression="${gwt.inplace}"
+     */
+    private boolean inplace;
+
+    public File getOutputDirectory()
+    {
+        return inplace ? warSourceDirectory : webappDirectory;
+    }
+
 
     //------------------------------
     // Plexus Lifecycle

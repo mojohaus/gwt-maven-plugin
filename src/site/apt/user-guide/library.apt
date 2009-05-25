@@ -1,0 +1,47 @@
+ -----
+ Writing a GWT library
+ -----
+ -----
+
+Writing a GWT library
+
+ A GWT library can be used to package classes for mutualization and/or modularization. A GWT library is just a
+ java archive (JAR) containing both classes and java sources for later GWT compilation and a gwt.xml module
+ descriptor.
+
+* Packaging
+
+ The only distinction with a standard JAR project is the mix of sources and classes in the output folder. A
+ simple way to achieve this is to add a dedicated <<<resource>>> in the POM :
+
++---
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/*.java</include>
+          <include>**/*.gwt.xml</include>
+        </includes>
+      </resource>
+    </resources>
++---
+
+ Another option is to let the plugin detect the required source to be included, based on the module descriptor.
+ The benefict is that the plugin will not include java files that are not declared as GWT source by the module
+ descriptor, avoiding end-user to reference your internal classes (usually for library that include both client
+ and server side components).
+
++---
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
++---

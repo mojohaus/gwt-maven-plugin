@@ -17,6 +17,7 @@
  * under the License.
  */
 
+// START SNIPPET: user-class
 package org.codehaus.mojo.gwt.test.domain;
 
 public class User
@@ -26,3 +27,4 @@ public class User
         return "Hello";
     }
 }
+//END SNIPPET: user-class

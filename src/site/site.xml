@@ -59,6 +59,7 @@ under the License.
       <item name="Testing" href="user-guide/testing.html"/>
       <item name="Compile and Package" href="user-guide/compiler.html"/>
       <item name="Multi-project setup" href="user-guide/multiproject.html"/>
+      <item name="Writing a GWT library" href="user-guide/library.html"/>
     </menu>
     <menu name="Examples">
       <item name="compile a GWT module" href="examples/compile.html"/>

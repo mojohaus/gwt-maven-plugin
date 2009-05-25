@@ -17,9 +17,9 @@
  * under the License.
  */
 assert new File(basedir, 'target/classes').exists();
-assert new File(basedir, 'target/gwt-compile-1.0-SNAPSHOT/hello').exists();
+assert new File(basedir, 'src/main/webapp/hello').exists();
 assert new File(basedir, 'src/main/webapp/hello/hello.nocache.js').exists();
-assert new File(basedir, 'target/gwt-compile-1.0-SNAPSHOT/com.google.gwt.sample.hello.Hello').exists();
+assert new File(basedir, 'src/main/webapp/com.google.gwt.sample.hello.Hello').exists();
 assert new File(basedir, 'src/main/webapp/com.google.gwt.sample.hello.Hello/com.google.gwt.sample.hello.Hello.nocache.js').exists();
 
 return true;

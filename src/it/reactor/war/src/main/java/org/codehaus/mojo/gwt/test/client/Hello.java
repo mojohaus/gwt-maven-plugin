@@ -17,15 +17,12 @@
  * under the License.
  */
 
+// START SNIPPET: hello-class
 package org.codehaus.mojo.gwt.test.client;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 import org.codehaus.mojo.gwt.test.domain.User;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 
@@ -39,3 +36,4 @@ public class Hello
         RootPanel.get().add( new Label( user.sayHello() ) );
     }
 }
+// END SNIPPET: hello-class

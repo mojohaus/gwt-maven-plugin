@@ -113,6 +113,22 @@ public class RunMojo
      */
     private File contextXml;
 
+    /**
+     * Prevents the embedded GWT Tomcat server from running (even if a port is specified).
+     * <p>
+     * Can be set from command line using '-Dgwt.noserver=...'
+     * 
+     * @parameter default-value="false" expression="${gwt.noserver}"
+     */
+    private boolean noServer;
+
+    /**
+     * Specifies the mapping URL to be used with the shell servlet.
+     * 
+     * @parameter default-value="/*"
+     */
+    private String shellServletMappingURL;
+
     public String getRunTarget()
     {
         return this.runTarget;
@@ -125,7 +141,7 @@ public class RunMojo
     throws MojoExecutionException
     {
         String[] modules = getModules();
-        if (isNoServer())
+        if ( noServer )
         {
             if (modules.length != 1)
             {
@@ -155,7 +171,7 @@ public class RunMojo
     public String getStartupUrl()
        throws MojoExecutionException
     {
-        if ( isNoServer() )
+        if ( noServer )
         {
             return runTarget;
         }
@@ -196,7 +212,8 @@ public class RunMojo
             .arg( getStyle() )
             .arg( "-port" )
             .arg( Integer.toString( getPort() ) )
-            .arg( isNoServer(), "-noserver" );
+            .arg( noServer,
+                "-noserver" );
 
         switch ( runtime.getVersion() )
         {
@@ -289,7 +306,7 @@ public class RunMojo
         }
 
         // note that MakeCatalinaBase will use emptyWeb.xml if webXml does not exist
-        new MakeCatalinaBase( this.getTomcat(), this.getWebXml(), this.getShellServletMappingURL() ).setup();
+        new MakeCatalinaBase( this.getTomcat(), this.getWebXml(), shellServletMappingURL ).setup();
 
         if ( ( this.getContextXml() != null ) && this.getContextXml().exists() )
         {

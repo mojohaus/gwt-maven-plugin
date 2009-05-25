@@ -155,7 +155,7 @@ public abstract class AbstractGwtModuleMojo
         try
         {
             Xpp3Dom dom = Xpp3DomBuilder.build( ReaderFactory.newXmlReader( xml ) );
-            return new GwtModule( name, dom );
+            return new GwtModule( name, dom, xml );
         }
         catch ( Exception e )
         {
