@@ -1,18 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?><archetype-descriptor name="maven-gwt-sample">
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor name="maven-gwt-sample">
   <fileSets>
     <fileSet filtered="true" packaged="true" encoding="UTF-8">
       <directory>src/main/java</directory>
       <includes>
-        <include>**/*.java</include>
+        <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet filtered="true" packaged="true" encoding="UTF-8">
       <directory>src/main/resources</directory>
       <includes>
-        <include>**/*.html</include>
-        <include>**/*.xml</include>
-        <include>**/*.properties</include>
-        <include>**/*.css</include>
+        <include>**/*</include>
       </includes>
     </fileSet>
     <fileSet filtered="true" encoding="UTF-8">
