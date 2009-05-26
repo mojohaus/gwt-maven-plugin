@@ -85,8 +85,8 @@ public class GenerateAsyncMojo
 
     /**
      * Stop the build on error
-     *
-     * @parameter default-value="false" expression="${maven.gwt.failOnError}"
+     * 
+     * @parameter default-value="true" expression="${maven.gwt.failOnError}"
      */
     private boolean failOnError;
 
