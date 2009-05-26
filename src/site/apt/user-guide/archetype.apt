@@ -13,10 +13,12 @@ gwt-maven-plugin Archetype Information
  Use it as you would any other Maven archetype to create a template/stub project.
 
 +--
- mvn archetype:create \
+ mvn archetype:generate \
    -DarchetypeGroupId=org.codehaus.mojo \
    -DarchetypeArtifactId=gwt-maven-plugin \
    -DarchetypeVersion=1.1 \
    -DgroupId=myGroupId \
    -DartifactId=myArtifactId
 +--
+
+  Note: don't run mvn <<<archetype:create>>> as the plugin uses archetype NG descriptor.
