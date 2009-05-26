@@ -93,13 +93,22 @@ Using the Google Eclipse Plugin
           <runTarget>com.mycompany.gwt.Module/Module.html</runTarget>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.0.2</version>
+        <configuration>
+          <warSourceDirectory>war</warSourceDirectory>
+          <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
 +---
 
   With this setup, you can start your GWT module with a single right-clik in your Eclispe IDE with
-  <Run as > Web application>.
+  <Run as : Web application>.
 
   You can the edit your java code and just hit refresh to see changes applied in the hosted browser.
 
