@@ -49,6 +49,9 @@ under the License.
       <item name="Usage" href="usage.html"/>
       <item name="FAQ" href="faq.html"/>
     </menu>
+    <menu name="IDE integration">
+      <item name="Eclipse" href="eclipse/google_plugin.html"/>
+    </menu>
     <menu name="User Guide">
       <item name="Introduction" href="user-guide/introduction.html"/>
       <item name="Setup" href="user-guide/setup.html"/>
@@ -65,8 +68,6 @@ under the License.
       <item name="compile a GWT module" href="examples/compile.html"/>
       <item name="generate async interfaces" href="examples/asyn.html"/>
       <item name="generate i18n bundles interfaces" href="examples/i18n.html"/>
-      <item name="configure Eclipse" href="examples/eclipse.html"/>
-      <item name="run GWT intergration Tests" href="examples/test.html"/>
     </menu>
     ${reports}
   </body>

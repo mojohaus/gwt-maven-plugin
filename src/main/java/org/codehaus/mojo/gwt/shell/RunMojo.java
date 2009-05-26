@@ -32,7 +32,7 @@ import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Goal which run a GWT module in the GWT Hosted mode.
- * 
+ *
  * @goal run
  * @execute phase=compile
  * @requiresDependencyResolution test
@@ -117,14 +117,14 @@ public class RunMojo
      * Prevents the embedded GWT Tomcat server from running (even if a port is specified).
      * <p>
      * Can be set from command line using '-Dgwt.noserver=...'
-     * 
+     *
      * @parameter default-value="false" expression="${gwt.noserver}"
      */
     private boolean noServer;
 
     /**
      * Specifies the mapping URL to be used with the shell servlet.
-     * 
+     *
      * @parameter default-value="/*"
      */
     private String shellServletMappingURL;
@@ -212,8 +212,7 @@ public class RunMojo
             .arg( getStyle() )
             .arg( "-port" )
             .arg( Integer.toString( getPort() ) )
-            .arg( noServer,
-                "-noserver" );
+            .arg( noServer, "-noserver" );
 
         switch ( runtime.getVersion() )
         {

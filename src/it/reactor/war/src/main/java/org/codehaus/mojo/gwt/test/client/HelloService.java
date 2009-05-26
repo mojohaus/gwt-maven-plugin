@@ -1,4 +1,3 @@
-<!--
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,18 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
--->
-<!DOCTYPE module PUBLIC "//gwt-module/" "http://google-web-toolkit.googlecode.com/svn/tags/1.6.2/distro-source/core/src/gwt-module.dtd">
-<!-- START SNIPPET: hello-module -->
-<module>
-  <inherits name="com.google.gwt.user.User"/>
-  <inherits name='com.google.gwt.user.theme.standard.Standard'/>
 
-  <inherits name="org.codehaus.mojo.gwt.test.Domain"/>
+package org.codehaus.mojo.gwt.test.client;
 
-  <entry-point class="org.codehaus.mojo.gwt.test.client.Hello"/>
+import java.util.Collection;
+import java.util.List;
 
-  <servlet class="org.codehaus.mojo.gwt.test.server.HelloRemoteServlet" path="/org.codehaus.mojo.gwt.test.Hello/Hello"/>
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
-</module>
-<!-- END SNIPPET: hello-module -->
+@RemoteServiceRelativePath( "Hello" )
+public interface HelloService
+    extends RemoteService
+{
+    String sayHello( String message );
+}

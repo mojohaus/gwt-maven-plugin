@@ -54,7 +54,6 @@ import freemarker.template.TemplateException;
  * @requiresDependencyResolution compile
  * @version $Id$
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- * @deprecated use google eclipse plugin http://code.google.com/intl/fr-FR/eclipse/docs/users_guide.html
  */
 public class EclipseMojo
     extends AbstractGwtModuleMojo
@@ -121,6 +120,15 @@ public class EclipseMojo
     private int port;
 
     /**
+     * Setup a launch configuration for using the Google Eclipse Plugin. This is the recommended setup, as the home-made
+     * launch configuration has many limitations. This parameter is only for backward compatibility, the standard lauch
+     * configuration template will be removed in a future release.
+     * 
+     * @parameter default-value="true" expression="${use.google.eclipse.plugin}"
+     */
+    private boolean useGoogleEclispePlugin;
+
+    /**
      * @param parameters additional parameter for module URL
      */
     public void setAdditionalPageParameters( String parameters )
@@ -158,7 +166,14 @@ public class EclipseMojo
                 Collection<Artifact> artifacts = getProject().getRuntimeArtifacts();
                 for ( Artifact artifact : artifacts )
                 {
-                    FileUtils.copyFileToDirectory( artifact.getFile(), lib );
+                    if ( !artifact.getFile().isDirectory() )
+                    {
+                        FileUtils.copyFileToDirectory( artifact.getFile(), lib );
+                    }
+                    else
+                    {
+                        // TODO automatically add this one to GWT warnings exlusions
+                    }
                 }
 
             }
@@ -183,7 +198,9 @@ public class EclipseMojo
     private void createLaunchConfigurationForHostedModeBrowser( GwtRuntime runtime, String module )
         throws MojoExecutionException
     {
-        File launchFile = new File( getProject().getBasedir(), module + ".launch" );
+        String rename = readModule( module ).getRenameTo();
+        String name = rename != null ? rename : module;
+        File launchFile = new File( getProject().getBasedir(), name + ".launch" );
         if ( launchFile.exists() )
         {
             getLog().info( "launch file exists " + launchFile.getName() + " skip generation " );
@@ -228,7 +245,8 @@ public class EclipseMojo
         try
         {
             Writer configWriter = WriterFactory.newXmlWriter( launchFile );
-            Template template = cfg.getTemplate( "launch.fm", "UTF-8" );
+            String templateName = useGoogleEclispePlugin ? "google.fm" : "launch.fm";
+            Template template = cfg.getTemplate( templateName, "UTF-8" );
             template.process( context, configWriter );
             configWriter.flush();
             configWriter.close();

@@ -57,11 +57,21 @@
           <execution>
             <goals>
               <goal>compile</goal>
+              <goal>generateAsync</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
           <runTarget>org.codehaus.mojo.gwt.test.Hello/Hello.html</runTarget>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.0.2</version>
+        <configuration>
+          <warSourceDirectory>war</warSourceDirectory>
+          <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
         </configuration>
       </plugin>
     </plugins>
