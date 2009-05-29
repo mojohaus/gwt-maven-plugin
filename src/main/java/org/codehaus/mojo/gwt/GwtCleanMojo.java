@@ -46,7 +46,7 @@ public class GwtCleanMojo
     {
         for ( String name : getModules() )
         {
-            File output = new File( getOutputDirectory(), getOutput( name ) );
+            File output = new File( getOutputDirectory(), readModule( name ).getPath() );
             clean( output );
         }
         clean( new File( getOutputDirectory(), ".gwt-tmp" ) );
@@ -62,17 +62,5 @@ public class GwtCleanMojo
         {
             getLog().warn( "Failed to delete directory " + output );
         }
-    }
-
-    private String getOutput( String name )
-        throws MojoExecutionException
-    {
-        GwtModule module = readModule( name );
-        String renameTo = module.getRenameTo();
-        if ( renameTo != null )
-        {
-            name = renameTo;
-        }
-        return name;
     }
 }

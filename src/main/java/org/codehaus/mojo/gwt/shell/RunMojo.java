@@ -183,9 +183,7 @@ public class RunMojo
             if ( prefix.equals( module ) )
             {
                 // runTarget includes the GWT module full path. Lets apply the rename-to directive
-                String renameTo = readModule( module ).getRenameTo();
-                String modulePath = ( renameTo != null ? renameTo : module );
-                return modulePath + '/' + runTarget.substring( dash + 1 );
+                return readModule( module ).getPath() + '/' + runTarget.substring( dash + 1 );
             }
         }
         return runTarget;

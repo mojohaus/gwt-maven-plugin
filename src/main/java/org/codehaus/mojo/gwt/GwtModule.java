@@ -40,12 +40,10 @@ public class GwtModule
         this.xml = xml;
     }
 
-    public String getRenameTo()
+    private String getRenameTo()
     {
         return xml.getAttribute( "rename-to" );
     }
-
-
 
     public String getPublic()
     {
@@ -129,5 +127,14 @@ public class GwtModule
     public String getPackage()
     {
         return name.substring( 0, name.lastIndexOf( '.' ) );
+    }
+
+    public String getPath()
+    {
+        if ( getRenameTo() != null )
+        {
+            return getRenameTo();
+        }
+        return name;
     }
 }

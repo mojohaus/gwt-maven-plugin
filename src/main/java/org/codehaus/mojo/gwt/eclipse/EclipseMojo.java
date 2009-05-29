@@ -198,9 +198,7 @@ public class EclipseMojo
     private void createLaunchConfigurationForHostedModeBrowser( GwtRuntime runtime, String module )
         throws MojoExecutionException
     {
-        String rename = readModule( module ).getRenameTo();
-        String name = rename != null ? rename : module;
-        File launchFile = new File( getProject().getBasedir(), name + ".launch" );
+        File launchFile = new File( getProject().getBasedir(), readModule( module ).getPath() + ".launch" );
         if ( launchFile.exists() )
         {
             getLog().info( "launch file exists " + launchFile.getName() + " skip generation " );
@@ -229,10 +227,7 @@ public class EclipseMojo
             page += "?" + additionalPageParameters;
         }
 
-        String renameTo = readModule( module ).getRenameTo();
-        String modulePath = ( renameTo != null ? renameTo : module );
-        context.put( "modulePath", modulePath );
-
+        context.put( "modulePath", readModule( module ).getPath() );
         context.put( "page", page );
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", getOutputDirectory().getAbsolutePath().substring( basedir + 1 ) );

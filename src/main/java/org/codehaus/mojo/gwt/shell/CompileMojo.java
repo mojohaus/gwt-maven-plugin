@@ -172,8 +172,7 @@ public class CompileMojo
             return true;
         }
 
-        String renameTo = readModule( module ).getRenameTo();
-        String modulePath = ( renameTo != null ? renameTo : module );
+        String modulePath = readModule( module ).getPath();
         String outputTarget = modulePath + "/" + modulePath + ".nocache.js";
 
         SingleTargetSourceMapping singleTargetMapping = new SingleTargetSourceMapping( ".java", outputTarget );
