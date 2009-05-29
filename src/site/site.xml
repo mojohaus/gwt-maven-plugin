@@ -30,7 +30,7 @@ under the License.
   </bannerLeft>
   <bannerRight>
     <name>Codehaus</name>
-    <src>http://mojo.codehaus.org/images/codehaus-small.png</src>
+    <src>../images/gwt-maven-logo.png</src>
     <href>http://www.codehaus.org</href>
   </bannerRight>
   <body>
