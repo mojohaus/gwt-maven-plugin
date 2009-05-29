@@ -21,7 +21,11 @@ package org.codehaus.mojo.gwt;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.plexus.util.DirectoryScanner;
@@ -78,27 +82,58 @@ public class GwtResourcesMojo
     private int copyAsResources( GwtModule module, String source )
     throws MojoExecutionException
     {
-        DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setBasedir( module.getDirectory() );
-        scanner.setIncludes( new String[] { "**/*.java", "**/*.gwt.xml" } );
-        scanner.scan();
-        String[] included = scanner.getIncludedFiles();
-        for ( String path : included )
+        String targetPath = module.getPackage().replace( '.', '/' ) + '/' + module.getFile().getName();
+        try
         {
-            try
+            FileUtils.copyFile( module.getFile(), new File( outputDirectory, targetPath ) );
+        }
+        catch ( IOException e )
+        {
+            throw new MojoExecutionException( "Failed to copy GWT module descriptor", e );
+        }
+
+        String pattern = module.getPackage().replace( '.', '/' ) + '/';
+        Set<String> paths = new HashSet<String>();
+        paths.addAll( getProject().getCompileSourceRoots() );
+        for ( Resource resource : (Collection<Resource>) getProject().getResources() )
+        {
+            paths.add( resource.getDirectory() );
+        }
+
+        int count = 0;
+        for ( String path : paths )
+        {
+            File basedir = new File( path );
+            // the default "src/main/resource" may not phisicaly exist in project
+            if ( !basedir.exists() )
             {
-                File f = new File( module.getDirectory(), path );
-                getLog().debug( "copy " + f + " to outputDirectory" );
-                File target = new File( outputDirectory, module.getPackage().replace( '.', '/' ) + '/' + path );
-                target.getParentFile().mkdirs();
-                FileUtils.copyFile( f, target );
+                continue;
             }
-            catch ( IOException e )
+            DirectoryScanner scanner = new DirectoryScanner();
+            scanner.setBasedir( basedir );
+            scanner.setIncludes( new String[] { pattern + source + "/**/*.java" } );
+            scanner.scan();
+            String[] includedFiles = scanner.getIncludedFiles();
+            for ( String included : includedFiles )
             {
-                throw new MojoExecutionException( "Failed to copy GWT class source " + path );
+                File f = new File( basedir, included );
+                File target = new File( outputDirectory, included );
+                try
+                {
+                    getLog().debug( "copy " + f + " to outputDirectory" );
+                    target.getParentFile().mkdirs();
+                    FileUtils.copyFile( f, target );
+                    count++;
+                }
+                catch ( IOException e )
+                {
+                    throw new MojoExecutionException( "Failed to copy GWT class source " + f, e );
+                }
             }
         }
-        return included.length;
+
+
+        return count;
     }
 
 }
