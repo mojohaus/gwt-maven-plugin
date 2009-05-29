@@ -20,11 +20,18 @@ package org.codehaus.mojo.gwt;
  */
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.DirectoryScanner;
@@ -120,11 +127,12 @@ public abstract class AbstractGwtModuleMojo
     protected GwtModule readModule( String name )
         throws MojoExecutionException
     {
+        String modulePath = name.replace( '.', '/' ) + GWT_MODULE_EXTENSION;
         Collection<String> sourceRoots = getProject().getCompileSourceRoots();
         for ( String sourceRoot : sourceRoots )
         {
             File root = new File( sourceRoot );
-            File xml = new File( root, name.replace( '.', '/' ) + GWT_MODULE_EXTENSION );
+            File xml = new File( root, modulePath );
             if ( xml.exists() )
             {
                 getLog().debug( "GWT module " + name + " found in " + root );
@@ -135,27 +143,65 @@ public abstract class AbstractGwtModuleMojo
         for ( Resource resource : resources )
         {
             File root = new File( resource.getDirectory() );
-            File xml = new File( root, name.replace( '.', '/' ) + GWT_MODULE_EXTENSION );
+            File xml = new File( root, modulePath );
             if ( xml.exists() )
             {
                 getLog().debug( "GWT module " + name + " found in " + root );
                 return readModule( name, xml );
             }
         }
+
+        try
+        {
+            Collection<File> classpath =
+                classpathBuilder.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE, null, getProjectArtifacts() );
+            URL[] urls = new URL[classpath.size()];
+            int i = 0;
+            for ( File file : classpath )
+            {
+                urls[i++] = file.toURI().toURL();
+            }
+            InputStream stream = new URLClassLoader( urls ).getResourceAsStream( modulePath );
+            if ( stream != null )
+            {
+                return readModule( name, stream );
+            }
+        }
+        catch ( MalformedURLException e )
+        {
+            // ignored;
+        }
+
         throw new MojoExecutionException( "GWT Module " + name + " not found in project sources or resources." );
+    }
+
+    private GwtModule readModule( String name, File file )
+        throws MojoExecutionException
+
+    {
+        try
+        {
+            GwtModule module = readModule( name, new FileInputStream( file ) );
+            module.setFile( file );
+            return module;
+        }
+        catch ( FileNotFoundException e )
+        {
+            throw new MojoExecutionException( "Failed to read module file " + file );
+        }
     }
 
     /**
      * @param module2
      * @return
      */
-    private GwtModule readModule( String name, File xml )
+    private GwtModule readModule( String name, InputStream xml )
         throws MojoExecutionException
     {
         try
         {
             Xpp3Dom dom = Xpp3DomBuilder.build( ReaderFactory.newXmlReader( xml ) );
-            return new GwtModule( name, dom, xml );
+            return new GwtModule( name, dom );
         }
         catch ( Exception e )
         {

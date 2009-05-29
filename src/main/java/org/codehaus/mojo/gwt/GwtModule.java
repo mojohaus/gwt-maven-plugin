@@ -1,6 +1,8 @@
 package org.codehaus.mojo.gwt;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
@@ -35,10 +37,15 @@ public class GwtModule
 
     private File file;
 
-    public GwtModule( String name, Xpp3Dom xml, File file )
+    public GwtModule( String name, Xpp3Dom xml )
     {
         this.name = name;
         this.xml = xml;
+    }
+
+    public GwtModule( String name, Xpp3Dom xml, File file )
+    {
+        this( name, xml );
         this.file = file;
     }
 
@@ -92,9 +99,40 @@ public class GwtModule
         return sources;
     }
 
+    public String[] getInherits()
+    {
+        Xpp3Dom nodes[] = xml.getChildren( "inherits" );
+        if ( nodes == null )
+        {
+            return new String[0];
+        }
+        String[] inherits = new String[nodes.length];
+        int i = 0;
+        for ( Xpp3Dom node : nodes )
+        {
+            inherits[i++] = node.getAttribute( "name" );
+        }
+        return inherits;
+    }
+
+    public Map<String, String> getServlets()
+    {
+        Map<String, String> servlets = new HashMap<String, String>();
+        Xpp3Dom nodes[] = xml.getChildren( "servlets" );
+        if ( nodes == null )
+        {
+            return servlets;
+        }
+        for ( Xpp3Dom node : nodes )
+        {
+            servlets.put( node.getAttribute( "path" ), node.getAttribute( "class" ) );
+        }
+        return servlets;
+    }
+
     public File getDirectory()
     {
-        return file.getParentFile();
+        return ( file != null ? file.getParentFile() : null );
     }
 
     public String getName()
@@ -105,5 +143,15 @@ public class GwtModule
     public String getPackage()
     {
         return name.substring( 0, name.lastIndexOf( '.' ) );
+    }
+
+    public File getFile()
+    {
+        return file;
+    }
+
+    public void setFile( File file )
+    {
+        this.file = file;
     }
 }
