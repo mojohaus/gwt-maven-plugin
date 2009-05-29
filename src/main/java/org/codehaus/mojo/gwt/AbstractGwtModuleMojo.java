@@ -181,9 +181,7 @@ public abstract class AbstractGwtModuleMojo
     {
         try
         {
-            GwtModule module = readModule( name, new FileInputStream( file ) );
-            module.setFile( file );
-            return module;
+            return readModule( name, new FileInputStream( file ) );
         }
         catch ( FileNotFoundException e )
         {

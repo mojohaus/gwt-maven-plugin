@@ -1,6 +1,5 @@
 package org.codehaus.mojo.gwt;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,18 +34,10 @@ public class GwtModule
 
     private String name;
 
-    private File file;
-
     public GwtModule( String name, Xpp3Dom xml )
     {
         this.name = name;
         this.xml = xml;
-    }
-
-    public GwtModule( String name, Xpp3Dom xml, File file )
-    {
-        this( name, xml );
-        this.file = file;
     }
 
     public String getRenameTo()
@@ -130,11 +121,6 @@ public class GwtModule
         return servlets;
     }
 
-    public File getDirectory()
-    {
-        return ( file != null ? file.getParentFile() : null );
-    }
-
     public String getName()
     {
         return name;
@@ -143,15 +129,5 @@ public class GwtModule
     public String getPackage()
     {
         return name.substring( 0, name.lastIndexOf( '.' ) );
-    }
-
-    public File getFile()
-    {
-        return file;
-    }
-
-    public void setFile( File file )
-    {
-        this.file = file;
     }
 }

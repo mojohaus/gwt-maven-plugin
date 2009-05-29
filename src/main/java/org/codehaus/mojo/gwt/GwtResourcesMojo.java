@@ -57,19 +57,29 @@ public class GwtResourcesMojo
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
+        Set<String> sourcesAndResources = new HashSet<String>();
+        sourcesAndResources.addAll( getProject().getCompileSourceRoots() );
+        for ( Resource resource : (Collection<Resource>) getProject().getResources() )
+        {
+            sourcesAndResources.add( resource.getDirectory() );
+        }
+
         for ( String name : getModules() )
         {
             GwtModule module = readModule( name );
-            int count = 0;
+
+            copyDescriptor( module, sourcesAndResources );
+            int count = 1;
+
             for ( String source : module.getSources() )
             {
                 getLog().debug( "copy GWT sources from " + name + '.' + source );
-                count += copyAsResources( module, source );
+                count += copyAsResources( module, source, sourcesAndResources, "**/*.java" );
             }
             for ( String source : module.getSuperSources() )
             {
-                getLog().debug( "copy GWT sources from " + name + '.' + source );
-                count += copyAsResources( module, source );
+                getLog().debug( "copy GWT super-sources from " + name + '.' + source );
+                count += copyAsResources( module, source, sourcesAndResources, "**/*.java" );
             }
             getLog().info( count + " source files copied from GWT module " + name );
         }
@@ -77,30 +87,16 @@ public class GwtResourcesMojo
 
     /**
      * @param source
+     * @param include TODO
      * @param name
      */
-    private int copyAsResources( GwtModule module, String source )
+    private int copyAsResources( GwtModule module, String source, Set<String> paths, String include )
     throws MojoExecutionException
     {
-        String targetPath = module.getPackage().replace( '.', '/' ) + '/' + module.getFile().getName();
-        try
-        {
-            FileUtils.copyFile( module.getFile(), new File( outputDirectory, targetPath ) );
-        }
-        catch ( IOException e )
-        {
-            throw new MojoExecutionException( "Failed to copy GWT module descriptor", e );
-        }
-
-        String pattern = module.getPackage().replace( '.', '/' ) + '/';
-        Set<String> paths = new HashSet<String>();
-        paths.addAll( getProject().getCompileSourceRoots() );
-        for ( Resource resource : (Collection<Resource>) getProject().getResources() )
-        {
-            paths.add( resource.getDirectory() );
-        }
+        String pattern = module.getPackage().replace( '.', '/' );
 
         int count = 0;
+
         for ( String path : paths )
         {
             File basedir = new File( path );
@@ -111,7 +107,7 @@ public class GwtResourcesMojo
             }
             DirectoryScanner scanner = new DirectoryScanner();
             scanner.setBasedir( basedir );
-            scanner.setIncludes( new String[] { pattern + source + "/**/*.java" } );
+            scanner.setIncludes( new String[] { pattern + '/' + source + '/' + include } );
             scanner.scan();
             String[] includedFiles = scanner.getIncludedFiles();
             for ( String included : includedFiles )
@@ -134,6 +130,33 @@ public class GwtResourcesMojo
 
 
         return count;
+    }
+
+    private void copyDescriptor( GwtModule module, Set<String> paths )
+        throws MojoExecutionException
+    {
+        String moduleFilePath = module.getName().replace( '.', '/' ) + GWT_MODULE_EXTENSION;
+        for ( String path : paths )
+        {
+            File basedir = new File( path );
+            File descriptor = new File( basedir, moduleFilePath );
+            if ( descriptor.exists() )
+            {
+                File target = new File( outputDirectory, moduleFilePath );
+                try
+                {
+                    getLog().debug( "copy " + descriptor + " to outputDirectory" );
+                    target.getParentFile().mkdirs();
+                    FileUtils.copyFile( descriptor, target );
+                    return;
+                }
+                catch ( IOException e )
+                {
+                    throw new MojoExecutionException( "Failed to copy GWT descriptor " + descriptor, e );
+                }
+            }
+        }
+        throw new MojoExecutionException( "Failed to retrieve GWT descriptor in project sources " + moduleFilePath );
     }
 
 }
