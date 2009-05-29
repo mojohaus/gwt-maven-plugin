@@ -34,6 +34,7 @@ public abstract class AbstractGwtWebMojo
      * entries.
      * 
      * @parameter default-value="${basedir}/src/main/webapp/WEB-INF/web.xml"
+     * @required
      */
     private File webXml;
 

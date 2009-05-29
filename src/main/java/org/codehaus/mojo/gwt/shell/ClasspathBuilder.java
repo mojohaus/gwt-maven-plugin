@@ -69,20 +69,20 @@ public class ClasspathBuilder
     @SuppressWarnings("unchecked")
     public Collection<File> buildClasspathList( final MavenProject project, final String scope, GwtRuntime runtime,
                                                 Set<Artifact> artifacts )
-        throws DependencyResolutionRequiredException, MojoExecutionException
+        throws MojoExecutionException
     {
         getLogger().info( "establishing classpath list (scope = " + scope + ")" );
 
         Set<File> items = new LinkedHashSet<File>();
 
         items.add( new File( project.getBuild().getOutputDirectory() ) );
-        
+
         // Note : Don't call addSourceWithActiveProject as a GWT dependency MUST be a valid GWT library module :
         // * include java sources in the JAR as resources
         // * define a gwt.xml module file to declare the required inherits
         // addSourceWithActiveProject would make some java sources available to GWT compiler that should not be accessible in
         // a non-reactor build, making the build less deterministic and encouraging bad design.
-        
+
         addSources( items, project.getCompileSourceRoots() );
         addResources( items, project.getResources() );
 
@@ -133,7 +133,10 @@ public class ClasspathBuilder
             throw new IllegalArgumentException( "unsupported scope " + scope );
         }
 
-        items.add( runtime.getGwtDevJar() );
+        if ( runtime != null )
+        {
+            items.add( runtime.getGwtDevJar() );
+        }
 
         getLogger().debug( "GWT SDK execution classpath :" );
         for ( File f : items )

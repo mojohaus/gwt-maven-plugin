@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
@@ -311,15 +310,7 @@ public abstract class AbstractGwtShellMojo
         public JavaCommand withinScope( String scope )
             throws MojoExecutionException
         {
-            try
-            {
-                classpath =
-                    classpathBuilder.buildClasspathList( getProject(), scope, runtime, getProjectArtifacts() );
-            }
-            catch ( DependencyResolutionRequiredException e )
-            {
-                throw new MojoExecutionException( "Failed to build " + scope + " classpath" );
-            }
+            classpath = classpathBuilder.buildClasspathList( getProject(), scope, runtime, getProjectArtifacts() );
             postProcessClassPath( classpath );
             return this;
         }
