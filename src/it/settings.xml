@@ -48,16 +48,6 @@ under the License.
             <enabled>true</enabled>
           </snapshots>
         </repository>
-        <repository>
-          <id>plexus.snapshots</id>
-          <url>http://oss.sonatype.org/content/repositories/plexus-snapshots/</url>
-          <releases>
-            <enabled>true</enabled>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>        
       </repositories>
       <pluginRepositories>
         <pluginRepository>
