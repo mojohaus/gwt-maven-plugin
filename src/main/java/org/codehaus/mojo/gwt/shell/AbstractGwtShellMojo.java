@@ -51,11 +51,6 @@ public abstract class AbstractGwtShellMojo
     extends AbstractGwtModuleMojo
 {
     /**
-     * @component
-     */
-    protected ClasspathBuilder classpathBuilder;
-
-    /**
      * Location on filesystem where GWT will write generated content for review (-gen option to GWTCompiler).
      * <p>
      * Can be set from command line using '-Dgwt.gen=...'
@@ -115,7 +110,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * Forked process execution timeOut. Usefull to avoid maven to hang in continuous integration server.
-     * 
+     *
      * @parameter
      */
     private int timeOut;
@@ -253,7 +248,7 @@ public abstract class AbstractGwtShellMojo
 
     /**
      * plexus-util hack to run a command WITHOUT a shell
-     * 
+     *
      * @see PLXUTILS-107
      */
     private class JavaShell
