@@ -9,7 +9,7 @@ import org.apache.maven.plugin.testing.AbstractMojoTestCase;
  * @author Robert Scholte
  *
  */
-public class AbstractGwtModuleMojoTest
+public class GwtModuleMojoTest
     extends AbstractMojoTestCase
 {
 
