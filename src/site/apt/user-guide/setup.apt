@@ -140,3 +140,15 @@ Setup Maven for GWT development
 +--
 
 
+* Configuring maven-war-plugin
+
+  Google Eclipse Plugin <<requires>> your web application to be created as an exploded WAR in <<</war>>> (hard coded path).
+  To match this requirement, you have two options :
+  
+  * Move your <<<src/main/webapp>>> folder to <<</war>>> and configure maven-war-plugin <<<warSourceDirectory>>> parameter. This is
+  the inplace setup, as the webapp source will be used to build the exploded WAR layout. 
+
+  * Configure maven-war-plugin to build the webapp in <<</war>>> (webappDirectory parameter) instead of the standard outputDirectory.
+  
+  The gwt-maven-plugin has a boolean <<<inplace>>> parameter to configure the option you choose. The inplace mode is interesting if
+  you use JSPs as no build/packaging/deployment is required to see changes made in the JSP file. Same applies to static files like CSS.

@@ -66,9 +66,10 @@ Compile GWT application into JavaScript
 +---+
 
   The compiler will output the generated javascript in the project output folder (<<<${project.build.directory}/${project.build.finalName}>>>).
-  For a WAR project, this matches the exploded web application root. You can override this behaviour by setting the ''outputDirectory''
-  parameter. For example, you may want to configure output to <<<${basedir}/src/main/webapp>>> if you have configured your servlet container
-  to use the {{{http://maven.apache.org/plugins/maven-war-plugin/inplace-mojo.html}"inplace"}} mode of the war plugin.
+  For a WAR project, this matches the exploded web application root. You can also configure the plugin to compile in 
+  <<<${basedir}/src/main/webapp>>> that may better match using lightweight development process based on 
+  to the {{{http://maven.apache.org/plugins/maven-war-plugin/inplace-mojo.html}"inplace"}} mode of the war plugin. To enable
+  this, just set the <<<inplace>>> parameter to true.
 
 * Compilation process failing
 
