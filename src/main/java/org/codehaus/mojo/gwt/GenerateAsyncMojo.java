@@ -229,19 +229,28 @@ public class GenerateAsyncMojo
             {
                 writer.print( ", " );
             }
-            if ( method.getReturns().isVoid() )
+            
+            if ( getGwtRuntime().getVersion().supportJava5() )
             {
-                writer.println( "AsyncCallback<Void> callback );" );
-            }
-            else if ( method.getReturns().isPrimitive() )
-            {
-                String primitive = method.getReturns().getGenericValue();
-                writer.println( "AsyncCallback<" + WRAPPERS.get( primitive ) + "> callback );" );
+                if ( method.getReturns().isVoid() )
+                {
+                    writer.println( "AsyncCallback<Void> callback );" );
+                }
+                else if ( method.getReturns().isPrimitive() )
+                {
+                    String primitive = method.getReturns().getGenericValue();
+                    writer.println( "AsyncCallback<" + WRAPPERS.get( primitive ) + "> callback );" );
+                }
+                else
+                {
+                    writer.println( "AsyncCallback<" + method.getReturns().getGenericValue() + "> callback );" );
+                }
             }
             else
             {
-                writer.println( "AsyncCallback<" + method.getReturns().getGenericValue() + "> callback );" );
+                writer.println( "AsyncCallback callback );" );
             }
+            
             writer.println();
         }
 

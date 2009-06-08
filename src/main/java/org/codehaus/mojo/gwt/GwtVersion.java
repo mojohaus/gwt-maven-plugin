@@ -24,140 +24,101 @@ package org.codehaus.mojo.gwt;
  */
 public enum GwtVersion
 {
-    ONE_DOT_FOUR
+    ONE_DOT_FOUR( false, "com.google.gwt.dev.GWTShell", "com.google.gwt.dev.GWTCompiler", EmbeddedServer.TOMCAT, 
+                  false, false, "-out" )
+
+    , ONE_DOT_FIVE( true, "com.google.gwt.dev.GWTShell", "com.google.gwt.dev.GWTCompiler", EmbeddedServer.TOMCAT,
+                    false, false, "-out" )
+
+    , ONE_DOT_SIX( true, "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY, 
+                   true, true, "-war" )
+
+    , FUTURE( true, "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY, 
+              true, true, "-war" );
+
+    
+    static GwtVersion fromMavenVersion( String version )
+            {
+                if ( version.startsWith( "1.4" ) )
+                {
+                    return ONE_DOT_FOUR;
+                }
+                if ( version.startsWith( "1.5" ) )
+                {
+                    return ONE_DOT_FIVE;
+                }
+                if ( version.startsWith( "1.6" ) )
+                {
+                    return ONE_DOT_SIX;
+                }
+                return FUTURE;
+            }
+
+    private GwtVersion( boolean supportJava5, String shellFQCN, String compilerFQCN,
+                        EmbeddedServer emebededServer,
+                        boolean supportMultiModuleCompiler, boolean supportParallelCompiler, String webOutputArgument
+                         )
     {
-        @Override
-        public String getShellFQCN()
-        {
-            return "com.google.gwt.dev.GWTShell";
-        }
+        this.supportJava5 = supportJava5;
+        this.shellFQCN = shellFQCN;
+        this.compilerFQCN = compilerFQCN;
+        this.supportMultiModuleCompiler = supportMultiModuleCompiler;
+        this.supportParallelCompiler = supportParallelCompiler;
+        this.webOutputArgument = webOutputArgument;
+        this.emebededServer = emebededServer;
+    }
 
-        @Override
-        public String getCompilerFQCN()
-        {
-            return "com.google.gwt.dev.GWTCompiler";
-        }
-
-        @Override
-        public EmbeddedServer getEmbeddedServer()
-        {
-            return EmbeddedServer.TOMCAT;
-        }
-
-        @Override
-        public boolean supportMultiModuleCompile()
-        {
-            return false;
-        }
-
-        @Override
-        public boolean supportParallelCompile()
-        {
-            return false;
-        }
-
-        @Override
-        public String getWebOutputArgument()
-        {
-            return "-out";
-        }
-
-    },
-    ONE_DOT_FIVE
+    private boolean supportJava5;
+    
+    private String shellFQCN;
+    
+    private String compilerFQCN;
+    
+    private EmbeddedServer emebededServer;
+    
+    private boolean supportMultiModuleCompiler;
+    
+    private boolean supportParallelCompiler;
+    
+    private String webOutputArgument;
+    
+    
+    public boolean supportJava5()
     {
-        @Override
-        public String getShellFQCN()
-        {
-            return "com.google.gwt.dev.GWTShell";
-        }
-
-        @Override
-        public String getCompilerFQCN()
-        {
-            return "com.google.gwt.dev.GWTCompiler";
-        }
-
-        @Override
-        public EmbeddedServer getEmbeddedServer()
-        {
-            return EmbeddedServer.TOMCAT;
-        }
-
-        @Override
-        public boolean supportMultiModuleCompile()
-        {
-            return false;
-        }
-
-        @Override
-        public boolean supportParallelCompile()
-        {
-            return false;
-        }
-
-        @Override
-        public String getWebOutputArgument()
-        {
-            return "-out";
-        }
-    },
-    ONE_DOT_SIX
-    {
-
-    },
-    FUTURE
-    {
-
-    };
+        return supportJava5;
+    }
 
     /**
      * @return fully qualified class name of the GWTShell "main" class
      */
     public String getShellFQCN()
     {
-        return "com.google.gwt.dev.HostedMode";
+        return shellFQCN;
     }
 
     public String getCompilerFQCN()
     {
-        return "com.google.gwt.dev.Compiler";
+        return compilerFQCN;
     }
 
     public EmbeddedServer getEmbeddedServer()
     {
-        return EmbeddedServer.JETTY;
+        return emebededServer;
     }
 
     public boolean supportMultiModuleCompile()
     {
-        return true;
+        return supportMultiModuleCompiler;
     }
 
     public boolean supportParallelCompile()
     {
-        return true;
+        return supportParallelCompiler;
     }
 
     public String getWebOutputArgument()
     {
-        return "-war";
-    }
-
-    static GwtVersion fromMavenVersion( String version )
-    {
-        if ( version.startsWith( "1.4" ) )
-        {
-            return ONE_DOT_FOUR;
-        }
-        if ( version.startsWith( "1.5" ) )
-        {
-            return ONE_DOT_FIVE;
-        }
-        if ( version.startsWith( "1.6" ) )
-        {
-            return ONE_DOT_SIX;
-        }
-        return FUTURE;
+        return webOutputArgument;
     }
 
 
