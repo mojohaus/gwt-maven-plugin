@@ -55,6 +55,7 @@ under the License.
     <menu name="User Guide">
       <item name="Introduction" href="user-guide/introduction.html"/>
       <item name="Setup" href="user-guide/setup.html"/>
+      <item name="the /war folder" href="user-guide/war-folder.html"/>
       <item name="Using the archetype" href="user-guide/archetype.html"/>
       <item name="Run Hosted Mode" href="user-guide/hosted.html"/>
       <item name="Generate Async" href="user-guide/async.html"/>

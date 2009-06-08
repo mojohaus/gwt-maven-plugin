@@ -1,0 +1,38 @@
+ ------
+ The /war folder
+ ------
+ ------
+
+The /war folder
+
+ The Google Web Toolkit and The {{{http://code.google.com/intl/en/eclipse/}Google Eclipse Plugin}} both use the
+ <<</war>>> folder as base directory for the hosted mode web application. Maven users used to follow the maven-war-plugin
+ convention for <<<src/main/webapp>>>.
+
+* Solution 1 : change maven-war-plugin configuration
+
+ You can change the maven-war-plugin configuration to use <<</war>>> as web application source folder. The benefict
+ of this setup is that you can define an alternate <<<web.xml>>> deployment descriptor, and have the hosted mode
+ run a lightweight, test-only server. The war plugin 
+ {{{http://maven.apache.org/plugins/maven-war-plugin/war-mojo.html#webXml}webXml}} parameter can then be used to
+ setup the <real> deployment descriptor to be used by your web application.
+ 
+ To use this setup you'll need to configure the gwt-maven-plugin in <<<inline>>> mode. The main side effect is that the
+ <<</war>>> folder will then contain classes and libs you have to exclude from your SCM (using svn:ignore).
+ 
+ To be even more productive you should also configure the build.outputDirectory to ouput classes into 
+ <<</war/WEB-INF/classes>>> so that any change to a java source in your favourite IDE is immediatelly usable in the
+ hosted browser with a simple refresh.
+ 
+ <<This is the recommended solution as you will then get a simple, productive environment with simple testing support>>
+ 
+* Solution 2 : change maven-war-plugin webappDirectory
+ 
+ Another option is to configure the maven-war-plugin to build the exploded web application in /war, using the
+ {{{http://maven.apache.org/plugins/maven-war-plugin/war-mojo.html#webappDirectory}webappDirectory}} parameter. With
+ this setup you won't see changes in your source folders <<but>> :
+ 
+ * the hosted mode will run the full web application, will all its frameworks, security and resources constraints
+ 
+ * any change to a configuration file or java source will require the web application to be repackaged using <<<war:exploded>>>  
+  
