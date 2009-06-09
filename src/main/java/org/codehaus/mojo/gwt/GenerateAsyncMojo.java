@@ -98,6 +98,7 @@ public class GenerateAsyncMojo
         throws MojoExecutionException
     {
         getLog().debug( "GenerateAsyncMojo#execute()" );
+        boolean supportJava5 = getGwtRuntime().getVersion().supportJava5();
 
         List<String> sourceRoots = getProject().getCompileSourceRoots();
         boolean generated = false;
@@ -105,7 +106,7 @@ public class GenerateAsyncMojo
         {
             try
             {
-                generated |= scanAndGenerateAsync( new File( sourceRoot ) );
+                generated |= scanAndGenerateAsync( new File( sourceRoot ), supportJava5 );
             }
             catch ( Throwable e )
             {
@@ -128,7 +129,7 @@ public class GenerateAsyncMojo
      * @return true if some file have been generated
      * @throws Exception generation failure
      */
-    private boolean scanAndGenerateAsync( File file )
+    private boolean scanAndGenerateAsync( File file, boolean supportJava5 )
         throws Exception
     {
         DirectoryScanner scanner = new DirectoryScanner();
@@ -142,7 +143,7 @@ public class GenerateAsyncMojo
         }
         for ( String source : sources )
         {
-            generateAsync( new File( file, source ), source );
+            generateAsync( new File( file, source ), source, supportJava5 );
         }
         return true;
     }
@@ -152,7 +153,7 @@ public class GenerateAsyncMojo
      * @param name the service name
      * @throws Exception generation failure
      */
-    private void generateAsync( File source, String name )
+    private void generateAsync( File source, String name, boolean supportJava5 )
         throws Exception
     {
         JavaDocBuilder builder = new JavaDocBuilder();
@@ -229,8 +230,8 @@ public class GenerateAsyncMojo
             {
                 writer.print( ", " );
             }
-            
-            if ( getGwtRuntime().getVersion().supportJava5() )
+
+            if ( supportJava5 )
             {
                 if ( method.getReturns().isVoid() )
                 {
@@ -250,7 +251,7 @@ public class GenerateAsyncMojo
             {
                 writer.println( "AsyncCallback callback );" );
             }
-            
+
             writer.println();
         }
 
