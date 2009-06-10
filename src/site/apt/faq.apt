@@ -10,15 +10,20 @@ Frequently Asked Questions
   No. The plugin uses maven dependency management to get the required libraries and native components depending on
   your operating system
 
-* How to use another version of GWT to compile my project ?
+* How to set the version of GWT to compile my project ?
 
-  Use a <dependencies> element in your plugin configuration to override the plugin dependency on
-  ''com.google.gwt:gwt-user''. Please note this only works with maven 2.0.9 and later.
+  Simply define a <dependencies> on ''com.google.gwt:gwt-user'' with the expected version, the plugin will detect this
+  and download the required SDK artifacts.
 
 * How does this plugin compare to other maven / gwt plugins ?
 
   This plugin, being part of the Mojo Project, can benefict for a large community of maven developers. Its async interface
   generation feature is AFAIK not supported by other plugins.
+
+* Is there any official Google support for maven ?
+
+  GWT guys don't use Maven by themselves but are interested by our work to provide community support. They helped us to make
+  the plugin work with the GWT SDK release candidates.
 
 * I get strange NoSuchMethodError running my application unit tests !
 
