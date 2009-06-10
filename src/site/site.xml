@@ -30,7 +30,7 @@ under the License.
   </bannerLeft>
   <bannerRight>
     <name>Codehaus</name>
-    <src>../images/gwt-maven-logo.png</src>
+    <src>images/gwt-maven-logo.png</src>
     <href>http://www.codehaus.org</href>
   </bannerRight>
   <body>
@@ -41,7 +41,7 @@ under the License.
     </links>
     <menu name="Mojo">
       <item name="Back to Mojo" href="http://mojo.codehaus.org"/>
-      <item name="Version 1.0" href="../1.0"/>
+      <item name="Version 1.0" href="http://mojo.codehaus.org/gwt-maven-plugin-1.0"/>
     </menu>
   <menu name="Overview">
       <item name="Index" href="index.html"/>

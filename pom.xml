@@ -304,6 +304,12 @@
           </requirements>
         </configuration>
       </plugin>
+	  <plugin>
+          <artifactId>maven-site-plugin</artifactId>
+          <configuration>
+            <stagingSiteURL>dav:https://dav.codehaus.org/mojo/${project.artifactId}-${project.version}</stagingSiteURL>
+          </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -327,14 +333,6 @@
       </plugin>
     </plugins>
   </reporting>
-
-  <distributionManagement>
-    <site>
-      <id>codehaus.org</id>
-      <name>Mojo Website</name>
-      <url>dav:https://dav.codehaus.org/mojo/gwt-maven-plugin/${project.version}</url>
-    </site>
-  </distributionManagement>
 
   <pluginRepositories>
     <pluginRepository>
