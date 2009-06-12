@@ -51,8 +51,17 @@ public class MergeWebXmlMojo
      * Location on filesystem where project should be built.
      * 
      * @parameter expression="${project.build.directory}"
+     * @deprecated use mergedWebXml
      */
     private File buildDir;
+
+    /**
+     * Location on filesystem where merged web.xml will be created. The maven-war-plugin must be configured to use this
+     * path as <a href="http://maven.apache.org/plugins/maven-war-plugin/war-mojo.html#webXml"> webXml</a> parameter
+     * 
+     * @parameter expression="${project.build.directory}/web.xml"
+     */
+    private File mergedWebXml;
 
     /** Creates a new instance of MergeWebXmlMojo */
     public MergeWebXmlMojo()
@@ -70,14 +79,18 @@ public class MergeWebXmlMojo
                                 "copy source web.xml - " + this.getWebXml()
                                     + " to build dir (source web.xml required if mergewebxml execution is enabled)"
                                     + buildDir.getAbsolutePath() );
-            File destination = new File( buildDir, "web.xml" );
-            if ( !destination.exists() )
+            if ( buildDir != null )
             {
-                destination.getParentFile().mkdirs();
-                destination.createNewFile();
+                getLog().warn( "buildDir parameter is deprecated, set mergedWebXml" );
+                mergedWebXml = new File( buildDir, "web.xml" );
+            }
+            if ( !mergedWebXml.exists() )
+            {
+                mergedWebXml.getParentFile().mkdirs();
+                mergedWebXml.createNewFile();
             }
 
-            FileUtils.copyFile( this.getWebXml(), destination );
+            FileUtils.copyFile( this.getWebXml(), mergedWebXml );
 
             for ( int i = 0; i < this.getModules().length; i++ )
             {
@@ -113,8 +126,9 @@ public class MergeWebXmlMojo
                     if ( moduleFile != null )
                     {
                         getLog().info( "Module file: " + moduleFile.getAbsolutePath() );
-                        processor = new GwtWebInfProcessor( this.getModules()[i], moduleFile, destination
-                            .getAbsolutePath(), destination.getAbsolutePath(), this.isWebXmlServletPathAsIs() );
+                        processor =
+                            new GwtWebInfProcessor( this.getModules()[i], moduleFile, mergedWebXml.getAbsolutePath(),
+                                                    mergedWebXml.getAbsolutePath(), this.isWebXmlServletPathAsIs() );
                     }
                     else
                     {
