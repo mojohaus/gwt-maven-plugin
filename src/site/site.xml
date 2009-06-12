@@ -38,6 +38,7 @@ under the License.
       <item name="Mojo" href="http://mojo.codehaus.org"/>
       <item name="Maven" href="http://maven.apache.org/"/>
       <item name="Google Web Toolkit" href="http://code.google.com/webtoolkit/"/>
+	  <item name="Google Eclipse Plugin" href="http://code.google.com/intl/en/eclipse"/>
     </links>
     <menu name="Mojo">
       <item name="Back to Mojo" href="http://mojo.codehaus.org"/>
