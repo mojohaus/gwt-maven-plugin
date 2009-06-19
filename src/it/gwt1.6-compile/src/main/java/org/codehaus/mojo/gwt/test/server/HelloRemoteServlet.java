@@ -37,12 +37,12 @@ public class HelloRemoteServlet
     {
         System.out.println( "HelloRemoteServlet started" );
     }
-    
+
 
     public void exit()
     {
         // Kill the JVM to stop the Hosted server
-        System.exit( 0 );        
+        System.exit( 0 );
     }
 
     public Collection<Integer> returnsGenerics( List<String> values )
@@ -59,5 +59,11 @@ public class HelloRemoteServlet
     {
 
     }
+
+    public String[] returnsArray( String[] values )
+    {
+        return new String[0];
+    }
+
 
 }

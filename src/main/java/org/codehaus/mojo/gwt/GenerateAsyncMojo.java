@@ -244,7 +244,12 @@ public class GenerateAsyncMojo
                 }
                 else
                 {
-                    writer.println( "AsyncCallback<" + method.getReturns().getGenericValue() + "> callback );" );
+                    String type = method.getReturns().getGenericValue();
+                    if ( method.getReturns().isArray() )
+                    {
+                        type += "[]";
+                    }
+                    writer.println( "AsyncCallback<" + type + "> callback );" );
                 }
             }
             else

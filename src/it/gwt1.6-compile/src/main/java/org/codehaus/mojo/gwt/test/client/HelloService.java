@@ -37,6 +37,9 @@ public interface HelloService
     // expected : void returnsPrimitive( String[] values, AsyncCallback<Integer> callback );
     int returnsPrimitive( String[] values );
 
+    // expected : void returnsArray( String[] values, AsyncCallback<String[]> callback );
+    String[] returnsArray( String[] values );
+
     // expected : void returnsGenerics( java.util.List<String> values, AsyncCallback<java.util.Collection<Integer>>
     // callback );
     Collection<Integer> returnsGenerics( List<String> values );
