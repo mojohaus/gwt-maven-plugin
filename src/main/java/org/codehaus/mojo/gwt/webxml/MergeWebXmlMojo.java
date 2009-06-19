@@ -51,21 +51,13 @@ public class MergeWebXmlMojo
     extends AbstractGwtWebMojo
 {
 
-    /**
-     * Location on filesystem where project should be built.
-     * 
-     * @parameter expression="${project.build.directory}"
-     * @deprecated use mergedWebXml
-     */
-    private File buildDir;
-
     private Set<String> checkedModules = new HashSet<String>();
 
     /**
      * Location on filesystem where merged web.xml will be created. The maven-war-plugin must be configured to use this
      * path as <a href="http://maven.apache.org/plugins/maven-war-plugin/war-mojo.html#webXml"> webXml</a> parameter
      * 
-     * @parameter expression="${project.build.directory}/web.xml"
+     * @parameter default-value="${project.build.directory}/web.xml"
      */
     private File mergedWebXml;
 
@@ -81,15 +73,6 @@ public class MergeWebXmlMojo
 
         try
         {
-            this.getLog().info(
-                                "copy source web.xml - " + getWebXml()
-                                    + " to build dir (source web.xml required if mergewebxml execution is enabled)"
-                                    + buildDir.getAbsolutePath() );
-            if ( buildDir != null )
-            {
-                getLog().warn( "buildDir parameter is deprecated, set mergedWebXml" );
-                mergedWebXml = new File( buildDir, "web.xml" );
-            }
             if ( !mergedWebXml.exists() )
             {
                 mergedWebXml.getParentFile().mkdirs();
@@ -110,6 +93,7 @@ public class MergeWebXmlMojo
                 }
             }
             new GwtWebInfProcessor().process( mergedWebXml, mergedWebXml, servlets );
+            getLog().info( servlets.size() + " servlet(s) merged into " + mergedWebXml );
         }
         catch ( Exception e )
         {
