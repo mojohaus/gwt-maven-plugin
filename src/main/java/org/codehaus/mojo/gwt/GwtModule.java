@@ -107,7 +107,7 @@ public class GwtModule
     public Map<String, String> getServlets()
     {
         Map<String, String> servlets = new HashMap<String, String>();
-        Xpp3Dom nodes[] = xml.getChildren( "servlets" );
+        Xpp3Dom nodes[] = xml.getChildren( "servlet" );
         if ( nodes == null )
         {
             return servlets;

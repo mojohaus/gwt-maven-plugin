@@ -22,15 +22,18 @@ package org.codehaus.mojo.gwt.shell;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-
+import java.util.Collection;
+import java.util.Collections;
 import org.apache.commons.io.IOUtils;
-
+import org.codehaus.mojo.gwt.webxml.GwtWebInfProcessor;
+import org.codehaus.mojo.gwt.webxml.ServletDescriptor;
 /**
  * @author cooper
  * @version $Id$
  */
 public class MakeCatalinaBase
 {
+    private static final String GWT_DEV_SHELL = "com.google.gwt.dev.shell.GWTShellServlet";
 
     private File baseDir;
 
@@ -81,16 +84,18 @@ public class MakeCatalinaBase
         {
             IOUtils.copy( baseWebXml, fos );
         }
-        File mergeWeb = new File( webinf, "web.xml" );
+        File mergeWebXml = new File( webinf, "web.xml" );
         if ( sourceWebXml.exists() )
         {
-            GwtShellWebProcessor p =
-                new GwtShellWebProcessor( mergeWeb.getAbsolutePath(), sourceWebXml, shellServletMappingURL );
-            p.process();
+            ServletDescriptor d = new ServletDescriptor( shellServletMappingURL, GWT_DEV_SHELL );
+            d.setName( "shell" );
+            Collection<ServletDescriptor> servlets = Collections.singleton( d );
+
+            new GwtWebInfProcessor().process( sourceWebXml, mergeWebXml, servlets );
         }
         else
         {
-            fos = new FileOutputStream( mergeWeb );
+            fos = new FileOutputStream( mergeWebXml );
             IOUtils.copy( getClass().getResourceAsStream( "emptyWeb.xml" ), fos );
         }
 

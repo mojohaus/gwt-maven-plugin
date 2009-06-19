@@ -64,6 +64,10 @@ public class ServletDescriptor
 
     public String getName()
     {
+        if ( name == null )
+        {
+            name = className + path;
+        }
         return name;
     }
 

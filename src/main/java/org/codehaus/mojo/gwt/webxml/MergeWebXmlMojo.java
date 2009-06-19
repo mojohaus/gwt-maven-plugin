@@ -21,15 +21,19 @@ package org.codehaus.mojo.gwt.webxml;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
+import org.codehaus.mojo.gwt.GwtModule;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.AbstractGwtWebMojo;
 
@@ -55,6 +59,8 @@ public class MergeWebXmlMojo
      */
     private File buildDir;
 
+    private Set<String> checkedModules = new HashSet<String>();
+
     /**
      * Location on filesystem where merged web.xml will be created. The maven-war-plugin must be configured to use this
      * path as <a href="http://maven.apache.org/plugins/maven-war-plugin/war-mojo.html#webXml"> webXml</a> parameter
@@ -76,7 +82,7 @@ public class MergeWebXmlMojo
         try
         {
             this.getLog().info(
-                                "copy source web.xml - " + this.getWebXml()
+                                "copy source web.xml - " + getWebXml()
                                     + " to build dir (source web.xml required if mergewebxml execution is enabled)"
                                     + buildDir.getAbsolutePath() );
             if ( buildDir != null )
@@ -90,58 +96,20 @@ public class MergeWebXmlMojo
                 mergedWebXml.createNewFile();
             }
 
-            FileUtils.copyFile( this.getWebXml(), mergedWebXml );
+            FileUtils.copyFile( getWebXml(), mergedWebXml );
 
-            for ( int i = 0; i < this.getModules().length; i++ )
+            Set<ServletDescriptor> servlets = new LinkedHashSet<ServletDescriptor>();
+            for ( String module : getModules() )
             {
-                File moduleFile = null;
-                for ( Iterator it = this.getProject().getCompileSourceRoots().iterator(); it.hasNext()
-                    && moduleFile == null; )
+                GwtModule gwtModule = readModule( module );
+                Map<String, String> moduleServlets = gwtModule.getServlets();
+                getLog().debug( "merge " + moduleServlets.size() + " servlets from module " + module );
+                for ( Map.Entry<String, String> servlet : moduleServlets.entrySet() )
                 {
-                    File check = new File( it.next().toString() + "/" + this.getModules()[i].replace( '.', '/' )
-                        + ".gwt.xml" );
-                    getLog().debug( "Looking for file: " + check.getAbsolutePath() );
-                    if ( check.exists() )
-                    {
-                        moduleFile = check;
-                    }
+                    servlets.add( new ServletDescriptor( servlet.getKey(), servlet.getValue() ) );
                 }
-                for ( Iterator it = this.getProject().getResources().iterator(); it.hasNext(); )
-                {
-                    Resource r = (Resource) it.next();
-                    File check = new File( r.getDirectory() + "/" + this.getModules()[i].replace( '.', '/' )
-                        + ".gwt.xml" );
-                    getLog().debug( "Looking for file: " + check.getAbsolutePath() );
-                    if ( check.exists() )
-                    {
-                        moduleFile = check;
-                    }
-                }
-
-                this.fixThreadClasspath( runtime );
-
-                GwtWebInfProcessor processor = null;
-                try
-                {
-                    if ( moduleFile != null )
-                    {
-                        getLog().info( "Module file: " + moduleFile.getAbsolutePath() );
-                        processor =
-                            new GwtWebInfProcessor( this.getModules()[i], moduleFile, mergedWebXml.getAbsolutePath(),
-                                                    mergedWebXml.getAbsolutePath(), this.isWebXmlServletPathAsIs() );
-                    }
-                    else
-                    {
-                        throw new MojoExecutionException( "module file null" );
-                    }
-                }
-                catch ( ExitException e )
-                {
-                    this.getLog().warn( e.getMessage() );
-                    return;
-                }
-                processor.process();
             }
+            new GwtWebInfProcessor().process( mergedWebXml, mergedWebXml, servlets );
         }
         catch ( Exception e )
         {
