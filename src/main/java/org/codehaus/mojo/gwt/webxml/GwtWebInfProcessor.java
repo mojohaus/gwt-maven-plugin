@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.codehaus.plexus.util.WriterFactory;
@@ -36,13 +37,14 @@ import org.jdom.Namespace;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
+import org.jdom.xpath.XPath;
 
 /**
  * @version $Id$
  */
 public class GwtWebInfProcessor
 {
-    private final static String[] DEFORE_SERVLETS =
+    private final static String[] BEFORE_SERVLETS =
         { "icon", "display-name", "description", "distributable", "context-param", "filter", "filter-mapping",
             "listener", "servlet" };
 
@@ -90,9 +92,18 @@ public class GwtWebInfProcessor
         Element webapp = dom.getRootElement();
         Namespace ns = webapp.getNamespace();
 
-        int insertAfter = getInsertPosition( webapp, DEFORE_SERVLETS, AFTER_SERVLETS );
-        for ( ServletDescriptor d : servletDescriptors )
+        int insertAfter = getInsertPosition( webapp, BEFORE_SERVLETS, AFTER_SERVLETS );
+        for ( Iterator<ServletDescriptor> it = servletDescriptors.iterator(); it.hasNext(); )
         {
+            ServletDescriptor d = it.next();
+            XPath path = XPath.newInstance( "/web-app/servlet/servlet-name[text() = '" + d.getName() + "']" );
+            if ( path.selectNodes( dom ).size() > 0 )
+            {
+                // Allready declared in target web.xml
+                it.remove();
+                continue;
+            }
+
             insertAfter++;
             Element servlet = new Element( "servlet", ns );
             Element servletName = new Element( "servlet-name", ns );

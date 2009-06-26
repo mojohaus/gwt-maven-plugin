@@ -114,7 +114,7 @@ public class GwtModule
         }
         for ( Xpp3Dom node : nodes )
         {
-            servlets.put( node.getAttribute( "path" ), node.getAttribute( "class" ) );
+            servlets.put( getPath() + node.getAttribute( "path" ), node.getAttribute( "class" ) );
         }
         return servlets;
     }

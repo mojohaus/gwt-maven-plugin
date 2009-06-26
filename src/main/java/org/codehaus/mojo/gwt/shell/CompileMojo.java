@@ -32,6 +32,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtRuntime;
+import org.codehaus.mojo.gwt.GwtVersion;
 import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SingleTargetSourceMapping;
@@ -77,6 +78,65 @@ public class CompileMojo
      */
     private boolean enableAssertions;
 
+    /**
+     * Ask GWT to create the Story of Your Compile (SOYC). Enabled by default if GWT >= 2.0 is detected
+     *
+     * @parameter expression="${gwt.compiler.soyc}"
+     */
+    private String soyc;
+
+    /**
+     * Logs output in a graphical tree view.
+     * <p>
+     * Can be set from command line using '-Dgwt.treeLogger=true'.
+     *
+     * @parameter default-value="false" expression="${gwt.treeLogger}"
+     */
+    private boolean treeLogger;
+
+    /**
+     * EXPERIMENTAL: Disables some java.lang.Class methods (e.g. getName()).
+     * <p>
+     * Can be set from command line using '-Dgwt.disableClassMetadata=true'.
+     *
+     * @parameter default-value="false" expression="${gwt.disableClassMetadata}"
+     */
+    private boolean disableClassMetadata;
+
+    /**
+     * EXPERIMENTAL: Disables run-time checking of cast operations.
+     * <p>
+     * Can be set from command line using '-Dgwt.disableCastChecking=true'.
+     *
+     * @parameter default-value="false" expression="${gwt.disableCastChecking}"
+     */
+    private boolean disableCastChecking;
+
+    /**
+     * Validate all source code, but do not compile.
+     * <p>
+     * Can be set from command line using '-Dgwt.validateOnly=true'.
+     *
+     * @parameter default-value="false" expression="${gwt.validateOnly}"
+     */
+    private boolean validateOnly;
+
+    /**
+     * Enable faster, but less-optimized, compilations.
+     * <p>
+     * Can be set from command line using '-Dgwt.draftCompile=true'.
+     *
+     * @parameter default-value="false" expression="${gwt.draftCompile}"
+     */
+    private boolean draftCompile;
+
+    /**
+     * The directory into which extra, non-deployed files will be written.
+     *
+     * @parameter default-value="${project.build.directory}/extra"
+     */
+    private File extra;
+
     public void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
     {
@@ -110,7 +170,9 @@ public class CompileMojo
         throws MojoExecutionException
     {
         boolean upToDate = true;
-        String clazz = runtime.getVersion().getCompilerFQCN();
+        GwtVersion gwtVersion = runtime.getVersion();
+
+        String clazz = gwtVersion.getCompilerFQCN();
         JavaCommand cmd = new JavaCommand( clazz, runtime )
             .withinScope( Artifact.SCOPE_COMPILE )
             .arg( "-gen" )
@@ -120,14 +182,39 @@ public class CompileMojo
             .arg( "-style" )
             .arg( getStyle() )
             .arg( enableAssertions, "-ea" )
-            .arg( runtime.getVersion().getWebOutputArgument() )
+            .arg( gwtVersion.getWebOutputArgument() )
             .arg( quote( getOutputDirectory().getAbsolutePath() ) );
 
-        if ( runtime.getVersion().supportParallelCompile() )
+        if ( gwtVersion.supportParallelCompile() )
         {
             cmd.arg( "-localWorkers" )
                .arg( String.valueOf( getLocalWorkers() ) );
         }
+
+        if ( gwtVersion.supportSOYC() )
+        {
+            if ( soyc != null && Boolean.valueOf( soyc ).booleanValue() == false )
+            {
+                getLog().debug( "SOYC has been disabled by user" );
+            }
+            else
+            {
+                cmd.arg( "-soyc" )
+                   .arg( "-extra")
+                   .arg( quote( extra.getAbsolutePath() ) );
+                extra.mkdirs();
+            }
+        }
+
+        if ( gwtVersion.compareTo( GwtVersion.TWO_DOT_ZERO ) >= 0 )
+        {
+            cmd.arg( draftCompile, "-draftCompile" )
+               .arg( validateOnly, "-validateOnly" )
+               .arg( treeLogger, "-treeLogger" )
+               .arg( disableClassMetadata, "-XdisableClassMetadata" )
+               .arg( disableCastChecking, "-XdisableCastChecking" );
+        }
+
         for ( String target : modules )
         {
             if ( !compilationRequired( target, getOutputDirectory() ) )

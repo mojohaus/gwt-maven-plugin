@@ -22,6 +22,7 @@ package org.codehaus.mojo.gwt.shell;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -288,7 +289,7 @@ public abstract class AbstractGwtShellMojo
 
         private GwtRuntime runtime;
 
-        private Collection<File> classpath;
+        private Collection<File> classpath = new LinkedList<File>();
 
         private List<String> args = new ArrayList<String>();
 
@@ -305,8 +306,17 @@ public abstract class AbstractGwtShellMojo
         public JavaCommand withinScope( String scope )
             throws MojoExecutionException
         {
-            classpath = classpathBuilder.buildClasspathList( getProject(), scope, runtime, getProjectArtifacts() );
+            classpath.addAll( classpathBuilder.buildClasspathList( getProject(), scope, runtime, getProjectArtifacts() ) );
             postProcessClassPath( classpath );
+            return this;
+        }
+
+        public JavaCommand withinClasspath( File... path )
+        {
+            for ( File file : path )
+            {
+                classpath.add( file );
+            }
             return this;
         }
 

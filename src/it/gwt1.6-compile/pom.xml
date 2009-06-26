@@ -45,6 +45,7 @@
             <goals>
               <goal>generateAsync</goal>
               <goal>compile</goal>
+              <goal>mergewebxml</goal>
             </goals>
           </execution>
         </executions>

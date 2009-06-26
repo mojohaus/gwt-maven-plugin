@@ -26,6 +26,8 @@ import java.util.Properties;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.mojo.gwt.shell.ArtifactNameUtil;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -39,29 +41,57 @@ public class GwtRuntime
     /** The gwt-dev-[platform] jar used at runtime */
     private File gwtDevJar;
 
+    /** The SOYC jar (since GWT 2.0) */
+    private File soycJar;
+
     /** The gwt version we are running */
     private GwtVersion version;
+
+    public GwtRuntime( File gwtHome ) throws MojoExecutionException
+    {
+        super();
+        if ( !gwtHome.exists() )
+        {
+            throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
+        }
+        gwtUserJar = new File( gwtHome, "gwt-user.jar" );
+        if ( !gwtUserJar.exists() )
+        {
+            throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
+        }
+        gwtDevJar = new File( gwtHome, ArtifactNameUtil.guessDevJarName() );
+        if ( !gwtDevJar.exists() )
+        {
+            throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
+        }
+        this.version = GwtVersion.fromMavenVersion( readGwtDevVersion( gwtDevJar ) );
+        if ( version.compareTo( GwtVersion.TWO_DOT_ZERO ) >= 0 )
+        {
+            soycJar = new File( gwtHome, "gwt-soyc-vis.jar" );
+            if ( !soycJar.exists() )
+            {
+                throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
+            }
+        }
+    }
 
     /**
      * @param gwtUserJar gwt user library
      * @param gwtDevJar gwt dev library
      * @param version gwt version
      */
-    public GwtRuntime( File gwtUserJar, File gwtDevJar, String version )
+    public GwtRuntime( File gwtUserJar, File gwtDevJar, File soycJar, String version )
+    throws MojoExecutionException
     {
         super();
         this.version = GwtVersion.fromMavenVersion( version );
+        if ( this.version.compareTo( GwtVersion.TWO_DOT_ZERO ) >= 0 && soycJar == null )
+        {
+            throw new MojoExecutionException( "Invalid GWT artifacts, SOYC missing" );
+        }
         this.gwtUserJar = gwtUserJar;
         this.gwtDevJar = gwtDevJar;
-    }
-
-    /**
-     * @param gwtUserJar gwt user library
-     * @param gwtDevJar gwt dev library
-     */
-    public GwtRuntime( File gwtUserJar, File gwtDevJar )
-    {
-        this( gwtUserJar, gwtDevJar, readGwtDevVersion( gwtDevJar ) );
+        this.soycJar = soycJar;
     }
 
     /**
@@ -126,6 +156,15 @@ public class GwtRuntime
     public File getGwtDevJar()
     {
         return gwtDevJar;
+    }
+
+    public File getSoycJar()
+    {
+        if ( version.compareTo( GwtVersion.TWO_DOT_ZERO ) < 0 )
+        {
+            throw new IllegalStateException( "Cannot use SOYC with GWT SDK prior to 2.0" );
+        }
+        return soycJar;
     }
 
     public GwtVersion getVersion()

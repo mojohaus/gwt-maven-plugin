@@ -248,21 +248,7 @@ public abstract class AbstractGwtMojo
         if ( gwtHome != null )
         {
             getLog().info( "using GWT jars from local installation " + gwtHome );
-            if ( !gwtHome.exists() )
-            {
-                throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
-            }
-            File userJar = new File( gwtHome, "gwt-user.jar" );
-            if ( !userJar.exists() )
-            {
-                throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
-            }
-            File devJar = new File( gwtHome, ArtifactNameUtil.guessDevJarName() );
-            if ( !devJar.exists() )
-            {
-                throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
-            }
-            return new GwtRuntime( userJar, devJar );
+            return new GwtRuntime( gwtHome );
         }
 
         if ( gwtVersion != null )
@@ -347,21 +333,26 @@ public abstract class AbstractGwtMojo
     private GwtRuntime getGwtRuntimeForVersion( String version )
         throws MojoExecutionException
     {
-        Artifact gwtUser =
-            artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, "gwt-user", version, "jar", null );
-        Artifact gwtDev =
-            artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, "gwt-dev", version, "jar",
-                                                          ArtifactNameUtil.getPlatformName() );
-        Artifact gwtNatives =
-            artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, "gwt-dev", version, "zip",
-                                                          ArtifactNameUtil.getPlatformName() + "-libs" );
+        Artifact gwtUser = resolve( "gwt-user", version, "jar", null );
+        Artifact gwtDev = resolve( "gwt-dev", version, "jar", ArtifactNameUtil.getPlatformName() );
+        Artifact gwtNatives = resolve( "gwt-dev", version, "zip", ArtifactNameUtil.getPlatformName() + "-libs" );
+        unpackNativeLibraries( gwtNatives.getFile() );
 
+        if ( GwtVersion.fromMavenVersion( version ).compareTo( GwtVersion.TWO_DOT_ZERO ) >= 0 )
+        {
+            Artifact soyc = resolve( "gwt-soyc-vis", version, "jar", null );
+            return new GwtRuntime( gwtUser.getFile(), gwtDev.getFile(), soyc.getFile(), version );
+        }
+        return new GwtRuntime( gwtUser.getFile(), gwtDev.getFile(), null, version );
+    }
+
+    private Artifact resolve( String id, String version, String type, String classifier )
+        throws MojoExecutionException
+    {
+        Artifact artifact = artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, id, version, type, classifier );
         try
         {
-            resolver.resolve( gwtUser, remoteRepositories, localRepository );
-            resolver.resolve( gwtDev, remoteRepositories, localRepository );
-            resolver.resolve( gwtNatives, remoteRepositories, localRepository );
-            unpackNativeLibraries( gwtNatives.getFile() );
+            resolver.resolve( artifact, remoteRepositories, localRepository );
         }
         catch ( ArtifactNotFoundException e )
         {
@@ -371,7 +362,7 @@ public abstract class AbstractGwtMojo
         {
             throw new MojoExecutionException( "artifact resolver problem - " + e.getMessage(), e );
         }
-        return new GwtRuntime( gwtUser.getFile(), gwtDev.getFile(), version );
+        return artifact;
     }
 
     /**

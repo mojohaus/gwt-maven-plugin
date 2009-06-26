@@ -1,4 +1,3 @@
-<!--
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,10 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
--->
-<!DOCTYPE module PUBLIC "//gwt-module/" "http://google-web-toolkit.googlecode.com/svn/tags/1.5.3/distro-source/core/src/gwt-module.dtd">
-<module>
-  <inherits name="com.google.gwt.user.User"/>
-  <entry-point class="org.codehaus.mojo.gwt.test.client.Hello"/>
-  <servlet path="/HelloService" class="org.codehaus.mojo.gwt.test.server.HelloRemoteServlet"/>
-</module>
+assert new File(basedir, 'target/classes').exists();
+assert new File(basedir, 'src/main/webapp/hello').exists();
+assert new File(basedir, 'src/main/webapp/hello/hello.nocache.js').exists();
+assert new File(basedir, 'src/main/webapp/com.google.gwt.sample.hello.Hello').exists();
+assert new File(basedir, 'src/main/webapp/com.google.gwt.sample.hello.Hello/com.google.gwt.sample.hello.Hello.nocache.js').exists();
+
+return true;

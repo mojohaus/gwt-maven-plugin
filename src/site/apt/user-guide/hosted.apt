@@ -32,8 +32,8 @@ Configuring the Hosted mode server
 ** Using command line  
   
   You can use <<<mvn gwt:run>>> to launch the hosted mode from command line. In such case, the plugin will copy 
-  runtime dependencies to <<<${hostedWebapp}/WEB-INF/lib>>> and your compiled classes to 
-  <<<${hostedWebapp}/WEB-INF/classes>>>.
+  runtime dependencies to <<<$\{hostedWebapp\}/WEB-INF/lib>>> and your compiled classes to 
+  <<<$\{hostedWebapp\}/WEB-INF/classes>>>.
   
 ** Distinction between hostedWebapp and maven-war-plugin webappDirectory  
   
