@@ -43,6 +43,9 @@ public class GwtRuntime
 
     /** The SOYC jar (since GWT 2.0) */
     private File soycJar;
+    
+    /** The OOPHM jar (since GWT 2.0) */
+    private File oophmJar;
 
     /** The gwt version we are running */
     private GwtVersion version;
@@ -68,7 +71,8 @@ public class GwtRuntime
         if ( version.compareTo( GwtVersion.TWO_DOT_ZERO ) >= 0 )
         {
             soycJar = new File( gwtHome, "gwt-soyc-vis.jar" );
-            if ( !soycJar.exists() )
+            oophmJar = new File( gwtHome, "gwt-oophm.jar" );
+            if ( !soycJar.exists() | !oophmJar.exists() )
             {
                 throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
             }
@@ -80,18 +84,12 @@ public class GwtRuntime
      * @param gwtDevJar gwt dev library
      * @param version gwt version
      */
-    public GwtRuntime( File gwtUserJar, File gwtDevJar, File soycJar, String version )
+    public GwtRuntime( File gwtUserJar, File gwtDevJar, String version )
     throws MojoExecutionException
     {
-        super();
         this.version = GwtVersion.fromMavenVersion( version );
-        if ( this.version.compareTo( GwtVersion.TWO_DOT_ZERO ) >= 0 && soycJar == null )
-        {
-            throw new MojoExecutionException( "Invalid GWT artifacts, SOYC missing" );
-        }
         this.gwtUserJar = gwtUserJar;
         this.gwtDevJar = gwtDevJar;
-        this.soycJar = soycJar;
     }
 
     /**
@@ -170,6 +168,21 @@ public class GwtRuntime
     public GwtVersion getVersion()
     {
         return version;
+    }
+
+    public File getOophmJar()
+    {
+        return oophmJar;
+    }
+
+    public void setSoycJar( File soycJar )
+    {
+        this.soycJar = soycJar;
+    }
+
+    public void setOophmJar( File oophmJar )
+    {
+        this.oophmJar = oophmJar;
     }
 
 }

@@ -129,6 +129,16 @@ public class RunMojo
      */
     private String shellServletMappingURL;
 
+    /**
+     * Run GWT Hosted mode in "Out Of Process" mode. This requires you to install the adequate plugin on your browser.
+     * <p>
+     * Can be set from command line using '-Dgwt.oophm=...'
+     *
+     * @parameter default-value="false" expression="${gwt.oophm}"
+     */
+    private boolean oophm;
+    
+    
     public String getRunTarget()
     {
         return this.runTarget;
@@ -212,10 +222,13 @@ public class RunMojo
             .arg( Integer.toString( getPort() ) )
             .arg( noServer, "-noserver" );
 
-        switch ( runtime.getVersion() )
+        if ( oophm )
         {
-            case ONE_DOT_FOUR:
-            case ONE_DOT_FIVE:
+            cmd.withinClasspathFirst( runtime.getOophmJar() );
+        }
+        switch ( runtime.getVersion().getEmbeddedServer() )
+        {
+            case TOMCAT:
                 try
                 {
                     this.makeCatalinaBase();
@@ -227,6 +240,7 @@ public class RunMojo
                 cmd.systemProperty( "catalina.base", quote( getTomcat().getAbsolutePath() ) )
                     .arg( getRunTarget() );
                 break;
+            case JETTY:
             default:
                 setupExplodedWar();
                 cmd.arg( "-startupUrl" )

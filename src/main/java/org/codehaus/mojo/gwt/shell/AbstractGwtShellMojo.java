@@ -289,7 +289,7 @@ public abstract class AbstractGwtShellMojo
 
         private GwtRuntime runtime;
 
-        private Collection<File> classpath = new LinkedList<File>();
+        private List<File> classpath = new LinkedList<File>();
 
         private List<String> args = new ArrayList<String>();
 
@@ -418,6 +418,11 @@ public abstract class AbstractGwtShellMojo
             {
                 throw new MojoExecutionException( "Failed to execute command line :\n" + command );
             }
+        }
+
+        public void withinClasspathFirst( File oophmJar )
+        {
+            classpath.add( 0, oophmJar );
         }
     }
 

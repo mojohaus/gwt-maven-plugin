@@ -338,12 +338,19 @@ public abstract class AbstractGwtMojo
         Artifact gwtNatives = resolve( "gwt-dev", version, "zip", ArtifactNameUtil.getPlatformName() + "-libs" );
         unpackNativeLibraries( gwtNatives.getFile() );
 
-        if ( GwtVersion.fromMavenVersion( version ).compareTo( GwtVersion.TWO_DOT_ZERO ) >= 0 )
+        GwtRuntime runtime = new GwtRuntime( gwtUser.getFile(), gwtDev.getFile(), version );
+        if (runtime.getVersion().supportSOYC())
         {
             Artifact soyc = resolve( "gwt-soyc-vis", version, "jar", null );
-            return new GwtRuntime( gwtUser.getFile(), gwtDev.getFile(), soyc.getFile(), version );
+            runtime.setSoycJar( soyc.getFile() );
         }
-        return new GwtRuntime( gwtUser.getFile(), gwtDev.getFile(), null, version );
+        if (runtime.getVersion().supportOOPHM())
+        {
+            Artifact oophm = resolve( "gwt-oophm", version, "jar", null );
+            runtime.setOophmJar( oophm.getFile() );
+        }
+        
+        return runtime;
     }
 
     private Artifact resolve( String id, String version, String type, String classifier )
