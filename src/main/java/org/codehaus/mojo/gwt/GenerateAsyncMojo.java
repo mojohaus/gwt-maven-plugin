@@ -163,6 +163,7 @@ public class GenerateAsyncMojo
 
         JavaClass clazz = builder.getClasses()[0];
         JavaClass[] implemented = clazz.getImplementedInterfaces();
+        // TODO check parentClasses for implementedInterfaces
         boolean isRemoteService = false;
         for ( JavaClass implement : implemented )
         {
@@ -202,7 +203,7 @@ public class GenerateAsyncMojo
         writer.println( "public interface " + className + "Async" );
         writer.println( "{" );
 
-        JavaMethod[] methods = clazz.getMethods();
+        JavaMethod[] methods = clazz.getMethods( true );
         for ( JavaMethod method : methods )
         {
             writer.println( "" );
