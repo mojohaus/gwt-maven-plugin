@@ -138,6 +138,23 @@ public class RunMojo
      */
     private boolean oophm;
     
+    /**
+     * Set GWT shell protocol/host whitelist.
+     * <p>
+     * Can be set from command line using '-Dgwt.whitelist=...'
+     *
+     * @parameter expression="${gwt.whitelist}"
+     */
+    private String whitelist;
+ 
+    /**
+     * Set GWT shell protocol/host blacklist.
+     * <p>
+     * Can be set from command line using '-Dgwt.blacklist=...'
+     *
+     * @parameter expression="${gwt.blacklist}"
+     */
+    private String blacklist;	
     
     public String getRunTarget()
     {
@@ -222,10 +239,20 @@ public class RunMojo
             .arg( Integer.toString( getPort() ) )
             .arg( noServer, "-noserver" );
 
+        if ( whitelist != null && whitelist.length() > 0 ) 
+		{
+            cmd.arg( "-whitelist" ).arg( whitelist );
+        }
+        if ( blacklist != null && blacklist.length() > 0 ) 
+		{
+            cmd.arg( "-blacklist" ).arg( blacklist );
+        }			
+		
         if ( oophm )
         {
             cmd.withinClasspathFirst( runtime.getOophmJar() );
         }
+		
         switch ( runtime.getVersion().getEmbeddedServer() )
         {
             case TOMCAT:
