@@ -58,7 +58,7 @@ public enum GwtVersion
                 }
                 if ( version.startsWith( "1.7" ) )
                 {
-                    return ONE_DOT_SIX;
+                    return ONE_DOT_SEVEN;
                 }
                 if ( version.startsWith( "2.0" ) )
                 {
