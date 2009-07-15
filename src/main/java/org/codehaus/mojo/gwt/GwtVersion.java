@@ -33,6 +33,9 @@ public enum GwtVersion
     , ONE_DOT_SIX( true, "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY,
                    true, true, false, false, "-war" )
 
+    , ONE_DOT_SEVEN( true, "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY,
+                   true, true, false, false, "-war" )
+
     , TWO_DOT_ZERO( true, "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY,
                     true, true, true, true, "-war" )
     , FUTURE( true, "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY,
@@ -50,6 +53,10 @@ public enum GwtVersion
                     return ONE_DOT_FIVE;
                 }
                 if ( version.startsWith( "1.6" ) )
+                {
+                    return ONE_DOT_SIX;
+                }
+                if ( version.startsWith( "1.7" ) )
                 {
                     return ONE_DOT_SIX;
                 }
