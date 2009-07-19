@@ -319,21 +319,21 @@
           </requirements>
         </configuration>
       </plugin>
-    <plugin>
-          <artifactId>maven-pdf-plugin</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <executions>
-        <execution>
-        <phase>pre-site</phase>
-        <goals>
-          <goal>pdf</goal>
-        </goals>
-        </execution>
-      </executions>
+      <plugin>
+        <artifactId>maven-pdf-plugin</artifactId>
+        <version>1.0</version>
+        <executions>
+          <execution>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>pdf</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
-    <plugin>
-          <artifactId>maven-site-plugin</artifactId>
-      <version>2.1-SNAPSHOT</version>
+      <plugin>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>2.1-SNAPSHOT</version>
           <configuration>
             <stagingSiteURL>dav:https://dav.codehaus.org/mojo/${project.artifactId}-${project.version}</stagingSiteURL>
           </configuration>
