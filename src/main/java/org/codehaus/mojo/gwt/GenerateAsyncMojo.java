@@ -20,7 +20,7 @@ package org.codehaus.mojo.gwt;
  */
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -44,7 +44,7 @@ import com.thoughtworks.qdox.model.JavaSource;
 
 /**
  * Goal which generate Asyn interface.
- *
+ * 
  * @goal generateAsync
  * @phase generate-sources
  * @requiresDependencyResolution compile
@@ -54,6 +54,8 @@ import com.thoughtworks.qdox.model.JavaSource;
 public class GenerateAsyncMojo
     extends AbstractGwtMojo
 {
+    private static final String REMOTE_SERVICE_INTERFACE = "com.google.gwt.user.client.rpc.RemoteService";
+
     private final static Map<String, String> WRAPPERS = new HashMap<String, String>();
     static
     {
@@ -69,7 +71,7 @@ public class GenerateAsyncMojo
 
     /**
      * Pattern for GWT service interface
-     *
+     * 
      * @parameter default-value="**\/*Service.java"
      */
     private String servicePattern;
@@ -78,7 +80,7 @@ public class GenerateAsyncMojo
      * A (MessageFormat) Pattern to get the GWT-RPC servlet URL based on service interface name. For example to
      * "{0}.rpc" if you want to map GWT-RPC calls to "*.rpc" in web.xml, for example when using Spring dispatch servlet
      * to handle RPC requests.
-     *
+     * 
      * @parameter default-value="{0}" expression="${gwt.rpcPattern}"
      */
     private String rpcPattern;
@@ -99,6 +101,7 @@ public class GenerateAsyncMojo
     {
         getLog().debug( "GenerateAsyncMojo#execute()" );
         boolean supportJava5 = getGwtRuntime().getVersion().supportJava5();
+        JavaDocBuilder builder = createJavaDocBuilder();
 
         List<String> sourceRoots = getProject().getCompileSourceRoots();
         boolean generated = false;
@@ -106,7 +109,7 @@ public class GenerateAsyncMojo
         {
             try
             {
-                generated |= scanAndGenerateAsync( new File( sourceRoot ), supportJava5 );
+                generated |= scanAndGenerateAsync( new File( sourceRoot ), builder, supportJava5 );
             }
             catch ( Throwable e )
             {
@@ -129,7 +132,7 @@ public class GenerateAsyncMojo
      * @return true if some file have been generated
      * @throws Exception generation failure
      */
-    private boolean scanAndGenerateAsync( File file, boolean supportJava5 )
+    private boolean scanAndGenerateAsync( File file, JavaDocBuilder builder, boolean supportJava5 )
         throws Exception
     {
         DirectoryScanner scanner = new DirectoryScanner();
@@ -141,11 +144,21 @@ public class GenerateAsyncMojo
         {
             return false;
         }
-        for ( String source : sources )
+        String[] classNames = getTopLevelClassNames( sources );
+        boolean fileGenerated = false;
+        for ( int i = 0; i < classNames.length; i++ )
         {
-            generateAsync( new File( file, source ), source, supportJava5 );
+            JavaClass clazz = builder.getClassByName( classNames[i] );
+            if ( isEligibleForGeneration( clazz ) )
+            {
+                String targetFileName = sources[i].substring( 0, sources[i].length() - 5 ) + "Async.java";
+                File targetFile = new File( getGenerateDirectory(), targetFileName );
+                targetFile.getParentFile().mkdirs();
+                generateAsync( clazz, targetFile, supportJava5 );
+                fileGenerated = true;
+            }
         }
-        return true;
+        return fileGenerated;
     }
 
     /**
@@ -153,44 +166,19 @@ public class GenerateAsyncMojo
      * @param name the service name
      * @throws Exception generation failure
      */
-    private void generateAsync( File source, String name, boolean supportJava5 )
-        throws Exception
+    private void generateAsync( JavaClass clazz, File targetFile, boolean supportJava5 )
+        throws IOException
     {
-        JavaDocBuilder builder = new JavaDocBuilder();
-        builder.getClassLibrary().addClassLoader( getProjectClassLoader() );
-        builder.addSource( new FileReader( source ) ); // TODO: use source encoding instead of platform encoding
-        name = name.substring( 0, name.length() - 5 ) + "Async";
+        PrintWriter writer = new PrintWriter( targetFile ); // TODO: use source encoding instead of platform encoding
 
-        JavaClass clazz = builder.getClasses()[0];
-        JavaClass[] implemented = clazz.getImplementedInterfaces();
-        // TODO check parentClasses for implementedInterfaces
-        boolean isRemoteService = false;
-        for ( JavaClass implement : implemented )
-        {
-            if ( "com.google.gwt.user.client.rpc.RemoteService".equals( implement.getFullyQualifiedName() ) )
-            {
-                isRemoteService = true;
-                break;
-            }
-        }
-        if ( !isRemoteService )
-        {
-            return;
-        }
         String className = clazz.getName();
-        getLog().debug( "generate Async interface for " + className );
-
-        File out = new File( getGenerateDirectory(), name + ".java" );
-        out.getParentFile().mkdirs();
-        PrintWriter writer = new PrintWriter( out ); // TODO: use source encoding instead of platform encoding
-
-        JavaSource javaSource = builder.getSources()[0];
+        JavaSource javaSource = clazz.getSource();
         writer.println( "package " + javaSource.getPackage().getName() + ";" );
         writer.println();
         String[] imports = javaSource.getImports();
         for ( String string : imports )
         {
-            if ( !"com.google.gwt.user.client.rpc.RemoteService".equals( string ) )
+            if ( !REMOTE_SERVICE_INTERFACE.equals( string ) )
             {
                 writer.println( "import " + string + ";" );
             }
@@ -209,7 +197,7 @@ public class GenerateAsyncMojo
             writer.println( "" );
             writer.println( "    /**" );
             writer.println( "     * GWT-RPC service  asynchronous (client-side) interface" );
-            writer.println( "     * @see " + clazz.getFullyQualifiedName() );
+            writer.println( "     * @see " + method.getParentClass().getFullyQualifiedName() );
             writer.println( "     */" );
             writer.print( "    void " + method.getName() + "( " );
             JavaParameter[] params = method.getParameters();
@@ -264,7 +252,7 @@ public class GenerateAsyncMojo
         writer.println();
 
         String uri = MessageFormat.format( rpcPattern, className );
-        if (clazz.getAnnotations() != null)
+        if ( clazz.getAnnotations() != null )
         {
             for ( Annotation annotation : clazz.getAnnotations() )
             {
@@ -300,6 +288,46 @@ public class GenerateAsyncMojo
 
         writer.println( "}" );
         writer.close();
+    }
+
+    private boolean isEligibleForGeneration( JavaClass javaClass )
+    {
+        return javaClass.isInterface() && javaClass.isPublic() && javaClass.isA( REMOTE_SERVICE_INTERFACE );
+    }
+
+    private JavaDocBuilder createJavaDocBuilder()
+        throws MojoExecutionException
+    {
+        try
+        {
+            JavaDocBuilder builder = new JavaDocBuilder();
+            builder.getClassLibrary().addClassLoader( getProjectClassLoader() );
+            for ( String sourceRoot : (List<String>) getProject().getCompileSourceRoots() )
+            {
+                builder.addSourceTree( new File( sourceRoot ) );
+            }
+            return builder;
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new MojoExecutionException( "Failed to resolve project classpath", e );
+        }
+        catch ( DependencyResolutionRequiredException e )
+        {
+            throw new MojoExecutionException( "Failed to resolve project classpath", e );
+        }
+    }
+
+    private String[] getTopLevelClassNames( String[] sourceFiles )
+    {
+        String[] result = new String[sourceFiles.length];
+        for ( int i = 0; i < sourceFiles.length; i++ )
+        {
+            String className = sourceFiles[i].substring( 0, sourceFiles[i].length() - 5 ); // strip ".java"
+            className = className.replace( File.separatorChar, '.' );
+            result[i] = className;
+        }
+        return result;
     }
 
     /**
