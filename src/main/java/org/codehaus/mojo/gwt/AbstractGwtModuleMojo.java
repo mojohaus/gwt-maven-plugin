@@ -105,7 +105,7 @@ public abstract class AbstractGwtModuleMojo
                 {
                     continue;
                 }
-                scanner = new DirectoryScanner();
+                DirectoryScanner scanner = new DirectoryScanner();
                 scanner.setBasedir( resource.getDirectory() );
                 scanner.setIncludes( new String[] { "**/*" + GWT_MODULE_EXTENSION } );
                 scanner.scan();
