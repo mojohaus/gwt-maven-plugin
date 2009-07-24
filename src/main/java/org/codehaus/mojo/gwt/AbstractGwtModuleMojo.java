@@ -63,7 +63,12 @@ public abstract class AbstractGwtModuleMojo
      */
     private String module;
 
-
+    /**
+     * @parameter expression="${project.build.sourceDirectory}"
+	 * @readOnly
+     */
+	private	File sourceDirectory;
+	
     /**
      * Return the configured modules or scan the project source/resources folder to find them
      *
@@ -79,14 +84,18 @@ public abstract class AbstractGwtModuleMojo
         }
         if ( modules == null )
         {
-            DirectoryScanner scanner = new DirectoryScanner();
-            scanner.setBasedir( getProject().getBuild().getSourceDirectory() );
-            scanner.setIncludes( new String[] { "**/*" + GWT_MODULE_EXTENSION } );
-            scanner.scan();
+			// Use a Set to avoid duplicate when user set src/main/java as <resource>
+			Set<String> mods = new HashSet<String>();
 
-            // Use a Set to avoid duplicate when user set src/main/java as <resource>
-            Set<String> mods = new HashSet<String>();
-            mods.addAll( Arrays.asList( scanner.getIncludedFiles() ) );
+            if ( sourceDirectory.exists() )
+			{
+				DirectoryScanner scanner = new DirectoryScanner();
+				scanner.setBasedir( sourceDirectory.getAbsolutePath() );
+				scanner.setIncludes( new String[] { "**/*" + GWT_MODULE_EXTENSION } );
+				scanner.scan();
+
+				mods.addAll( Arrays.asList( scanner.getIncludedFiles() ) );
+		    }
 
             Collection<Resource> resources = (Collection<Resource>) getProject().getResources();
             for ( Resource resource : resources )
