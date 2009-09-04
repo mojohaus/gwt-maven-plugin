@@ -37,7 +37,6 @@ import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.artifact.ActiveProjectArtifact;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.plexus.logging.AbstractLogEnabled;
 
@@ -163,15 +162,12 @@ public class ClasspathBuilder
 
         for ( Artifact artifact : scopeArtifacts )
         {
-            if ( artifact instanceof ActiveProjectArtifact )
+            String projectReferenceId =
+                getProjectReferenceId( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );
+            MavenProject refProject = (MavenProject) project.getProjectReferences().get( projectReferenceId );
+            if ( refProject != null )
             {
-                String projectReferenceId =
-                    getProjectReferenceId( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );
-                MavenProject refProject = (MavenProject) project.getProjectReferences().get( projectReferenceId );
-                if ( refProject != null )
-                {
-                    addSources( items, getSourceRoots( refProject, scope ) );
-                }
+                addSources( items, getSourceRoots( refProject, scope ) );
             }
         }
     }
@@ -192,15 +188,12 @@ public class ClasspathBuilder
 
         for ( Artifact artifact : scopeArtifacts )
         {
-            if ( artifact instanceof ActiveProjectArtifact )
+            String projectReferenceId =
+                getProjectReferenceId( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );
+            MavenProject refProject = (MavenProject) project.getProjectReferences().get( projectReferenceId );
+            if ( refProject != null )
             {
-                String projectReferenceId =
-                    getProjectReferenceId( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion() );
-                MavenProject refProject = (MavenProject) project.getProjectReferences().get( projectReferenceId );
-                if ( refProject != null )
-                {
-                    addResources( items, getResources( refProject, scope ) );
-                }
+                addResources( items, getResources( refProject, scope ) );
             }
         }
     }
