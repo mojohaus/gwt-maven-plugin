@@ -77,7 +77,7 @@ public class GwtModule
         Xpp3Dom nodes[] = xml.getChildren( "source" );
         if ( nodes == null )
         {
-            return new String[0];
+            return new String[] { "client" };
         }
         String[] sources = new String[nodes.length];
         int i = 0;
