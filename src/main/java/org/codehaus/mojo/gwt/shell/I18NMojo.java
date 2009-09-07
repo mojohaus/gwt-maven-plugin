@@ -89,6 +89,7 @@ public class I18NMojo
         throws MojoExecutionException, MojoFailureException
     {
         setup();
+        boolean generated = false;
 
         // constants with lookup
         if ( i18nConstantsWithLookupBundles != null )
@@ -104,6 +105,7 @@ public class I18NMojo
                     .arg( "-createConstantsWithLookup" )
                     .arg( target )
                     .execute();
+                generated = true;
             }
         }
 
@@ -120,6 +122,7 @@ public class I18NMojo
                     .arg( "\"" + getGenerateDirectory() + "\"" )
                     .arg( target )
                     .execute();
+                generated = true;
             }
         }
 
@@ -137,7 +140,14 @@ public class I18NMojo
                     .arg( "-createMessages" )
                     .arg( target )
                     .execute();
+                generated = true;
             }
+        }
+
+        if ( generated )
+        {
+            getLog().debug( "add compile source root " + getGenerateDirectory() );
+            addCompileSourceRoot( getGenerateDirectory() );
         }
     }
 
