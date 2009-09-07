@@ -120,6 +120,24 @@ public class EclipseMojo
     private int port;
 
     /**
+     * Set GWT shell protocol/host whitelist.
+     * <p>
+     * Can be set from command line using '-Dgwt.whitelist=...'
+     * 
+     * @parameter expression="${gwt.whitelist}"
+     */
+    private String whitelist;
+
+    /**
+     * Set GWT shell protocol/host blacklist.
+     * <p>
+     * Can be set from command line using '-Dgwt.blacklist=...'
+     * 
+     * @parameter expression="${gwt.blacklist}"
+     */
+    private String blacklist;
+
+    /**
      * Setup a launch configuration for using the Google Eclipse Plugin. This is the recommended setup, as the home-made
      * launch configuration has many limitations. This parameter is only for backward compatibility, the standard lauch
      * configuration template will be removed in a future release.
@@ -242,7 +260,16 @@ public class EclipseMojo
         int basedir = getProject().getBasedir().getAbsolutePath().length();
         context.put( "out", getOutputDirectory().getAbsolutePath().substring( basedir + 1 ) );
         context.put( "war", hostedWebapp.getAbsolutePath().substring( basedir + 1 ) );
-        context.put( "additionalArguments", noserver ? "-noserver -port " + port : "" );
+        String args = noserver ? "-noserver -port " + port : "";
+        if ( blacklist != null )
+        {
+            args += " -blacklist " + blacklist;
+        }
+        if ( whitelist != null )
+        {
+            args += " -whitelist " + whitelist;
+        }
+        context.put( "additionalArguments", args );
         context.put( "extraJvmArgs", getExtraJvmArgs() );
         context.put( "project", eclipseUtil.getProjectName( getProject() ) );
         context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath().replace( '\\', '/' ) );
