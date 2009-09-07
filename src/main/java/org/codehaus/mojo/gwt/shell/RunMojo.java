@@ -123,8 +123,15 @@ public class RunMojo
     private boolean noServer;
 
     /**
+     * Specifies a different embedded web server to run (must implement ServletContainerLauncher)
+     * 
+     * @parameter expression="${gwt.server}"
+     */
+    private String server;
+
+    /**
      * Specifies the mapping URL to be used with the shell servlet.
-     *
+     * 
      * @parameter default-value="/*"
      */
     private String shellServletMappingURL;
@@ -238,6 +245,11 @@ public class RunMojo
             .arg( "-port" )
             .arg( Integer.toString( getPort() ) )
             .arg( noServer, "-noserver" );
+
+        if ( server != null )
+        {
+            cmd.arg( "-server" ).arg( server );
+        }
 
         if ( whitelist != null && whitelist.length() > 0 )
         {
