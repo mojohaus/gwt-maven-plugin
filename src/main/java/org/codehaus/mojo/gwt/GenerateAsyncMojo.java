@@ -161,6 +161,7 @@ public class GenerateAsyncMojo
         return fileGenerated;
     }
 
+
     /**
      * @param source the RPC service java source file
      * @param name the service name
@@ -208,7 +209,7 @@ public class GenerateAsyncMojo
                 {
                     writer.print( ", " );
                 }
-                writer.print( param.getType().getGenericValue() );
+                writer.print( fixClassName(param.getType().getGenericValue()) );
                 if ( param.getType().isArray() )
                 {
                     writer.print( "[]" );
@@ -233,7 +234,7 @@ public class GenerateAsyncMojo
                 }
                 else
                 {
-                    String type = method.getReturns().getGenericValue();
+                    String type = fixClassName(method.getReturns().getGenericValue());
                     if ( method.getReturns().isArray() )
                     {
                         type += "[]";
@@ -328,6 +329,14 @@ public class GenerateAsyncMojo
             result[i] = className;
         }
         return result;
+    }
+
+    /**
+     * Fix the class name returned by QDox model (e.g. fix inner class names)
+     */
+    private String fixClassName( String original )
+    {
+        return original.replaceAll( "\\$", "." );
     }
 
     /**

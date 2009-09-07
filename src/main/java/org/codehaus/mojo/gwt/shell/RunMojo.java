@@ -137,7 +137,7 @@ public class RunMojo
      * @parameter default-value="false" expression="${gwt.oophm}"
      */
     private boolean oophm;
-    
+
     /**
      * Set GWT shell protocol/host whitelist.
      * <p>
@@ -146,7 +146,7 @@ public class RunMojo
      * @parameter expression="${gwt.whitelist}"
      */
     private String whitelist;
- 
+
     /**
      * Set GWT shell protocol/host blacklist.
      * <p>
@@ -154,8 +154,8 @@ public class RunMojo
      *
      * @parameter expression="${gwt.blacklist}"
      */
-    private String blacklist;	
-    
+    private String blacklist;
+
     public String getRunTarget()
     {
         return this.runTarget;
@@ -239,20 +239,20 @@ public class RunMojo
             .arg( Integer.toString( getPort() ) )
             .arg( noServer, "-noserver" );
 
-        if ( whitelist != null && whitelist.length() > 0 ) 
-		{
+        if ( whitelist != null && whitelist.length() > 0 )
+        {
             cmd.arg( "-whitelist" ).arg( whitelist );
         }
-        if ( blacklist != null && blacklist.length() > 0 ) 
-		{
+        if ( blacklist != null && blacklist.length() > 0 )
+        {
             cmd.arg( "-blacklist" ).arg( blacklist );
-        }			
-		
+        }
+
         if ( oophm )
         {
             cmd.withinClasspathFirst( runtime.getOophmJar() );
         }
-		
+
         switch ( runtime.getVersion().getEmbeddedServer() )
         {
             case TOMCAT:
@@ -269,7 +269,14 @@ public class RunMojo
                 break;
             case JETTY:
             default:
-                setupExplodedWar();
+                if ( !noServer )
+                {
+                    setupExplodedWar();
+                }
+                else
+                {
+                    getLog().info( "noServer is set! Skipping exploding war file..." );
+                }
                 cmd.arg( "-startupUrl" )
                     .arg( quote( getStartupUrl() ) )
                     .arg( getRunModule() );

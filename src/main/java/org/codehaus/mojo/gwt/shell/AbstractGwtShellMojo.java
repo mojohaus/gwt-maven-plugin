@@ -141,7 +141,12 @@ public abstract class AbstractGwtShellMojo
 
     public String getExtraJvmArgs()
     {
-        return this.extraJvmArgs;
+        String extra = extraJvmArgs;
+        if ( Os.isFamily( Os.FAMILY_MAC ) && !extraJvmArgs.contains( "-XstartOnFirstThread" ) )
+        {
+            extra += " -XstartOnFirstThread";
+        }
+        return extra;
     }
 
     public File getGen()
