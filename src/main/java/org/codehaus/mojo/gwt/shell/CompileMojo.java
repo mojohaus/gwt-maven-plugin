@@ -31,6 +31,7 @@ import java.util.HashSet;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.codehaus.mojo.gwt.GwtModule;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.GwtVersion;
 import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
@@ -254,12 +255,20 @@ public class CompileMojo
     private boolean compilationRequired( String module, File output )
         throws MojoExecutionException
     {
+        GwtModule gwtModule = readModule( module );
+        if ( gwtModule.getEntryPoints().length == 0 )
+        {
+            // No entry-point, this is a secondary module : compiling this one will fail
+            // with '[ERROR] Module has no entry points defined'
+            return false;
+        }
+
         if ( force )
         {
             return true;
         }
 
-        String modulePath = readModule( module ).getPath();
+        String modulePath = gwtModule.getPath();
         String outputTarget = modulePath + "/" + modulePath + ".nocache.js";
 
         // Require compilation if no js file present in target.

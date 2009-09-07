@@ -88,6 +88,22 @@ public class GwtModule
         return sources;
     }
 
+    public String[] getEntryPoints()
+    {
+        Xpp3Dom nodes[] = xml.getChildren( "entry-point" );
+        if ( nodes == null )
+        {
+            return new String[0];
+        }
+        String[] entryPoints = new String[nodes.length];
+        int i = 0;
+        for ( Xpp3Dom node : nodes )
+        {
+            entryPoints[i++] = node.getAttribute( "class" );
+        }
+        return entryPoints;
+    }
+
     public String[] getInherits()
     {
         Xpp3Dom nodes[] = xml.getChildren( "inherits" );
