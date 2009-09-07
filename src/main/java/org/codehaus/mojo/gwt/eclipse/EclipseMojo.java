@@ -147,45 +147,55 @@ public class EclipseMojo
     {
         GwtRuntime runtime = getGwtRuntime();
 
-        if ( runtime.getVersion().getEmbeddedServer() == JETTY )
+        if ( !noserver && runtime.getVersion().getEmbeddedServer() == JETTY )
         {
             // Jetty requires an exploded webapp
-            try
-            {
-                File classes = new File( hostedWebapp, "WEB-INF/classes" );
-                if ( !buildOutputDirectory.getAbsolutePath().equals( classes.getAbsolutePath() ) )
-                {
-                    getLog().warn( "Your POM <build><outputdirectory> must match your "
-                        + "hosted webapp WEB-INF/classes folder for GWT Hosted browser to see your classes." );
-                }
-
-                File lib = new File( hostedWebapp, "WEB-INF/lib" );
-                getLog().info( "create exploded Jetty webapp in " + hostedWebapp );
-                lib.mkdirs();
-
-                Collection<Artifact> artifacts = getProject().getRuntimeArtifacts();
-                for ( Artifact artifact : artifacts )
-                {
-                    if ( !artifact.getFile().isDirectory() )
-                    {
-                        FileUtils.copyFileToDirectory( artifact.getFile(), lib );
-                    }
-                    else
-                    {
-                        // TODO automatically add this one to GWT warnings exlusions
-                    }
-                }
-
-            }
-            catch ( IOException ioe )
-            {
-                throw new MojoExecutionException( "Failed to create Jetty exploded webapp", ioe );
-            }
+            setupExplodedWar();
+        }
+        else
+        {
+            getLog().info( "noServer is set! Skipping exploding war file..." );
         }
 
         for ( String module : getModules() )
         {
             createLaunchConfigurationForHostedModeBrowser( runtime, module );
+        }
+    }
+
+    protected void setupExplodedWar()
+        throws MojoExecutionException
+    {
+        try
+        {
+            File classes = new File( hostedWebapp, "WEB-INF/classes" );
+            if ( !buildOutputDirectory.getAbsolutePath().equals( classes.getAbsolutePath() ) )
+            {
+                getLog().warn( "Your POM <build><outputdirectory> must match your "
+                    + "hosted webapp WEB-INF/classes folder for GWT Hosted browser to see your classes." );
+            }
+
+            File lib = new File( hostedWebapp, "WEB-INF/lib" );
+            getLog().info( "create exploded Jetty webapp in " + hostedWebapp );
+            lib.mkdirs();
+
+            Collection<Artifact> artifacts = getProject().getRuntimeArtifacts();
+            for ( Artifact artifact : artifacts )
+            {
+                if ( !artifact.getFile().isDirectory() )
+                {
+                    FileUtils.copyFileToDirectory( artifact.getFile(), lib );
+                }
+                else
+                {
+                    // TODO automatically add this one to GWT warnings exlusions
+                }
+            }
+
+        }
+        catch ( IOException ioe )
+        {
+            throw new MojoExecutionException( "Failed to create Jetty exploded webapp", ioe );
         }
     }
 
