@@ -31,9 +31,8 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.test.TestMojo;
+import org.codehaus.mojo.gwt.shell.TestMojo;
 import org.codehaus.mojo.gwt.test.TestTemplate;
-import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.WriterFactory;
 
 import freemarker.template.Configuration;
@@ -89,10 +88,9 @@ public class EclipseTestMojo
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     @Override
-    public void execute()
+    protected void doExecute( final GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
     {
-        final GwtRuntime runtime = getGwtRuntime();
 
         new TestTemplate( getProject(), includes, excludes, new TestTemplate.CallBack()
         {
@@ -156,16 +154,4 @@ public class EclipseTestMojo
         }
     }
 
-    /**
-     * @return
-     */
-    protected String getExtraJvmArgs()
-    {
-        String extra = extraJvmArgs;
-        if ( Os.isFamily( Os.FAMILY_MAC ) && !extraJvmArgs.contains( "-XstartOnFirstThread" ) )
-        {
-            extra += " -XstartOnFirstThread";
-        }
-        return extra;
-    }
 }
