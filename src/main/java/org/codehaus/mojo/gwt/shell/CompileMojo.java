@@ -262,6 +262,13 @@ public class CompileMojo
         String modulePath = readModule( module ).getPath();
         String outputTarget = modulePath + "/" + modulePath + ".nocache.js";
 
+        // Require compilation if no js file present in target.
+        if ( !new File( output, outputTarget ).exists() )
+        {
+            return true;
+        }
+
+        // js file allreay exists, but may not be up-to-date with project source files
         SingleTargetSourceMapping singleTargetMapping = new SingleTargetSourceMapping( ".java", outputTarget );
         StaleSourceScanner scanner = new StaleSourceScanner();
         scanner.addSourceMapping( singleTargetMapping );
