@@ -271,11 +271,11 @@ public class GenerateAsyncMojo
         writer.println( "    /**" );
         writer.println( "     * Utility class to get the RPC Async interface from client-side code" );
         writer.println( "     */" );
-        writer.println( "    public static class Util " );
+        writer.println( "    public static final class Util " );
         writer.println( "    { " );
         writer.println( "        private static " + className + "Async instance;" );
         writer.println();
-        writer.println( "        public static " + className + "Async getInstance()" );
+        writer.println( "        public static final " + className + "Async getInstance()" );
         writer.println( "        {" );
         writer.println( "            if ( instance == null )" );
         writer.println( "            {" );
@@ -284,6 +284,11 @@ public class GenerateAsyncMojo
         writer.println( "                target.setServiceEntryPoint( GWT.getModuleBaseURL() + \"" + uri + "\" );" );
         writer.println( "            }" );
         writer.println( "            return instance;" );
+        writer.println( "        }" );
+        writer.println( "" );
+        writer.println( "        private Util()" );
+        writer.println( "        {" );
+        writer.println( "            // Utility class should not be instanciated" );
         writer.println( "        }" );
         writer.println( "    }" );
 
