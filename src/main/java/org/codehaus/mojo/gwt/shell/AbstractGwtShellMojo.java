@@ -90,17 +90,6 @@ public abstract class AbstractGwtShellMojo
     private String extraJvmArgs;
 
     /**
-     * For backward compatibility with googlecode gwt-maven, support the command line argument
-     * '-Dgoogle.webtoolkit.extrajvmargs=...'.
-     *
-     * @deprecated use extraJvmArgs
-     * @parameter expression="${google.webtoolkit.extrajvmargs}"
-     */
-    @SuppressWarnings( "unused" )
-    @Deprecated
-    private String extraArgs;
-
-    /**
      * Option to specify the jvm (or path to the java executable) to use with the forking scripts. For the default, the
      * jvm will be the same as the one used to run Maven.
      *
@@ -132,12 +121,6 @@ public abstract class AbstractGwtShellMojo
 
     protected abstract void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException;
-
-
-    public void setExtraArgs( String extraArgs )
-    {
-        this.extraJvmArgs = extraArgs;
-    }
 
     public String getExtraJvmArgs()
     {
