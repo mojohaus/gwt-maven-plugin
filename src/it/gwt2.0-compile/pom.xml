@@ -25,43 +25,9 @@
   <packaging>war</packaging>
   <properties>
     <gwtPluginVersion>@pom.version@</gwtPluginVersion>
-    <gwtHome>${basedir}/gwt-windows-0.0.0</gwtHome>
+    <gwtHome>${basedir}/gwt-0.0.0-6120</gwtHome>
   </properties>
-  
-  <profiles>
-    <profile>
-      <id>windows</id>
-      <activation>
-        <os>
-          <family>Windows</family>
-        </os>
-      </activation>
-	  <build>
-	    <plugins>
-		  <plugin>
-			<groupId>org.codehaus.mojo</groupId>
-			<artifactId>gwt-maven-plugin</artifactId>
-			<version>${gwtPluginVersion}</version>
-			<configuration>
-			  <gwtHome>${gwtHome}</gwtHome>
-			  <inplace>true</inplace>
-			  <logLevel>INFO</logLevel>
-			</configuration>
-			<executions>
-			  <execution>
-				<goals>
-				  <goal>generateAsync</goal>
-				  <goal>compile</goal>
-				  <goal>mergewebxml</goal>
-				</goals>
-			  </execution>
-			</executions>
-		  </plugin>
-	    </plugins>
-	  </build>
-	</profile>
-  </profiles>
-  
+   
   <build>
     <plugins>
       <plugin>
@@ -71,7 +37,25 @@
           <target>1.5</target>
         </configuration>
       </plugin>
-
+   	  <plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>gwt-maven-plugin</artifactId>
+		<version>${gwtPluginVersion}</version>
+		<configuration>
+		  <gwtHome>${gwtHome}</gwtHome>
+		  <inplace>true</inplace>
+		  <logLevel>INFO</logLevel>
+		</configuration>
+		<executions>
+		  <execution>
+			<goals>
+			  <goal>generateAsync</goal>
+			  <goal>compile</goal>
+			  <goal>mergewebxml</goal>
+			</goals>
+		  </execution>
+		</executions>
+	  </plugin>
     </plugins>
   </build>
 
