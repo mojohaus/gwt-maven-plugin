@@ -71,7 +71,7 @@ public class GwtRuntime
         if ( version.compareTo( GwtVersion.TWO_DOT_ZERO ) >= 0 )
         {
             soycJar = new File( gwtHome, "gwt-soyc-vis.jar" );
-            oophmJar = new File( gwtHome, "gwt-oophm.jar" );
+            oophmJar = new File( gwtHome, "gwt-dev-oophm.jar" );
             if ( !soycJar.exists() | !oophmJar.exists() )
             {
                 throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );

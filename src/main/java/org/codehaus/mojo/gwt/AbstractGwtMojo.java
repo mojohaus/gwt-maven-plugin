@@ -346,7 +346,7 @@ public abstract class AbstractGwtMojo
         }
         if (runtime.getVersion().supportOOPHM())
         {
-            Artifact oophm = resolve( "gwt-oophm", version, "jar", null );
+            Artifact oophm = resolve( "gwt-dev-oophm", version, "jar", null );
             runtime.setOophmJar( oophm.getFile() );
         }
         
