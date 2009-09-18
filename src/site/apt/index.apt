@@ -32,3 +32,5 @@ Google Web Toolkit Maven Plugin (gwt-maven-plugin)
 * History
 
   {{{http://code.google.com/p/gwt-maven/}GWT-maven plugin}} has merged with this plugin since version 1.1
+  
+  version 1.2 includes a preview of gwt 2.0 support
