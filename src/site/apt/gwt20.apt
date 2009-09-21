@@ -1,0 +1,87 @@
+ ------
+GWT 2.0 preview with Maven Plugin
+ ------
+ ------
+ ------
+
+GWT 2.0
+
+  GWT 2.0 is not yet released, but the plugin allready support some of it's new features based on nightly-builds.
+  
+  * draft compilation, usefull in dev or continuous integration to speed up the build
+  
+  * story of your compiler report
+  
+  * Dissable Class metadata : remove support for ''class.getName()'' to reduce script size
+  
+  * Disable Class Cast checking : remove class cast check in compiled JavaScript code to reduce script size
+   
+Setup
+
+  As GWT 2.0 is not released, you'ill have to install a {{{http://code.google.com/p/sfeir/downloads/list}JDK preview}}. Set
+  the plugin ''gwtHome'' parameter to point to this SDK, and configure a System dependency for the gwt-user API.
+  
++---
+  <properties>
+    <gwtHome>${basedir}/gwt-0.0.0-6120</gwtHome>
+  </properties>
+  
+  <dependencies>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>2.0-6120</version>
+      <scope>system</scope>
+      <systemPath>${gwtHome}/gwt-user.jar</systemPath>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <plugins>
+   	  <plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>gwt-maven-plugin</artifactId>
+		<configuration>
+		  <gwtHome>${gwtHome}</gwtHome>
+		  <disableCastChecking>true</disableCastChecking>
+		  <disableClassMetadata>true</disableClassMetadata>
+		</configuration>
+		<executions>
+		  <execution>
+			<goals>
+			  <goal>generateAsync</goal>
+			  <goal>compile</goal>
+			</goals>
+		  </execution>
+		</executions>
+	  </plugin>
+    </plugins>
+  </build>
++---  
+
+SOYC report
+
+  When GWT 2.0 is detected, the SOYC analysis will be automatically set on (if you don't force it off) so that you
+  can later generate the report.
+
++---
+  <reporting>
+    <excludeDefaults>true</excludeDefaults>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>gwt-maven-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>soyc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+        <configuration>
+          <gwtHome>${gwtHome}</gwtHome>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
++---  

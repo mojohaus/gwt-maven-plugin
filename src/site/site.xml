@@ -42,13 +42,15 @@ under the License.
     </links>
     <menu name="Mojo">
       <item name="Back to Mojo" href="http://mojo.codehaus.org"/>
-      <item name="Version 1.0" href="http://mojo.codehaus.org/gwt-maven-plugin-1.0"/>
-      <item name="Version 1.1 (last stable released)" href="http://mojo.codehaus.org/gwt-maven-plugin-1.1"/>
+	  <item name="Version 1.0" href="http://mojo.codehaus.org/gwt-maven-plugin-1.0"/>
+	  <item name="Version 1.1" href="http://mojo.codehaus.org/gwt-maven-plugin-1.1"/>
+	  <item name="Download as PDF" href="pdf/gwt-maven-plugin.pdf"/>
     </menu>
-  <menu name="Overview">
+    <menu name="Overview">
       <item name="Index" href="index.html"/>
       <item name="Goals" href="plugin-info.html"/>
       <item name="Usage" href="usage.html"/>
+      <item name="GWT 2.0 preview" href="gwt20.html"/>
       <item name="FAQ" href="faq.html"/>
     </menu>
     <menu name="IDE integration">
