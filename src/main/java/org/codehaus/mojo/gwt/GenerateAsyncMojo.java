@@ -93,6 +93,13 @@ public class GenerateAsyncMojo
     private boolean failOnError;
 
     /**
+     * Pattern for GWT service interface
+     * 
+     * @parameter default-value="false" expression="${generateAsync.force}"
+     */
+    private boolean force;
+
+    /**
      * {@inheritDoc}
      */
     @SuppressWarnings( "unchecked" )
@@ -128,15 +135,15 @@ public class GenerateAsyncMojo
     }
 
     /**
-     * @param file the base directory to scan for RPC services
+     * @param sourceRoot the base directory to scan for RPC services
      * @return true if some file have been generated
      * @throws Exception generation failure
      */
-    private boolean scanAndGenerateAsync( File file, JavaDocBuilder builder, boolean supportJava5 )
+    private boolean scanAndGenerateAsync( File sourceRoot, JavaDocBuilder builder, boolean supportJava5 )
         throws Exception
     {
         DirectoryScanner scanner = new DirectoryScanner();
-        scanner.setBasedir( file );
+        scanner.setBasedir( sourceRoot );
         scanner.setIncludes( new String[] { servicePattern } );
         scanner.scan();
         String[] sources = scanner.getIncludedFiles();
@@ -144,21 +151,39 @@ public class GenerateAsyncMojo
         {
             return false;
         }
-        String[] classNames = getTopLevelClassNames( sources );
         boolean fileGenerated = false;
-        for ( int i = 0; i < classNames.length; i++ )
+        for ( String source : sources )
         {
-            JavaClass clazz = builder.getClassByName( classNames[i] );
+            File sourceFile = new File( sourceRoot, source );
+            File targetFile = getTargetFile( source );
+            if ( isUpToDate( sourceFile, targetFile ) )
+            {
+                getLog().debug( targetFile.getAbsolutePath() + " is up to date. Generation skipped" );
+                continue;
+            }
+
+            String className = getTopLevelClassName( source );
+            JavaClass clazz = builder.getClassByName( className );
             if ( isEligibleForGeneration( clazz ) )
             {
-                String targetFileName = sources[i].substring( 0, sources[i].length() - 5 ) + "Async.java";
-                File targetFile = new File( getGenerateDirectory(), targetFileName );
                 targetFile.getParentFile().mkdirs();
                 generateAsync( clazz, targetFile, supportJava5 );
                 fileGenerated = true;
             }
         }
         return fileGenerated;
+    }
+
+    private boolean isUpToDate( File sourceFile, File targetFile )
+    {
+        return !force && targetFile.exists() && targetFile.lastModified() > sourceFile.lastModified();
+    }
+
+    private File getTargetFile( String source )
+    {
+        String targetFileName = source.substring( 0, source.length() - 5 ) + "Async.java";
+        File targetFile = new File( getGenerateDirectory(), targetFileName );
+        return targetFile;
     }
 
 
@@ -324,16 +349,10 @@ public class GenerateAsyncMojo
         }
     }
 
-    private String[] getTopLevelClassNames( String[] sourceFiles )
+    private String getTopLevelClassName( String sourceFile )
     {
-        String[] result = new String[sourceFiles.length];
-        for ( int i = 0; i < sourceFiles.length; i++ )
-        {
-            String className = sourceFiles[i].substring( 0, sourceFiles[i].length() - 5 ); // strip ".java"
-            className = className.replace( File.separatorChar, '.' );
-            result[i] = className;
-        }
-        return result;
+        String className = sourceFile.substring( 0, sourceFile.length() - 5 ); // strip ".java"
+        return className.replace( File.separatorChar, '.' );
     }
 
     /**
