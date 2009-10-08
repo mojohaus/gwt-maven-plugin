@@ -137,15 +137,6 @@ public class RunMojo
     private String shellServletMappingURL;
 
     /**
-     * Run GWT Hosted mode in "Out Of Process" mode. This requires you to install the adequate plugin on your browser.
-     * <p>
-     * Can be set from command line using '-Dgwt.oophm=...'
-     *
-     * @parameter default-value="false" expression="${gwt.oophm}"
-     */
-    private boolean oophm;
-
-    /**
      * Set GWT shell protocol/host whitelist.
      * <p>
      * Can be set from command line using '-Dgwt.whitelist=...'
@@ -258,11 +249,6 @@ public class RunMojo
         if ( blacklist != null && blacklist.length() > 0 )
         {
             cmd.arg( "-blacklist" ).arg( blacklist );
-        }
-
-        if ( oophm )
-        {
-            cmd.withinClasspathFirst( runtime.getOophmJar() );
         }
 
         switch ( runtime.getVersion().getEmbeddedServer() )

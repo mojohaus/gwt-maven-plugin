@@ -25,9 +25,8 @@
   <packaging>war</packaging>
   <properties>
     <gwtPluginVersion>@pom.version@</gwtPluginVersion>
-    <gwtHome>${basedir}/gwt-0.0.0-6120</gwtHome>
   </properties>
-   
+
   <build>
     <plugins>
       <plugin>
@@ -37,25 +36,24 @@
           <target>1.5</target>
         </configuration>
       </plugin>
-   	  <plugin>
-		<groupId>org.codehaus.mojo</groupId>
-		<artifactId>gwt-maven-plugin</artifactId>
-		<version>${gwtPluginVersion}</version>
-		<configuration>
-		  <gwtHome>${gwtHome}</gwtHome>
-		  <inplace>true</inplace>
-		  <logLevel>INFO</logLevel>
-		</configuration>
-		<executions>
-		  <execution>
-			<goals>
-			  <goal>generateAsync</goal>
-			  <goal>compile</goal>
-			  <goal>mergewebxml</goal>
-			</goals>
-		  </execution>
-		</executions>
-	  </plugin>
+       <plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>gwt-maven-plugin</artifactId>
+    <version>${gwtPluginVersion}</version>
+    <configuration>
+      <inplace>true</inplace>
+      <logLevel>INFO</logLevel>
+    </configuration>
+    <executions>
+      <execution>
+      <goals>
+        <goal>generateAsync</goal>
+        <goal>compile</goal>
+        <goal>mergewebxml</goal>
+      </goals>
+      </execution>
+    </executions>
+    </plugin>
     </plugins>
   </build>
 
@@ -72,9 +70,6 @@
             </reports>
           </reportSet>
         </reportSets>
-        <configuration>
-          <gwtHome>${gwtHome}</gwtHome>
-        </configuration>
       </plugin>
     </plugins>
   </reporting>
@@ -83,9 +78,7 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-      <version>2.0-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${gwtHome}/gwt-user.jar</systemPath>
+      <version>2.0.0-ms1</version>
     </dependency>
   </dependencies>
 </project>

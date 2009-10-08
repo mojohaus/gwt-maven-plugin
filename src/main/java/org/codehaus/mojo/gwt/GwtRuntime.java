@@ -26,8 +26,13 @@ import java.util.Properties;
 
 import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.mojo.gwt.shell.ArtifactNameUtil;
+import org.codehaus.plexus.archiver.ArchiverException;
+import org.codehaus.plexus.archiver.UnArchiver;
+import org.codehaus.plexus.archiver.manager.ArchiverManager;
+import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -36,19 +41,16 @@ import org.codehaus.mojo.gwt.shell.ArtifactNameUtil;
 public class GwtRuntime
 {
     /** The gwt-user jar used at runtime */
-    private File gwtUserJar;
+    private final File gwtUserJar;
 
     /** The gwt-dev-[platform] jar used at runtime */
-    private File gwtDevJar;
+    private final File gwtDevJar;
 
     /** The SOYC jar (since GWT 2.0) */
-    private File soycJar;
-    
-    /** The OOPHM jar (since GWT 2.0) */
-    private File oophmJar;
+    private final File soycJar;
 
     /** The gwt version we are running */
-    private GwtVersion version;
+    private final GwtVersion version;
 
     public GwtRuntime( File gwtHome ) throws MojoExecutionException
     {
@@ -62,7 +64,7 @@ public class GwtRuntime
         {
             throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
         }
-        gwtDevJar = new File( gwtHome, ArtifactNameUtil.guessDevJarName() );
+        this.gwtDevJar = new File( gwtHome, ArtifactNameUtil.guessDevJarName() );
         if ( !gwtDevJar.exists() )
         {
             throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
@@ -71,11 +73,14 @@ public class GwtRuntime
         if ( version.compareTo( GwtVersion.TWO_DOT_ZERO ) >= 0 )
         {
             soycJar = new File( gwtHome, "gwt-soyc-vis.jar" );
-            oophmJar = new File( gwtHome, "gwt-dev-oophm.jar" );
-            if ( !soycJar.exists() | !oophmJar.exists() )
+            if ( !soycJar.exists() )
             {
                 throw new MojoExecutionException( "Invalid GWT home : " + gwtHome );
             }
+        }
+        else
+        {
+            this.soycJar = null;
         }
     }
 
@@ -84,12 +89,36 @@ public class GwtRuntime
      * @param gwtDevJar gwt dev library
      * @param version gwt version
      */
-    public GwtRuntime( File gwtUserJar, File gwtDevJar, String version )
+    public GwtRuntime( String version, GwtArtifactResolver resolver )
     throws MojoExecutionException
     {
         this.version = GwtVersion.fromMavenVersion( version );
-        this.gwtUserJar = gwtUserJar;
-        this.gwtDevJar = gwtDevJar;
+
+        Artifact gwtUser = resolver.resolve( "gwt-user", version, "jar", null );
+        this.gwtUserJar = gwtUser.getFile();
+
+        boolean supportOOPHM = this.version.supportOOPHM();
+
+        String platformVersion = supportOOPHM ? null : ArtifactNameUtil.getPlatformName();
+        Artifact gwtDev = resolver.resolve( "gwt-dev", version, "jar", platformVersion );
+        this.gwtDevJar = gwtDev.getFile();
+
+        if ( !supportOOPHM )
+        {
+            Artifact gwtNatives =
+                resolver.resolve( "gwt-dev", version, "zip", ArtifactNameUtil.getPlatformName() + "-libs" );
+            unpackNativeLibraries( gwtNatives.getFile(), resolver.getArchiverManager() );
+        }
+
+        if ( this.version.supportSOYC() )
+        {
+            Artifact soyc = resolver.resolve( "gwt-soyc-vis", version, "jar", null );
+            this.soycJar = soyc.getFile();
+        }
+        else
+        {
+            this.soycJar = null;
+        }
     }
 
     /**
@@ -165,24 +194,29 @@ public class GwtRuntime
         return soycJar;
     }
 
+    private static void unpackNativeLibraries( File nativeLibs, ArchiverManager archiverManager )
+        throws MojoExecutionException
+    {
+        try
+        {
+            UnArchiver unArchiver = archiverManager.getUnArchiver( nativeLibs );
+            unArchiver.setSourceFile( nativeLibs );
+            unArchiver.setDestDirectory( nativeLibs.getParentFile() );
+            unArchiver.extract();
+            unArchiver.setOverwrite( false );
+        }
+        catch ( NoSuchArchiverException e )
+        {
+            throw new MojoExecutionException( "Failed to retrieve Archiver implementation", e );
+        }
+        catch ( ArchiverException e )
+        {
+            throw new MojoExecutionException( "Failed to unpack native libs", e );
+        }
+    }
+
     public GwtVersion getVersion()
     {
         return version;
     }
-
-    public File getOophmJar()
-    {
-        return oophmJar;
-    }
-
-    public void setSoycJar( File soycJar )
-    {
-        this.soycJar = soycJar;
-    }
-
-    public void setOophmJar( File oophmJar )
-    {
-        this.oophmJar = oophmJar;
-    }
-
 }

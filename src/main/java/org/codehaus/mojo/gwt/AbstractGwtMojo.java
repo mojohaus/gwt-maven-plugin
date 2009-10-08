@@ -39,11 +39,9 @@ import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.mojo.gwt.shell.ArtifactNameUtil;
 import org.codehaus.mojo.gwt.shell.ClasspathBuilder;
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.codehaus.plexus.context.Context;
@@ -59,7 +57,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
  */
 public abstract class AbstractGwtMojo
     extends AbstractMojo
-    implements Contextualizable
+    implements Contextualizable, GwtArtifactResolver
 {
     /** GWT artifacts groupId */
     public static final String GWT_GROUP_ID = "com.google.gwt";
@@ -333,27 +331,17 @@ public abstract class AbstractGwtMojo
     private GwtRuntime getGwtRuntimeForVersion( String version )
         throws MojoExecutionException
     {
-        Artifact gwtUser = resolve( "gwt-user", version, "jar", null );
-        Artifact gwtDev = resolve( "gwt-dev", version, "jar", ArtifactNameUtil.getPlatformName() );
-        Artifact gwtNatives = resolve( "gwt-dev", version, "zip", ArtifactNameUtil.getPlatformName() + "-libs" );
-        unpackNativeLibraries( gwtNatives.getFile() );
-
-        GwtRuntime runtime = new GwtRuntime( gwtUser.getFile(), gwtDev.getFile(), version );
-        if (runtime.getVersion().supportSOYC())
-        {
-            Artifact soyc = resolve( "gwt-soyc-vis", version, "jar", null );
-            runtime.setSoycJar( soyc.getFile() );
-        }
-        if (runtime.getVersion().supportOOPHM())
-        {
-            Artifact oophm = resolve( "gwt-dev-oophm", version, "jar", null );
-            runtime.setOophmJar( oophm.getFile() );
-        }
-        
+        GwtRuntime runtime = new GwtRuntime( version, (GwtArtifactResolver) this );
         return runtime;
     }
 
-    private Artifact resolve( String id, String version, String type, String classifier )
+    /**
+     * {@inheritDoc}
+     * 
+     * @see org.codehaus.mojo.gwt.GwtArtifactResolver#resolve(java.lang.String, java.lang.String, java.lang.String,
+     * java.lang.String)
+     */
+    public Artifact resolve( String id, String version, String type, String classifier )
         throws MojoExecutionException
     {
         Artifact artifact = artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, id, version, type, classifier );
@@ -370,31 +358,6 @@ public abstract class AbstractGwtMojo
             throw new MojoExecutionException( "artifact resolver problem - " + e.getMessage(), e );
         }
         return artifact;
-    }
-
-    /**
-     * Unpack the GWT native libraries in the repository so that Hosted mode browser can be executed without requirement
-     * to install GWT on computer.
-     *
-     * @throws MojoExecutionException some error occured
-     */
-    private void unpackNativeLibraries( File zip )
-        throws MojoExecutionException
-    {
-        try
-        {
-            UnArchiver unArchiver = getArchiverManager().getUnArchiver( zip );
-            unArchiver.setSourceFile( zip );
-            unArchiver.setDestDirectory( zip.getParentFile() );
-            unArchiver.extract();
-            unArchiver.setOverwrite( false );
-            getLog().info( "Unpack native libraries required to run GWT" );
-        }
-        catch ( Exception e )
-        {
-            getLog().error( "Failed to unpack native libraries required to run hosted browser", e );
-            throw new MojoExecutionException( "GWT setup failed" );
-        }
     }
 
     /**
@@ -434,7 +397,7 @@ public abstract class AbstractGwtMojo
         return generateDirectory;
     }
 
-    protected ArchiverManager getArchiverManager()
+    public ArchiverManager getArchiverManager()
     {
         return archiverManager;
     }
