@@ -74,8 +74,6 @@ public class ClasspathBuilder
 
         Set<File> items = new LinkedHashSet<File>();
 
-        items.add( new File( project.getBuild().getOutputDirectory() ) );
-
         // Note : Don't call addSourceWithActiveProject as a GWT dependency MUST be a valid GWT library module :
         // * include java sources in the JAR as resources
         // * define a gwt.xml module file to declare the required inherits
@@ -84,15 +82,16 @@ public class ClasspathBuilder
 
         addSources( items, project.getCompileSourceRoots() );
         addResources( items, project.getResources() );
+        items.add( new File( project.getBuild().getOutputDirectory() ) );
 
         // Use our own ClasspathElements fitering, as for RUNTIME we need to include PROVIDED artifacts,
         // that is not the default Maven policy, as RUNTIME is used here to build the GWTShell execution classpath
 
         if ( scope.equals( SCOPE_TEST ) )
         {
-            items.add( new File( project.getBuild().getTestOutputDirectory() ) );
             addSources( items, project.getTestCompileSourceRoots() );
             addResources( items, project.getTestResources() );
+            items.add( new File( project.getBuild().getTestOutputDirectory() ) );
 
             // Add all project dependencies in classpath
             for ( Artifact artifact : artifacts )
