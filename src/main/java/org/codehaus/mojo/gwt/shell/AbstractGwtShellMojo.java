@@ -232,6 +232,11 @@ public abstract class AbstractGwtShellMojo
 
     protected String quote( String arg )
     {
+        if ( arg.startsWith( "'" ) || arg.startsWith( "\"" ) )
+        {
+            // Allready quoted
+            return arg;
+        }
         return '"' + arg + '"';
     }
 
