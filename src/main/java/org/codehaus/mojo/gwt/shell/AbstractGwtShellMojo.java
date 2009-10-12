@@ -125,9 +125,15 @@ public abstract class AbstractGwtShellMojo
     public String getExtraJvmArgs()
     {
         String extra = extraJvmArgs;
-        if ( Os.isFamily( Os.FAMILY_MAC ) && !extraJvmArgs.contains( "-XstartOnFirstThread" ) )
-        {
-            extra += " -XstartOnFirstThread";
+        try {
+            if ( Os.isFamily( Os.FAMILY_MAC ) && !extraJvmArgs.contains( "-XstartOnFirstThread" ) && !getGwtRuntime().getVersion().supportOOPHM())
+            {
+                getLog().debug("Adding -XstartOnFirstThread because of version: " + getGwtRuntime().getVersion() + " and os:" + Os.FAMILY_MAC );
+                extra += " -XstartOnFirstThread";
+            }
+        }
+        catch (MojoExecutionException ex){
+            throw new RuntimeException(ex);
         }
         return extra;
     }
@@ -199,9 +205,15 @@ public abstract class AbstractGwtShellMojo
                 extra.add( extraArg );
             }
         }
-        if ( Os.isFamily( Os.FAMILY_MAC ) && ( !extra.contains( "-XstartOnFirstThread" ) ) )
-        {
-            extra.add( "-XstartOnFirstThread" );
+        try {
+            if ( Os.isFamily( Os.FAMILY_MAC ) && !extraJvmArgs.contains( "-XstartOnFirstThread" ) && !getGwtRuntime().getVersion().supportOOPHM())
+            {
+                getLog().debug("Adding -XstartOnFirstThread because of version: " + getGwtRuntime().getVersion() + " and os:" + Os.FAMILY_MAC );
+                extra.add( "-XstartOnFirstThread" );
+            }
+        }
+        catch (MojoExecutionException ex){
+            throw new RuntimeException(ex);
         }
         return extra;
     }

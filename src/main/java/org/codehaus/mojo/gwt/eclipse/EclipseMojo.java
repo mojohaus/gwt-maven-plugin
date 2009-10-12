@@ -300,9 +300,15 @@ public class EclipseMojo
     protected String getExtraJvmArgs()
     {
         String extra = extraJvmArgs;
-        if ( Os.isFamily( Os.FAMILY_MAC ) && !extraJvmArgs.contains( "-XstartOnFirstThread" ) )
-        {
-            extra += " -XstartOnFirstThread";
+        try {
+            if ( Os.isFamily( Os.FAMILY_MAC ) && !extraJvmArgs.contains( "-XstartOnFirstThread" ) && !getGwtRuntime().getVersion().supportOOPHM())
+            {
+                getLog().debug("Adding -XstartOnFirstThread because of version: " + getGwtRuntime().getVersion() + " and os:" + Os.FAMILY_MAC );
+                extra += " -XstartOnFirstThread";
+            }
+        }
+        catch (MojoExecutionException ex){
+            throw new RuntimeException(ex);
         }
         return extra;
     }
