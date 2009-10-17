@@ -22,6 +22,7 @@ package org.codehaus.mojo.gwt.shell;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -153,6 +154,15 @@ public class RunMojo
      * @parameter expression="${gwt.blacklist}"
      */
     private String blacklist;
+    
+    /**
+     * List of System properties to pass when running the hosted mode.
+     * 
+     * @parameter
+     * @since 1.2
+     */
+    private Map<String, String> systemProperties;
+    
 
     public String getRunTarget()
     {
@@ -163,7 +173,7 @@ public class RunMojo
      * @return the GWT module to run (gwt 1.6+)
      */
     public String getRunModule()
-    throws MojoExecutionException
+        throws MojoExecutionException
     {
         String[] modules = getModules();
         if ( noServer )
@@ -251,6 +261,24 @@ public class RunMojo
             cmd.arg( "-blacklist" ).arg( blacklist );
         }
 
+        if ( systemProperties != null && !systemProperties.isEmpty() )
+        {
+            for ( String key : systemProperties.keySet() )
+            {
+                String value = systemProperties.get( key );
+                if ( value != null )
+                {
+                    getLog().info( " " + key + "=" + value );
+                    cmd.systemProperty( key, value );
+                }
+                else
+                {
+                    getLog().info( "skip sysProps " + key + " with empty value" );
+                }
+
+            }
+        }
+        
         switch ( runtime.getVersion().getEmbeddedServer() )
         {
             case TOMCAT:
