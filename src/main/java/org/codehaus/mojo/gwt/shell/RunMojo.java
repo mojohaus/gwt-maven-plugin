@@ -313,7 +313,7 @@ public class RunMojo
     }
 
     private void setupExplodedWar()
-    throws MojoExecutionException
+        throws MojoExecutionException
     {
         getLog().info( "create exploded Jetty webapp in " + hostedWebapp );
 

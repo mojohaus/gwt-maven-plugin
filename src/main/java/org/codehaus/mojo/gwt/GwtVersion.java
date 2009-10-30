@@ -36,7 +36,7 @@ public enum GwtVersion
     , ONE_DOT_SEVEN( true, "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY,
                    true, true, false, false, "-war" )
 
-    , TWO_DOT_ZERO( true, "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY,
+    , TWO_DOT_ZERO( true, "com.google.gwt.dev.DevMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY,
                     true, true, true, true, "-war" )
     , FUTURE( true, "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY,
               true, true, true, false, "-war" );
