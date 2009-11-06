@@ -43,6 +43,7 @@
     <configuration>
       <inplace>true</inplace>
       <logLevel>INFO</logLevel>
+      <style>OBF</style>
     </configuration>
     <executions>
       <execution>

@@ -90,7 +90,7 @@ public class GwtRuntime
      * @param version gwt version
      */
     public GwtRuntime( String version, GwtArtifactResolver resolver )
-    throws MojoExecutionException
+        throws MojoExecutionException
     {
         this.version = GwtVersion.fromMavenVersion( version );
 

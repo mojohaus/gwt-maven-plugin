@@ -29,6 +29,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.gwt.GwtRuntime;
+import org.codehaus.mojo.gwt.GwtVersion;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
@@ -240,10 +241,13 @@ public class RunMojo
             .arg( "-gen" )
             .arg( quote( getGen().getAbsolutePath() ) )
             .arg( "-logLevel" )
-            .arg( getLogLevel() )
-            .arg( "-style" )
-            .arg( getStyle() )
-            .arg( "-port" )
+            .arg( getLogLevel() );
+            
+        if ( runtime.getVersion().compareTo( GwtVersion.TWO_DOT_ZERO ) < 0 )
+        {
+            cmd.arg( "-style" ).arg( getStyle() );
+        }
+        cmd.arg( "-port" )
             .arg( Integer.toString( getPort() ) )
             .arg( noServer, "-noserver" );
 
