@@ -73,10 +73,7 @@ public class DebugMojo
         String extras = super.getExtraJvmArgs();
         extras += " -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,address=";
         extras += debugPort;
-        if ( debugSuspend )
-        {
-            extras += ",suspend=y ";
-        }
+        extras += ",suspend=" + ( debugSuspend ? "y " : "n " );
         return extras;
     }
 
