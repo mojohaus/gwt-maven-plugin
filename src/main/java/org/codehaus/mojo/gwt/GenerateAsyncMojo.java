@@ -159,6 +159,8 @@ public class GenerateAsyncMojo
             if ( isUpToDate( sourceFile, targetFile ) )
             {
                 getLog().debug( targetFile.getAbsolutePath() + " is up to date. Generation skipped" );
+                // up to date, but still need to report generated-sources directory as sourceRoot
+                fileGenerated = true;
                 continue;
             }
 
