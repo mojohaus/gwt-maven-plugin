@@ -21,6 +21,7 @@ package org.codehaus.mojo.gwt;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -197,13 +198,23 @@ public class GwtRuntime
     private static void unpackNativeLibraries( File nativeLibs, ArchiverManager archiverManager )
         throws MojoExecutionException
     {
+    	File timestamp = new File( nativeLibs.getParentFile(), ".gwt-maven-plugin" );
+    	if ( timestamp.exists() && timestamp.lastModified() > nativeLibs.lastModified() )
+    	{
+    		return;
+    	}
         try
         {
             UnArchiver unArchiver = archiverManager.getUnArchiver( nativeLibs );
             unArchiver.setSourceFile( nativeLibs );
             unArchiver.setDestDirectory( nativeLibs.getParentFile() );
-            unArchiver.extract();
             unArchiver.setOverwrite( false );
+            unArchiver.extract();
+            timestamp.createNewFile();
+        }
+        catch ( IOException e )
+        {
+        	// failed to create timestamp ... let's ignore this
         }
         catch ( NoSuchArchiverException e )
         {
