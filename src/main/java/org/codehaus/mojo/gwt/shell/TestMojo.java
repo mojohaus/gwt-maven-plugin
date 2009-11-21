@@ -88,6 +88,12 @@ public class TestMojo
      * @parameter default-value="target/www-test"
      */
     private String out;
+    
+    /**
+     * run tests using web mode rather than developer (a.k.a. hosted) mode
+     * @parameter default-value=false
+     */
+    private boolean webMode;    
 
     /**
      * Time out (in seconds) for test execution in dedicated JVM
@@ -177,6 +183,7 @@ public class TestMojo
                     .withinScope( Artifact.SCOPE_TEST )
                     .arg( test )
                     .systemProperty( "surefire.reports", quote( reportsDirectory.getAbsolutePath() ) )
+                    .systemProperty( "gwt.args", getGwtArgs() )
                     .execute();
             }
             catch ( ForkedProcessExecutionException e )
@@ -189,6 +196,18 @@ public class TestMojo
             throw new MojoExecutionException( "Failed to run GWT tests", e );
         }
     }
+    
+    
+    protected String getGwtArgs()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "-out " ).append( quote( out ) ).append( " " );
+        if ( webMode )
+        {
+            sb.append( "-web " );
+        }
+        return sb.toString();
+    }    
 
     @Override
     protected void postProcessClassPath( Collection<File> classpath )
