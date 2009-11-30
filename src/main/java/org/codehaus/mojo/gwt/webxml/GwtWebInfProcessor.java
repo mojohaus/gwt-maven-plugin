@@ -123,7 +123,12 @@ public class GwtWebInfProcessor
             servletName.setText( d.getName() );
             servletMapping.addContent( servletName );
             Element urlPattern = new Element( "url-pattern", ns );
-            urlPattern.setText( d.getPath() );
+			String path = d.getPath();
+			if ( path.charAt( 0) !=  '/' ) 
+			{
+			    path = '/' + path;
+			}
+            urlPattern.setText( path );
             servletMapping.addContent( urlPattern );
             webapp.addContent( insertAfter, servletMapping );
         }
