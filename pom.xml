@@ -17,7 +17,7 @@
     <version>23</version>
   </parent>
   <artifactId>gwt-maven-plugin</artifactId>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.2</version>
   <packaging>maven-plugin</packaging>
   <name>Maven GWT Plugin</name>
   <description>
@@ -92,9 +92,9 @@
     </mailingList>
   </mailingLists>
   <scm>
-    <connection>scm:svn:http://svn.codehaus.org/mojo/trunk/mojo/gwt-maven-plugin</connection>
-    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/trunk/mojo/gwt-maven-plugin</developerConnection>
-    <url>http://fisheye.codehaus.org/browse/mojo/trunk/mojo/gwt-maven-plugin</url>
+    <connection>scm:svn:http://svn.codehaus.org/mojo/tags/gwt-maven-plugin-1.2</connection>
+    <developerConnection>scm:svn:https://svn.codehaus.org/mojo/tags/gwt-maven-plugin-1.2</developerConnection>
+    <url>http://fisheye.codehaus.org/browse/mojo/tags/gwt-maven-plugin-1.2</url>
   </scm>
   <issueManagement>
     <system>jira</system>
@@ -334,7 +334,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-pdf-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
         <executions>
           <execution>
             <phase>pre-site</phase>
