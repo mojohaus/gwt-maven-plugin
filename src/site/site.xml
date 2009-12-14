@@ -50,7 +50,6 @@ under the License.
       <item name="Index" href="index.html"/>
       <item name="Goals" href="plugin-info.html"/>
       <item name="Usage" href="usage.html"/>
-      <item name="GWT 2.0 preview" href="gwt20.html"/>
       <item name="FAQ" href="faq.html"/>
     </menu>
     <menu name="IDE integration">
