@@ -22,6 +22,7 @@ package org.codehaus.mojo.gwt;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -98,6 +99,11 @@ public class GenerateAsyncMojo
      * @parameter default-value="false" expression="${generateAsync.force}"
      */
     private boolean force;
+	
+	/**
+	 * @parameter expression="${project.build.sourceEncoding}"
+	 */
+	private String encoding;
 
     /**
      * {@inheritDoc}
@@ -107,6 +113,13 @@ public class GenerateAsyncMojo
         throws MojoExecutionException
     {
         getLog().debug( "GenerateAsyncMojo#execute()" );
+		
+		if (encoding == null)
+		{
+			getLog().warn( "Encoding is not set, your build will be platform dependent" );
+			encoding = Charset.defaultCharset().name();
+		}
+		
         boolean supportJava5 = getGwtRuntime().getVersion().supportJava5();
         JavaDocBuilder builder = createJavaDocBuilder();
 
@@ -197,7 +210,7 @@ public class GenerateAsyncMojo
     private void generateAsync( JavaClass clazz, File targetFile, boolean supportJava5 )
         throws IOException
     {
-        PrintWriter writer = new PrintWriter( targetFile ); // TODO: use source encoding instead of platform encoding
+        PrintWriter writer = new PrintWriter( targetFile, encoding );
 
         String className = clazz.getName();
         JavaSource javaSource = clazz.getSource();
@@ -334,6 +347,7 @@ public class GenerateAsyncMojo
         try
         {
             JavaDocBuilder builder = new JavaDocBuilder();
+			builder.setEncoding( encoding );
             builder.getClassLibrary().addClassLoader( getProjectClassLoader() );
             for ( String sourceRoot : (List<String>) getProject().getCompileSourceRoots() )
             {
