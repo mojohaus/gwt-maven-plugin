@@ -242,16 +242,6 @@ public abstract class AbstractGwtShellMojo
         return jvm;
     }
 
-    protected String quote( String arg )
-    {
-        if ( arg.startsWith( "'" ) || arg.startsWith( "\"" ) )
-        {
-            // Allready quoted
-            return arg;
-        }
-        return '"' + arg + '"';
-    }
-
     /**
      * plexus-util hack to run a command WITHOUT a shell
      *
@@ -269,7 +259,17 @@ public abstract class AbstractGwtShellMojo
             }
             for ( String arg : arguments )
             {
-                commandLine.add( arg );
+				if ( isQuotedArgumentsEnabled() )
+				{
+					char[] escapeChars = getEscapeChars( isSingleQuotedExecutableEscaped(), isDoubleQuotedExecutableEscaped() );
+
+					commandLine.add( StringUtils.quoteAndEscape( arg, getArgumentQuoteDelimiter(), escapeChars, getQuotingTriggerChars(), '\\', false ) );
+				}
+				else
+				{
+					commandLine.add( arg );
+				}
+                
             }
             return commandLine;
         }
@@ -361,7 +361,7 @@ public abstract class AbstractGwtShellMojo
             List<String> path = new ArrayList<String>( classpath.size() );
             for ( File file : classpath )
             {
-                path.add( quote( file.getAbsolutePath() ) );
+                path.add( file.getAbsolutePath() );
             }
             command.add( StringUtils.join( path.iterator(), File.pathSeparator ) );
             if ( systemProperties != null )

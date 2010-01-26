@@ -237,9 +237,9 @@ public class RunMojo
         JavaCommand cmd = new JavaCommand( clazz, runtime )
             .withinScope( Artifact.SCOPE_RUNTIME )
             .arg( runtime.getVersion().getWebOutputArgument() )
-            .arg( quote( hostedWebapp.getAbsolutePath() ) )
+            .arg( hostedWebapp.getAbsolutePath() )
             .arg( "-gen" )
-            .arg( quote( getGen().getAbsolutePath() ) )
+            .arg( getGen().getAbsolutePath() )
             .arg( "-logLevel" )
             .arg( getLogLevel() );
             
@@ -294,7 +294,7 @@ public class RunMojo
                 {
                     throw new MojoExecutionException( "Unable to build catalina.base", e );
                 }
-                cmd.systemProperty( "catalina.base", quote( getTomcat().getAbsolutePath() ) )
+                cmd.systemProperty( "catalina.base", getTomcat().getAbsolutePath() )
                     .arg( getRunTarget() );
                 break;
             case JETTY:
@@ -308,7 +308,7 @@ public class RunMojo
                     getLog().info( "noServer is set! Skipping exploding war file..." );
                 }
                 cmd.arg( "-startupUrl" )
-                    .arg( quote( getStartupUrl() ) )
+                    .arg( getStartupUrl() )
                     .arg( getRunModule() );
                 break;
         }

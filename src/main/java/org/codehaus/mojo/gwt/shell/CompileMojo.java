@@ -178,14 +178,14 @@ public class CompileMojo
         JavaCommand cmd = new JavaCommand( clazz, runtime )
             .withinScope( Artifact.SCOPE_COMPILE )
             .arg( "-gen" )
-            .arg( quote( getGen().getAbsolutePath() ) )
+            .arg( getGen().getAbsolutePath() )
             .arg( "-logLevel" )
             .arg( getLogLevel() )
             .arg( "-style" )
             .arg( getStyle() )
             .arg( enableAssertions, "-ea" )
             .arg( gwtVersion.getWebOutputArgument() )
-            .arg( quote( getOutputDirectory().getAbsolutePath() ) );
+            .arg( getOutputDirectory().getAbsolutePath() );
 
         if ( gwtVersion.supportParallelCompile() )
         {
@@ -203,7 +203,7 @@ public class CompileMojo
             {
                 cmd.arg( "-soyc" )
                    .arg( "-extra")
-                   .arg( quote( extra.getAbsolutePath() ) );
+                   .arg( extra.getAbsolutePath() );
                 extra.mkdirs();
             }
         }

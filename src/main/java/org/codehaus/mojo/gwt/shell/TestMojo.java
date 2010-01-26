@@ -182,7 +182,7 @@ public class TestMojo
                 new JavaCommand( MavenTestRunner.class.getName(), runtime )
                     .withinScope( Artifact.SCOPE_TEST )
                     .arg( test )
-                    .systemProperty( "surefire.reports", quote( reportsDirectory.getAbsolutePath() ) )
+                    .systemProperty( "surefire.reports", reportsDirectory.getAbsolutePath() )
                     .systemProperty( "gwt.args", getGwtArgs() )
                     .execute();
             }
@@ -201,7 +201,7 @@ public class TestMojo
     protected String getGwtArgs()
     {
         StringBuilder sb = new StringBuilder();
-        sb.append( "-out " ).append( quote( out ) ).append( " " );
+        sb.append( "-out " ).append( out ).append( " " );
         if ( webMode )
         {
             sb.append( "-web " );
