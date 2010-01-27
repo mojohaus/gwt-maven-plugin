@@ -17,8 +17,6 @@
  * under the License.
  */
 assert new File(basedir, 'target/classes').exists();
-assert new File(basedir, 'src/main/webapp/hello').exists();
-assert new File(basedir, 'src/main/webapp/hello/hello.nocache.js').exists();
 assert new File(basedir, 'src/main/webapp/world').exists();
 assert new File(basedir, 'src/main/webapp/world/world.nocache.js').exists();
 
