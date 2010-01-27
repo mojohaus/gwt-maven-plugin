@@ -31,7 +31,6 @@ import java.util.HashSet;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.gwt.GwtModule;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.GwtVersion;
@@ -282,6 +281,9 @@ public class CompileMojo
         SingleTargetSourceMapping singleTargetMapping = new SingleTargetSourceMapping( ".java", outputTarget );
         StaleSourceScanner scanner = new StaleSourceScanner();
         scanner.addSourceMapping( singleTargetMapping );
+
+        SingleTargetSourceMapping gwtModuleMapping = new SingleTargetSourceMapping( ".gwt.xml", outputTarget );
+        scanner.addSourceMapping( gwtModuleMapping );
 
         Collection<File> compileSourceRoots = new HashSet<File>();
         classpathBuilder.addSourcesWithActiveProjects( getProject(), compileSourceRoots, SCOPE_COMPILE );
