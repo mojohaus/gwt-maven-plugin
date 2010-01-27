@@ -167,6 +167,7 @@ public class GwtModule
         for ( Xpp3Dom node : nodes )
         {
             String moduleName = node.getAttribute( "name" );
+            // exclude modules from gwt-dev/gwt-user
             if ( !moduleName.startsWith( "com.google.gwt." ) )
             {
                 modules.add( reader.readModule( moduleName ) );
@@ -176,17 +177,23 @@ public class GwtModule
     }
 
     public Map<String, String> getServlets()
+        throws MojoExecutionException
+    {
+        return getServlets( getPath() );
+    }
+
+    public Map<String, String> getServlets( String path )
 		throws MojoExecutionException
     {
-        Map<String, String> servlets = getLocalServlets();
+        Map<String, String> servlets = getLocalServlets( path );
 		for( GwtModule module : getInherits() )
 		{		
-            servlets.putAll( module.getLocalServlets() );
+            servlets.putAll( module.getLocalServlets( path ) );
 	    }
         return servlets;
     }
 
-    private Map<String, String> getLocalServlets()
+    private Map<String, String> getLocalServlets( String path )
     {
         Map<String, String> servlets = new HashMap<String, String>();
         Xpp3Dom nodes[] = xml.getChildren( "servlet" );
@@ -194,7 +201,7 @@ public class GwtModule
         {
 			for ( Xpp3Dom node : nodes )
 			{
-				servlets.put( getPath() + node.getAttribute( "path" ), node.getAttribute( "class" ) );
+                servlets.put( path + node.getAttribute( "path" ), node.getAttribute( "class" ) );
 			}
 	    }
         return servlets;
