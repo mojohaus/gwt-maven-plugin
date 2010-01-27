@@ -44,6 +44,7 @@ under the License.
       <item name="Back to Mojo" href="http://mojo.codehaus.org"/>
 	  <item name="Version 1.0" href="http://mojo.codehaus.org/gwt-maven-plugin-1.0"/>
 	  <item name="Version 1.1" href="http://mojo.codehaus.org/gwt-maven-plugin-1.1"/>
+	  <item name="Version 1.2 (last stable)" href="http://mojo.codehaus.org/gwt-maven-plugin-1.2"/>
 	  <item name="Download as PDF" href="pdf/gwt-maven-plugin.pdf"/>
     </menu>
     <menu name="Overview">
@@ -67,6 +68,7 @@ under the License.
       <item name="Compile and Package" href="user-guide/compiler.html"/>
       <item name="Multi-project setup" href="user-guide/multiproject.html"/>
       <item name="Writing a GWT library" href="user-guide/library.html"/>
+	  <item name="Productivity Tips" href="user-guide/productivity.html"/>
     </menu>
     <menu name="Examples">
       <item name="compile a GWT module" href="examples/compile.html"/>
