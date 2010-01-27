@@ -45,6 +45,7 @@ import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
  */
 public abstract class AbstractGwtModuleMojo
     extends AbstractGwtMojo
+	implements GwtModuleReader
 {
     public static final String GWT_MODULE_EXTENSION = ".gwt.xml";
 
@@ -133,7 +134,7 @@ public abstract class AbstractGwtModuleMojo
         return modules;
     }
 
-    protected GwtModule readModule( String name )
+    public GwtModule readModule( String name )
         throws MojoExecutionException
     {
         String modulePath = name.replace( '.', '/' ) + GWT_MODULE_EXTENSION;
@@ -208,7 +209,7 @@ public abstract class AbstractGwtModuleMojo
         try
         {
             Xpp3Dom dom = Xpp3DomBuilder.build( ReaderFactory.newXmlReader( xml ) );
-            return new GwtModule( name, dom );
+            return new GwtModule( name, dom, this );
         }
         catch ( Exception e )
         {

@@ -256,9 +256,10 @@ public class CompileMojo
         throws MojoExecutionException
     {
         GwtModule gwtModule = readModule( module );
-        if ( gwtModule.getEntryPoints().length == 0 )
+        if ( gwtModule.getEntryPoints().size() == 0 )
         {
-            // No entry-point, this is a secondary module : compiling this one will fail
+            getLog().debug( gwtModule.getName() + " has no EntryPoint - compilation skipped" );
+            // No entry-point, this is an utility module : compiling this one will fail
             // with '[ERROR] Module has no entry points defined'
             return false;
         }

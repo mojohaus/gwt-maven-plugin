@@ -1,8 +1,14 @@
 package org.codehaus.mojo.gwt;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 /*
@@ -33,11 +39,16 @@ public class GwtModule
     private Xpp3Dom xml;
 
     private String name;
+	
+    private Set<GwtModule> inherits;
+	
+	private GwtModuleReader reader;
 
-    public GwtModule( String name, Xpp3Dom xml )
+    public GwtModule( String name, Xpp3Dom xml, GwtModuleReader reader )
     {
         this.name = name;
         this.xml = xml;
+		this.reader = reader;
     }
 
     private String getRenameTo()
@@ -88,50 +99,104 @@ public class GwtModule
         return sources;
     }
 
-    public String[] getEntryPoints()
+    public List<String> getEntryPoints()
+        throws MojoExecutionException
     {
-        Xpp3Dom nodes[] = xml.getChildren( "entry-point" );
-        if ( nodes == null )
+        List<String> entryPoints = new ArrayList<String>();
+        entryPoints.addAll( getLocalEntryPoints() );
+        for ( GwtModule module : getInherits() )
         {
-            return new String[0];
-        }
-        String[] entryPoints = new String[nodes.length];
-        int i = 0;
-        for ( Xpp3Dom node : nodes )
-        {
-            entryPoints[i++] = node.getAttribute( "class" );
+            entryPoints.addAll( module.getLocalEntryPoints() );
         }
         return entryPoints;
     }
 
-    public String[] getInherits()
+    private List<String> getLocalEntryPoints()
+    {
+        Xpp3Dom nodes[] = xml.getChildren( "entry-point" );
+        if ( nodes == null )
+        {
+            return Collections.emptyList();
+        }
+        List<String> entryPoints = new ArrayList<String>( nodes.length );
+        for ( Xpp3Dom node : nodes )
+        {
+            entryPoints.add( node.getAttribute( "class" ) );
+        }
+        return entryPoints;
+    }
+
+    /**
+     * Build the set of inhertied modules. Due to xml inheritence mecanism, there may be cicles in the inheritence
+     * graph, so we build a set of inherited modules
+     */
+    public Set<GwtModule> getInherits()
+		throws MojoExecutionException
+    {
+	    if ( inherits != null ) return inherits;
+		
+        inherits = new HashSet<GwtModule>();
+        addInheritedModules( inherits, getLocalInherits() );
+
+        return inherits;
+    }
+
+    private void addInheritedModules( Set<GwtModule> set, Set<GwtModule> modules )
+        throws MojoExecutionException
+    {
+        for ( GwtModule module : modules )
+        {
+            if ( set.add( module ) )
+            {
+                // if module is allready in the set, don't re-parse it's inherits
+                addInheritedModules( set, module.getLocalInherits() );
+            }
+        }
+
+    }
+
+    private Set<GwtModule> getLocalInherits()
+        throws MojoExecutionException
     {
         Xpp3Dom nodes[] = xml.getChildren( "inherits" );
         if ( nodes == null )
         {
-            return new String[0];
+            return Collections.emptySet();
         }
-        String[] inherits = new String[nodes.length];
-        int i = 0;
+        Set<GwtModule> modules = new HashSet<GwtModule>();
         for ( Xpp3Dom node : nodes )
         {
-            inherits[i++] = node.getAttribute( "name" );
+            String moduleName = node.getAttribute( "name" );
+            if ( !moduleName.startsWith( "com.google.gwt." ) )
+            {
+                modules.add( reader.readModule( moduleName ) );
+            }
         }
-        return inherits;
+        return modules;
     }
 
     public Map<String, String> getServlets()
+		throws MojoExecutionException
+    {
+        Map<String, String> servlets = getLocalServlets();
+		for( GwtModule module : getInherits() )
+		{		
+            servlets.putAll( module.getLocalServlets() );
+	    }
+        return servlets;
+    }
+
+    private Map<String, String> getLocalServlets()
     {
         Map<String, String> servlets = new HashMap<String, String>();
         Xpp3Dom nodes[] = xml.getChildren( "servlet" );
-        if ( nodes == null )
+        if ( nodes != null )
         {
-            return servlets;
-        }
-        for ( Xpp3Dom node : nodes )
-        {
-            servlets.put( getPath() + node.getAttribute( "path" ), node.getAttribute( "class" ) );
-        }
+			for ( Xpp3Dom node : nodes )
+			{
+				servlets.put( getPath() + node.getAttribute( "path" ), node.getAttribute( "class" ) );
+			}
+	    }
         return servlets;
     }
 
@@ -152,5 +217,17 @@ public class GwtModule
             return getRenameTo();
         }
         return name;
+    }
+
+    @Override
+    public boolean equals( Object obj )
+    {
+        return name.equals( ( (GwtModule) obj ).name );
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return name.hashCode();
     }
 }
