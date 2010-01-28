@@ -19,7 +19,7 @@ Testing GWT code with Maven
 
  The gwt-maven-plugin testing support is <<not>> intended to be run standalone, rather it is bound to
  the Maven "<<<integration-test>>>" phase. To get <<<gwt:test>>> to run, you should include the "<<<test>>>"
- goal in your plugin configuration executions, and you should invoke <<<mvn test>>>.
+ goal in your plugin configuration executions, and you should invoke <<<mvn integration-test>>> (or <<<mvn install>>>).
 
 +--
 <project>
