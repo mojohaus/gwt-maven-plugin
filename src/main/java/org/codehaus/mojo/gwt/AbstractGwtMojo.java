@@ -47,6 +47,7 @@ import org.codehaus.plexus.component.repository.exception.ComponentLookupExcepti
 import org.codehaus.plexus.context.Context;
 import org.codehaus.plexus.context.ContextException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.Contextualizable;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Abstract Support class for all GWT-related operations. Provide GWT runtime resolution based on plugin configuration
@@ -243,7 +244,7 @@ public abstract class AbstractGwtMojo
     public GwtRuntime getGwtRuntime()
         throws MojoExecutionException
     {
-        if ( gwtHome != null )
+        if ( gwtHome != null && !StringUtils.isEmpty( gwtHome.getPath() ) )
         {
             getLog().info( "using GWT jars from local installation " + gwtHome );
             return new GwtRuntime( gwtHome );
