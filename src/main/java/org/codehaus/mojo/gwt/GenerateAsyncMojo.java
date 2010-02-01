@@ -22,10 +22,10 @@ package org.codehaus.mojo.gwt;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.Charset;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -201,10 +201,10 @@ public class GenerateAsyncMojo
         return targetFile;
     }
 
-
     /**
-     * @param source the RPC service java source file
-     * @param name the service name
+     * @param clazz the RPC service java class
+     * @param targetFile RemoteAsync file to generate
+     * @param supportJava5 true if Java5 or higher is supported (use of generics enabled)
      * @throws Exception generation failure
      */
     private void generateAsync( JavaClass clazz, File targetFile, boolean supportJava5 )
@@ -213,17 +213,9 @@ public class GenerateAsyncMojo
         PrintWriter writer = new PrintWriter( targetFile, encoding );
 
         String className = clazz.getName();
-        JavaSource javaSource = clazz.getSource();
+        JavaSource javaSource = clazz.getParentSource();
         writer.println( "package " + javaSource.getPackage().getName() + ";" );
         writer.println();
-        String[] imports = javaSource.getImports();
-        for ( String string : imports )
-        {
-            if ( !REMOTE_SERVICE_INTERFACE.equals( string ) )
-            {
-                writer.println( "import " + string + ";" );
-            }
-        }
         writer.println( "import com.google.gwt.core.client.GWT;" );
         writer.println( "import com.google.gwt.user.client.rpc.AsyncCallback;" );
         writer.println( "import com.google.gwt.user.client.rpc.ServiceDefTarget;" );
