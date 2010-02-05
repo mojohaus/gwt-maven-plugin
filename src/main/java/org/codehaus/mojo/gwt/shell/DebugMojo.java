@@ -50,6 +50,13 @@ public class DebugMojo
     private boolean debugSuspend;
 
     /**
+     * Attach to the debugger application at the specified debugPort.
+     * 
+     * @parameter default-value="false" expression="${attachDebugger}"
+     */
+    private boolean attachDebugger;
+
+    /**
      * {@inheritDoc}
      * 
      * @see org.codehaus.mojo.gwt.shell.RunMojo#getFileName()
@@ -71,47 +78,27 @@ public class DebugMojo
     public String getExtraJvmArgs()
     {
         String extras = super.getExtraJvmArgs();
-        extras += " -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,address=";
-        extras += debugPort;
+        extras += " -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket";
+        extras += ",server=" + ( attachDebugger ? "n " : "y" );
+        extras += ",address=" + debugPort;
         extras += ",suspend=" + ( debugSuspend ? "y " : "n " );
         return extras;
     }
 
-    /**
-     * @see org.codehaus.mojo.gwt.shell.RunMojo#doExecute(org.codehaus.mojo.gwt.GwtRuntime)
-     */
+
     @Override
     public void doExecute(GwtRuntime runtime)
         throws MojoExecutionException, MojoFailureException
     {
-        if (isDebugSuspend())
+        if ( debugSuspend )
         {
-            getLog().info("starting debugger on port " + getDebugPort() + " in suspend mode");
+            getLog().info( "starting debugger on port " + debugPort + " in suspend mode" );
         }
         else
         {
-            getLog().info( "starting debugger on port " + getDebugPort() );
+            getLog().info( "starting debugger on port " + debugPort );
         }
 
         super.doExecute( runtime );
-    }
-
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#getDebugPort()
-     */
-    public int getDebugPort()
-    {
-        return this.debugPort;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @see org.codehaus.mojo.gwt.shell.scripting.ScriptConfiguration#isDebugSuspend()
-     */
-    public boolean isDebugSuspend()
-    {
-        return this.debugSuspend;
     }
 }
