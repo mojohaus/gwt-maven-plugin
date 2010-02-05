@@ -45,7 +45,6 @@ under the License.
 	  <item name="Version 1.0" href="http://mojo.codehaus.org/gwt-maven-plugin-1.0"/>
 	  <item name="Version 1.1" href="http://mojo.codehaus.org/gwt-maven-plugin-1.1"/>
 	  <item name="Version 1.2 (last stable)" href="http://mojo.codehaus.org/gwt-maven-plugin-1.2"/>
-	  <item name="Download as PDF" href="pdf/gwt-maven-plugin.pdf"/>
     </menu>
     <menu name="Overview">
       <item name="Index" href="index.html"/>
@@ -55,6 +54,7 @@ under the License.
     </menu>
     <menu name="IDE integration">
       <item name="Eclipse" href="eclipse/google_plugin.html"/>
+      <item name="NetBeans" href="netbeans/gwt4nb.html"/>
     </menu>
     <menu name="User Guide">
       <item name="Introduction" href="user-guide/introduction.html"/>
