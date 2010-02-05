@@ -25,21 +25,21 @@ package org.codehaus.mojo.gwt;
 public enum GwtVersion
 {
     ONE_DOT_FOUR( false, "com.google.gwt.dev.GWTShell", "com.google.gwt.dev.GWTCompiler", EmbeddedServer.TOMCAT,
-                  false, false, false, false, "-out" )
+                  false, false, false, false, false, "-out" )
 
     , ONE_DOT_FIVE( true, "com.google.gwt.dev.GWTShell", "com.google.gwt.dev.GWTCompiler", EmbeddedServer.TOMCAT,
-                    false, false, false, false, "-out" )
+                    false, false, false, false, false, "-out" )
 
     , ONE_DOT_SIX( true, "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY,
-                   true, true, false, false, "-war" )
+                   true, false, true, false, false, "-war" )
 
     , ONE_DOT_SEVEN( true, "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY,
-                   true, true, false, false, "-war" )
+                   true, false, true, false, false, "-war" )
 
     , TWO_DOT_ZERO( true, "com.google.gwt.dev.DevMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY,
-                    true, true, true, true, "-war" )
+                    true, true, true, true, true, "-war" )
     , FUTURE( true, "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", EmbeddedServer.JETTY,
-              true, true, true, false, "-war" );
+              true, true, true, true, false, "-war" );
 
 
     static GwtVersion fromMavenVersion( String version )
@@ -69,13 +69,15 @@ public enum GwtVersion
 
     private GwtVersion( boolean supportJava5, String shellFQCN, String compilerFQCN,
                         EmbeddedServer emebededServer,
-                        boolean supportMultiModuleCompiler, boolean supportParallelCompiler, boolean supportSOYC,
-                        boolean supportOOPHM, String webOutputArgument )
+                        boolean supportMultiModuleCompiler, boolean supportMultiModuleShell, 
+                        boolean supportParallelCompiler,
+                        boolean supportSOYC, boolean supportOOPHM, String webOutputArgument )
     {
         this.supportJava5 = supportJava5;
         this.shellFQCN = shellFQCN;
         this.compilerFQCN = compilerFQCN;
         this.supportMultiModuleCompiler = supportMultiModuleCompiler;
+        this.supportMultiModuleShell = supportMultiModuleShell;
         this.supportParallelCompiler = supportParallelCompiler;
         this.supportSOYC = supportSOYC;
         this.supportOOPHM = supportOOPHM;
@@ -92,6 +94,8 @@ public enum GwtVersion
     private EmbeddedServer emebededServer;
 
     private boolean supportMultiModuleCompiler;
+    
+    private boolean supportMultiModuleShell;
 
     private boolean supportParallelCompiler;
 
@@ -127,6 +131,11 @@ public enum GwtVersion
     public boolean supportMultiModuleCompile()
     {
         return supportMultiModuleCompiler;
+    }
+
+    public boolean supportMultiModuleShell()
+    {
+        return supportMultiModuleShell;
     }
 
     public boolean supportParallelCompile()
