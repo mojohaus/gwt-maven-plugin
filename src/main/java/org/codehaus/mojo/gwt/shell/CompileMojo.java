@@ -37,6 +37,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtModule;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.GwtVersion;
+import org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo.JavaCommand;
 import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SingleTargetSourceMapping;
@@ -204,34 +205,7 @@ public class CompileMojo
             .arg( gwtVersion.getWebOutputArgument() )
             .arg( getOutputDirectory().getAbsolutePath() );
 
-        if ( compileSourcesArtifacts != null )
-        {
-            for ( String include : compileSourcesArtifacts )
-            {
-                List<String> parts = new ArrayList<String>();
-                parts.addAll( Arrays.asList( include.split( ":" ) ) );
-                if ( parts.size() == 2 )
-                {
-                    // type is optional as it will mostly be "jar"
-                    parts.add( "jar" );
-                }
-                String dependencyId = StringUtils.join( parts.iterator(), ":" );
-
-                for ( Artifact artifact : getProjectArtifacts() )
-                {
-                    if ( artifact.getDependencyConflictId().equals( dependencyId ) )
-                    {
-                        getLog().debug( "Add " + include + " sources.jar artifact to compile classpath" );
-                        Artifact sources =
-                            resolve( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), 
-                                "jar", "sources" );
-                        cmd.withinClasspath( sources.getFile() );
-                        break;
-                    }
-                }
-                getLog().warn( "Declared compileSourcesArtifact was not found in project dependencies " + include );
-            }
-        }
+        addCompileSourceArtifacts( cmd );
         
         if ( gwtVersion.supportParallelCompile() )
         {
@@ -239,29 +213,9 @@ public class CompileMojo
                .arg( String.valueOf( getLocalWorkers() ) );
         }
 
-        if ( gwtVersion.supportSOYC() )
-        {
-            if ( soyc != null && Boolean.valueOf( soyc ).booleanValue() == false )
-            {
-                getLog().debug( "SOYC has been disabled by user" );
-            }
-            else
-            {
-                cmd.arg( "-soyc" )
-                   .arg( "-extra")
-                   .arg( extra.getAbsolutePath() );
-                extra.mkdirs();
-            }
-        }
+        addSOYC( gwtVersion, cmd );
 
-        if ( gwtVersion.compareTo( GwtVersion.TWO_DOT_ZERO ) >= 0 )
-        {
-            cmd.arg( draftCompile, "-draftCompile" )
-               .arg( validateOnly, "-validateOnly" )
-               .arg( treeLogger, "-treeLogger" )
-               .arg( disableClassMetadata, "-XdisableClassMetadata" )
-               .arg( disableCastChecking, "-XdisableCastChecking" );
-        }
+        addAvancedOptions( gwtVersion, cmd );
 
         for ( String target : modules )
         {
@@ -278,6 +232,84 @@ public class CompileMojo
         }
     }
 
+    /**
+     * Add sources.jar artifacts for project dependencies listed as compileSourcesArtifacts. This is a GWT hack to avoid
+     * packaging java source files into JAR when sharing code between server and client. Typically, some domain model
+     * classes or business rules may be packaged as a separate Maven module. With GWT packaging this requires to
+     * distribute such classes with code, that may not be desirable.
+     * <p>
+     * The hack can also be used to include utility code from external librariries that may not have been designed for
+     * GWT.
+     */
+    private void addCompileSourceArtifacts( JavaCommand cmd )
+        throws MojoExecutionException
+    {
+        if ( compileSourcesArtifacts == null )
+        {
+            return;
+        }
+        for ( String include : compileSourcesArtifacts )
+        {
+            List<String> parts = new ArrayList<String>();
+            parts.addAll( Arrays.asList( include.split( ":" ) ) );
+            if ( parts.size() == 2 )
+            {
+                // type is optional as it will mostly be "jar"
+                parts.add( "jar" );
+            }
+            String dependencyId = StringUtils.join( parts.iterator(), ":" );
+            boolean found = false;
+    
+            for ( Artifact artifact : getProjectArtifacts() )
+            {
+                getLog().debug( "compare " + dependencyId + " with " + artifact.getDependencyConflictId() );
+                if ( artifact.getDependencyConflictId().equals( dependencyId ) )
+                {
+                    getLog().debug( "Add " + dependencyId + " sources.jar artifact to compile classpath" );
+                    Artifact sources =
+                        resolve( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), 
+                            "jar", "sources" );
+                    cmd.withinClasspath( sources.getFile() );
+                    found = true;
+                    break;
+                }
+            }
+            if ( !found )
+                getLog().warn(
+                    "Declared compileSourcesArtifact was not found in project dependencies " + dependencyId );
+        }
+    }
+
+    private void addSOYC( GwtVersion gwtVersion, JavaCommand cmd )
+    {
+        if ( gwtVersion.supportSOYC() )
+        {
+            if ( soyc != null && Boolean.valueOf( soyc ).booleanValue() == false )
+            {
+                getLog().debug( "SOYC has been disabled by user" );
+            }
+            else
+            {
+                cmd.arg( "-soyc" )
+                   .arg( "-extra")
+                   .arg( extra.getAbsolutePath() );
+                extra.mkdirs();
+            }
+        }
+    }
+
+    private void addAvancedOptions( GwtVersion gwtVersion, JavaCommand cmd )
+    {
+        if ( gwtVersion.compareTo( GwtVersion.TWO_DOT_ZERO ) >= 0 )
+        {
+            cmd.arg( draftCompile, "-draftCompile" )
+               .arg( validateOnly, "-validateOnly" )
+               .arg( treeLogger, "-treeLogger" )
+               .arg( disableClassMetadata, "-XdisableClassMetadata" )
+               .arg( disableCastChecking, "-XdisableCastChecking" );
+        }
+    }
+
     private int getLocalWorkers()
     {
         if ( localWorkers > 0 )
@@ -288,7 +320,7 @@ public class CompileMojo
         // @see http://code.google.com/p/google-web-toolkit/issues/detail?id=4031
         if ( System.getProperty( "java.vendor" ).startsWith( "IBM" ) )
         {
-            getLog().debug( "Build is using IBM JDK, localWorkers set to 1 as workaround to gwt#4031" );
+            getLog().info( "Build is using IBM JDK, localWorkers set to 1 as workaround to gwt#4031" );
             return 1;
         }
         return Runtime.getRuntime().availableProcessors();

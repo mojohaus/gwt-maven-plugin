@@ -21,7 +21,7 @@
 <!DOCTYPE module PUBLIC "//gwt-module/" "http://google-web-toolkit.googlecode.com/svn/tags/1.6.2/distro-source/core/src/gwt-module.dtd">
 <module rename-to="hello">
   <inherits name="com.google.gwt.user.User"/>
-  <!--<inherits name="org.apache.commons.Lang"/>-->
+  <inherits name="org.apache.commons.Lang"/>
 
   <entry-point class="org.codehaus.mojo.gwt.test.client.Hello"/>
   <servlet path="/HelloService" class="org.codehaus.mojo.gwt.test.server.HelloRemoteServlet"/>

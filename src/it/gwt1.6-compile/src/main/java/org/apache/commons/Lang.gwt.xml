@@ -21,5 +21,5 @@
 <!DOCTYPE module PUBLIC "//gwt-module/" "http://google-web-toolkit.googlecode.com/svn/releases/1.4/distro-source/core/src/gwt-module.dtd">
 <module>
   <inherits name="com.google.gwt.user.User" />
-  <source path="lang" includes="StringUtils" />
+  <source path="lang" includes="WordUtils.java" />
 </module>
