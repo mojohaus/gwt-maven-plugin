@@ -25,8 +25,11 @@ package org.codehaus.mojo.gwt.shell;
 import static org.apache.maven.artifact.Artifact.SCOPE_COMPILE;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -37,6 +40,7 @@ import org.codehaus.mojo.gwt.GwtVersion;
 import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SingleTargetSourceMapping;
+import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Invokes the GWTCompiler for the project source.
@@ -53,6 +57,7 @@ import org.codehaus.plexus.compiler.util.scan.mapping.SingleTargetSourceMapping;
 public class CompileMojo
     extends AbstractGwtShellMojo
 {
+
     /**
      * @parameter expression="${gwt.compiler.skip}" default-value="false"
      */
@@ -85,6 +90,19 @@ public class CompileMojo
      * @parameter expression="${gwt.compiler.soyc}"
      */
     private String soyc;
+
+    /**
+     * Artifacts to be included as source-jars in GWTCompiler Classpath. Removes the restriction that source code must
+     * be bundled inside of the final JAR when dealing with external utility libraries not designed exclusivelly for
+     * GWT. The plugin will download the source.jar if necessary.
+     * <p>
+     * This option is a workaround to avoid packaging sources inside the same JAR when splitting and application into
+     * modules. A smaller JAR can then be used on server classpath and distributed without sources (that may not be
+     * desirable).
+     * 
+     * @parameter
+     */
+    private String[] compileSourcesArtifacts;
 
     /**
      * Logs output in a graphical tree view.
@@ -186,6 +204,35 @@ public class CompileMojo
             .arg( gwtVersion.getWebOutputArgument() )
             .arg( getOutputDirectory().getAbsolutePath() );
 
+        if ( compileSourcesArtifacts != null )
+        {
+            for ( String include : compileSourcesArtifacts )
+            {
+                List<String> parts = new ArrayList<String>();
+                parts.addAll( Arrays.asList( include.split( ":" ) ) );
+                if ( parts.size() == 2 )
+                {
+                    // type is optional as it will mostly be "jar"
+                    parts.add( "jar" );
+                }
+                String dependencyId = StringUtils.join( parts.iterator(), ":" );
+
+                for ( Artifact artifact : getProjectArtifacts() )
+                {
+                    if ( artifact.getDependencyConflictId().equals( dependencyId ) )
+                    {
+                        getLog().debug( "Add " + include + " sources.jar artifact to compile classpath" );
+                        Artifact sources =
+                            resolve( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), 
+                                "jar", "sources" );
+                        cmd.withinClasspath( sources.getFile() );
+                        break;
+                    }
+                }
+                getLog().warn( "Declared compileSourcesArtifact was not found in project dependencies " + include );
+            }
+        }
+        
         if ( gwtVersion.supportParallelCompile() )
         {
             cmd.arg( "-localWorkers" )
@@ -220,7 +267,6 @@ public class CompileMojo
         {
             if ( !compilationRequired( target, getOutputDirectory() ) )
             {
-                getLog().info( target + " is up to date. GWT compilation skipped" );
                 continue;
             }
             cmd.arg( target );
@@ -237,6 +283,13 @@ public class CompileMojo
         if ( localWorkers > 0 )
         {
             return localWorkers;
+        }
+        // workaround to GWT issue 4031 whith IBM JDK
+        // @see http://code.google.com/p/google-web-toolkit/issues/detail?id=4031
+        if ( System.getProperty( "java.vendor" ).startsWith( "IBM" ) )
+        {
+            getLog().debug( "Build is using IBM JDK, localWorkers set to 1 as workaround to gwt#4031" );
+            return 1;
         }
         return Runtime.getRuntime().availableProcessors();
     }
@@ -309,6 +362,7 @@ public class CompileMojo
                     + "for stale files to recompile.", e );
             }
         }
+        getLog().info( module + " is up to date. GWT compilation skipped" );
         return false;
     }
 }

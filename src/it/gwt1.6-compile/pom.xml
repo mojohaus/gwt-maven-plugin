@@ -39,6 +39,9 @@
           <logLevel>INFO</logLevel>
           <runTarget>org.codehaus.mojo.gwt.test.Hello/Hello.html</runTarget>
           <runTimeOut>20</runTimeOut>
+          <compileSourcesArtifacts>
+            <compileSourcesArtifact>commons-lang:commons-lang</compileSourcesArtifact>
+          </compileSourcesArtifacts>          
         </configuration>
         <executions>
           <execution>
@@ -68,5 +71,12 @@
       <version>${gwtVersion}</version>
       <scope>provided</scope>
     </dependency>
+
+    <!-- Dependency used both as server-side and GWT utility lib using it's sources.jar -->
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.4</version>
+    </dependency>    
   </dependencies>
 </project>

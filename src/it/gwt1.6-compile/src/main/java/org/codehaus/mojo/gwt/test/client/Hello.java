@@ -19,6 +19,8 @@ package org.codehaus.mojo.gwt.test.client;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
@@ -30,8 +32,8 @@ public class Hello
 
     public void onModuleLoad()
     {
-
-        RootPanel.get().add( new Label( "GWT is running :D" ) );
+        String msg = StringUtils.capitalize( "GWT is running :D" );
+        RootPanel.get().add( new Label( msg ) );
         HelloServiceAsync service = HelloServiceAsync.Util.getInstance();
 
         service.exit( new VoidAsyncCallBack() );

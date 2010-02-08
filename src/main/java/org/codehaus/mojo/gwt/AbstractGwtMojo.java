@@ -342,10 +342,18 @@ public abstract class AbstractGwtMojo
      * @see org.codehaus.mojo.gwt.GwtArtifactResolver#resolve(java.lang.String, java.lang.String, java.lang.String,
      * java.lang.String)
      */
-    public Artifact resolve( String id, String version, String type, String classifier )
+    public Artifact resolve( String artifactId, String version, String type, String classifier )
         throws MojoExecutionException
     {
-        Artifact artifact = artifactFactory.createArtifactWithClassifier( GWT_GROUP_ID, id, version, type, classifier );
+        String groupId = GWT_GROUP_ID;
+        return resolve( groupId, artifactId, version, type, classifier );
+    }
+
+
+    protected Artifact resolve( String groupId, String artifactId, String version, String type, String classifier )
+        throws MojoExecutionException
+    {
+        Artifact artifact = artifactFactory.createArtifactWithClassifier( groupId, artifactId, version, type, classifier );
         try
         {
             resolver.resolve( artifact, remoteRepositories, localRepository );

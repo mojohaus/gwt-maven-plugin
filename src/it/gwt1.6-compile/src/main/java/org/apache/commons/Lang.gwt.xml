@@ -1,5 +1,4 @@
-package org.codehaus.mojo.gwt;
-
+<!--
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,19 +17,9 @@ package org.codehaus.mojo.gwt;
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.MojoExecutionException;
-import org.codehaus.plexus.archiver.manager.ArchiverManager;
-
-/**
- * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
- */
-public interface GwtArtifactResolver
-{
-
-    public abstract Artifact resolve( String artifactId, String version, String type, String classifier )
-        throws MojoExecutionException;
-
-    public ArchiverManager getArchiverManager();
-}
+-->
+<!DOCTYPE module PUBLIC "//gwt-module/" "http://google-web-toolkit.googlecode.com/svn/releases/1.4/distro-source/core/src/gwt-module.dtd">
+<module>
+  <inherits name="com.google.gwt.user.User" />
+  <source path="lang" includes="StringUtils" />
+</module>
