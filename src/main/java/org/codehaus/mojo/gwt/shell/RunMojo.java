@@ -171,7 +171,7 @@ public class RunMojo
     }
 
     /**
-     * @return the GWT module to run (gwt 1.6+)
+     * @return the GWT module to run (gwt 1.6+) -- expected to be unique
      */
     public String getRunModule()
         throws MojoExecutionException
@@ -198,7 +198,8 @@ public class RunMojo
             return runTarget.substring( 0, dash );
         }
         // The runTarget MUST start with the full GWT module path
-        throw new MojoExecutionException( "You MUST specify the GWT module to run using -Dgwt.module" );
+        throw new MojoExecutionException( 
+            "Unable to choose a GWT module to run. Please specify your module(s) in the configuration" );
     }
 
     /**
@@ -211,15 +212,20 @@ public class RunMojo
         {
             return runTarget;
         }
+
         int dash = runTarget.indexOf( '/' );
-        String module = getRunModule();
         if ( dash > 0 )
         {
             String prefix = runTarget.substring( 0, dash );
-            if ( prefix.equals( module ) )
+            // runTarget includes the GWT module full path.
+            // Lets retrieve the GWT module and apply the rename-to directive
+            String[] modules = getModules();
+            for ( String module : modules )
             {
-                // runTarget includes the GWT module full path. Lets apply the rename-to directive
-                return readModule( module ).getPath() + '/' + runTarget.substring( dash + 1 );
+                if ( prefix.equals( module ) )
+                {
+                    return readModule( module ).getPath() + '/' + runTarget.substring( dash + 1 );
+                }
             }
         }
         return runTarget;
@@ -308,8 +314,19 @@ public class RunMojo
                     getLog().info( "noServer is set! Skipping exploding war file..." );
                 }
                 cmd.arg( "-startupUrl" )
-                    .arg( getStartupUrl() )
-                    .arg( getRunModule() );
+                   .arg( getStartupUrl() );
+
+                if ( runtime.getVersion().supportMultiModuleShell() )
+                {
+                    for ( String module : getModules() )
+                    {
+                        cmd.arg( module );
+                    }
+                }
+                else
+                {
+                    cmd.arg( getRunModule() );
+                }
                 break;
         }
 
