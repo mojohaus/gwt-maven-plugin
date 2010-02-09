@@ -78,6 +78,13 @@ public class GenerateAsyncMojo
     private String servicePattern;
 
     /**
+     * Return a com.google.gwt.http.client.Request on async interface to allow cancellation.
+     * 
+     * @parameter default-value="false"
+     */
+    private boolean returnRequest;
+
+    /**
      * A (MessageFormat) Pattern to get the GWT-RPC servlet URL based on service interface name. For example to
      * "{0}.rpc" if you want to map GWT-RPC calls to "*.rpc" in web.xml, for example when using Spring dispatch servlet
      * to handle RPC requests.
@@ -232,7 +239,14 @@ public class GenerateAsyncMojo
             writer.println( "     * GWT-RPC service  asynchronous (client-side) interface" );
             writer.println( "     * @see " + method.getParentClass().getFullyQualifiedName() );
             writer.println( "     */" );
-            writer.print( "    void " + method.getName() + "( " );
+            if ( returnRequest )
+            {
+                writer.print( "    com.google.gwt.http.client.Request " + method.getName() + "( " );
+            }
+            else
+            {
+                writer.print( "    void " + method.getName() + "( " );
+            }
             JavaParameter[] params = method.getParameters();
             for ( int j = 0; j < params.length; j++ )
             {
