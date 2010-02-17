@@ -93,10 +93,24 @@ public class TestMojo
      * run tests using web mode rather than developer (a.k.a. hosted) mode
      * @parameter default-value=false
      */
-    private boolean webMode;    
+    private boolean webMode;
+
+    /**
+     * run tests using production mode rather than development (a.k.a. hosted) mode
+     * 
+     * @see http://code.google.com/intl/fr-FR/webtoolkit/doc/latest/DevGuideCompilingAndDebugging.html#DevGuideProdMode
+     * @parameter default-value=false expression="${gwt.test.prod}"
+     */
+    private boolean productionMode;
+
+    /**
+     * @parameter default-value=false expression="${gwt.test.manual}"
+     */
+    private boolean manualMode;
 
     /**
      * Time out (in seconds) for test execution in dedicated JVM
+     * 
      * @parameter default-value="60"
      */
     @SuppressWarnings("unused")
@@ -205,6 +219,14 @@ public class TestMojo
         if ( webMode )
         {
             sb.append( "-web " );
+        }
+        if ( productionMode )
+        {
+            sb.append( "-prod " );
+        }
+        if ( manualMode )
+        {
+            sb.append( "-runStyle Manual:1 " );
         }
         return sb.toString();
     }    
