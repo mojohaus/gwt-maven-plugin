@@ -41,7 +41,6 @@ import com.thoughtworks.qdox.model.Annotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
-import com.thoughtworks.qdox.model.JavaSource;
 
 /**
  * Goal which generate Asyn interface.
@@ -220,9 +219,11 @@ public class GenerateAsyncMojo
         PrintWriter writer = new PrintWriter( targetFile, encoding );
 
         String className = clazz.getName();
-        JavaSource javaSource = clazz.getParentSource();
-        writer.println( "package " + javaSource.getPackage().getName() + ";" );
-        writer.println();
+        if ( clazz.getPackage() != null )
+        {
+            writer.println( "package " + clazz.getPackageName() + ";" );
+            writer.println();
+        }
         writer.println( "import com.google.gwt.core.client.GWT;" );
         writer.println( "import com.google.gwt.user.client.rpc.AsyncCallback;" );
         writer.println( "import com.google.gwt.user.client.rpc.ServiceDefTarget;" );
@@ -237,7 +238,7 @@ public class GenerateAsyncMojo
             writer.println( "" );
             writer.println( "    /**" );
             writer.println( "     * GWT-RPC service  asynchronous (client-side) interface" );
-            writer.println( "     * @see " + method.getParentClass().getFullyQualifiedName() );
+            writer.println( "     * @see " + clazz.getFullyQualifiedName() );
             writer.println( "     */" );
             if ( returnRequest )
             {
@@ -255,8 +256,8 @@ public class GenerateAsyncMojo
                 {
                     writer.print( ", " );
                 }
-                writer.print( fixClassName(param.getType().getGenericValue()) );
-                if ( param.getType().isArray() )
+                writer.print( param.getType().getGenericValue() );
+                for ( int dimensionIndex = 0; dimensionIndex  < param.getType().getDimensions(); dimensionIndex ++  )
                 {
                     writer.print( "[]" );
                 }
@@ -280,8 +281,8 @@ public class GenerateAsyncMojo
                 }
                 else
                 {
-                    String type = fixClassName(method.getReturns().getGenericValue());
-                    if ( method.getReturns().isArray() )
+                    String type = method.getReturns().getGenericValue();
+                    for ( int dimensionIndex = 0; dimensionIndex  < method.getReturns().getDimensions(); dimensionIndex ++  )
                     {
                         type += "[]";
                     }
@@ -357,7 +358,7 @@ public class GenerateAsyncMojo
             builder.getClassLibrary().addClassLoader( getProjectClassLoader() );
             for ( String sourceRoot : (List<String>) getProject().getCompileSourceRoots() )
             {
-                builder.addSourceTree( new File( sourceRoot ) );
+                builder.getClassLibrary().addSourceFolder( new File(sourceRoot) );
             }
             return builder;
         }
@@ -375,14 +376,6 @@ public class GenerateAsyncMojo
     {
         String className = sourceFile.substring( 0, sourceFile.length() - 5 ); // strip ".java"
         return className.replace( File.separatorChar, '.' );
-    }
-
-    /**
-     * Fix the class name returned by QDox model (e.g. fix inner class names)
-     */
-    private String fixClassName( String original )
-    {
-        return original.replaceAll( "\\$", "." );
     }
 
     /**
