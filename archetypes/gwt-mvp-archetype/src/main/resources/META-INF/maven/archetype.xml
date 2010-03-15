@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><archetype>
+  <id>gwt-mvp-rpc</id>
+  <sources>
+    <source>src/main/java/client/CachingDispatchAsync.java</source>
+    <source>src/main/java/client/gin/GreetingClientModule.java</source>
+    <source>src/main/java/client/gin/GreetingGinjector.java</source>
+    <source>src/main/java/client/GreetingService.java</source>
+    <source>src/main/java/client/GreetingServiceAsync.java</source>
+    <source>src/main/java/client/GreetMvp.java</source>
+    <source>src/main/java/client/mvp/AppPresenter.java</source>
+    <source>src/main/java/client/mvp/GreetingPresenter.java</source>
+    <source>src/main/java/client/mvp/GreetingResponsePresenter.java</source>
+    <source>src/main/java/client/mvp/GreetingResponseView.java</source>
+    <source>src/main/java/client/mvp/GreetingView.java</source>
+    
+    <source>src/main/java/server/GreetingServiceImpl.java</source>
+    <source>src/main/java/server/guice/DispatchServletModule.java</source>
+    <source>src/main/java/server/guice/LogProvider.java</source>
+    <source>src/main/java/server/guice/MyGuiceServletConfig.java</source>
+    <source>src/main/java/server/guice/ServerModule.java</source>
+    <source>src/main/java/server/handler/SendGreetingHandler.java</source>
+
+    <source>src/main/java/shared/event/GreetingSentEvent.java</source>
+    <source>src/main/java/shared/event/GreetingSentEventHandler.java</source>
+    <source>src/main/java/shared/rpc/SendGreeting.java</source>
+    <source>src/main/java/shared/rpc/SendGreetingResult.java</source>
+  </sources>
+
+  <resources>
+    <resource>src/main/resources/GreetMvp.gwt.xml</resource>
+    <resource>src/main/resources/log4j.properties</resource>
+
+    <resource>lib/gin-1.0.0.130.jar</resource>
+
+    <resource>war/GreetMvp.css</resource>
+    <resource>war/GreetMvp.html</resource>
+    <resource>war/WEB-INF/web.xml</resource>
+  </resources>
+</archetype>
