@@ -138,6 +138,15 @@ public class EclipseMojo
     private String blacklist;
 
     /**
+     * Set GWT shell bindAddress.
+     * <p>
+     * Can be set from command line using '-Dgwt.bindAddress=...'
+     * 
+     * @parameter expression="${gwt.bindAddress}"
+     */
+    private String bindAddress;
+
+    /**
      * Setup a launch configuration for using the Google Eclipse Plugin. This is the recommended setup, as the home-made
      * launch configuration has many limitations. This parameter is only for backward compatibility, the standard lauch
      * configuration template will be removed in a future release.
@@ -268,6 +277,10 @@ public class EclipseMojo
         if ( whitelist != null )
         {
             args += " -whitelist " + whitelist;
+        }
+        if ( bindAddress != null )
+        {
+            args += " -bindAddress " + bindAddress;
         }
         context.put( "additionalArguments", args );
         context.put( "extraJvmArgs", getExtraJvmArgs() );
