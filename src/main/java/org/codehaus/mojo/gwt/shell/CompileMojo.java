@@ -37,7 +37,6 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtModule;
 import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.GwtVersion;
-import org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo.JavaCommand;
 import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SingleTargetSourceMapping;
@@ -100,7 +99,7 @@ public class CompileMojo
      * This option is a workaround to avoid packaging sources inside the same JAR when splitting and application into
      * modules. A smaller JAR can then be used on server classpath and distributed without sources (that may not be
      * desirable).
-     * 
+     *
      * @parameter
      */
     private String[] compileSourcesArtifacts;
@@ -157,6 +156,13 @@ public class CompileMojo
      */
     private File extra;
 
+    /**
+     * The temp directory is used for temporary compiled files (defaults is system temp directory).
+     *
+     * @parameter
+     */
+    private File workDir;
+
     public void doExecute( GwtRuntime runtime )
         throws MojoExecutionException, MojoFailureException
     {
@@ -206,7 +212,13 @@ public class CompileMojo
             .arg( getOutputDirectory().getAbsolutePath() );
 
         addCompileSourceArtifacts( cmd );
-        
+
+        if ( workDir != null )
+        {
+            cmd.arg( "-workDir" )
+               .arg( String.valueOf( workDir ) );
+        }
+
         if ( gwtVersion.supportParallelCompile() )
         {
             cmd.arg( "-localWorkers" )
@@ -259,7 +271,7 @@ public class CompileMojo
             }
             String dependencyId = StringUtils.join( parts.iterator(), ":" );
             boolean found = false;
-    
+
             for ( Artifact artifact : getProjectArtifacts() )
             {
                 getLog().debug( "compare " + dependencyId + " with " + artifact.getDependencyConflictId() );
@@ -267,7 +279,7 @@ public class CompileMojo
                 {
                     getLog().debug( "Add " + dependencyId + " sources.jar artifact to compile classpath" );
                     Artifact sources =
-                        resolve( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), 
+                        resolve( artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(),
                             "jar", "sources" );
                     cmd.withinClasspath( sources.getFile() );
                     found = true;
