@@ -155,7 +155,7 @@ public class RunMojo
      * @parameter expression="${gwt.blacklist}"
      */
     private String blacklist;
-    
+
     /**
      * List of System properties to pass when running the hosted mode.
      * 
@@ -163,7 +163,7 @@ public class RunMojo
      * @since 1.2
      */
     private Map<String, String> systemProperties;
-    
+
 
     public String getRunTarget()
     {
@@ -198,7 +198,7 @@ public class RunMojo
             return runTarget.substring( 0, dash );
         }
         // The runTarget MUST start with the full GWT module path
-        throw new MojoExecutionException( 
+        throw new MojoExecutionException(
             "Unable to choose a GWT module to run. Please specify your module(s) in the configuration" );
     }
 
@@ -248,7 +248,7 @@ public class RunMojo
             .arg( getGen().getAbsolutePath() )
             .arg( "-logLevel" )
             .arg( getLogLevel() );
-            
+
         if ( runtime.getVersion().compareTo( GwtVersion.TWO_DOT_ZERO ) < 0 )
         {
             cmd.arg( "-style" ).arg( getStyle() );
@@ -288,7 +288,7 @@ public class RunMojo
 
             }
         }
-        
+
         switch ( runtime.getVersion().getEmbeddedServer() )
         {
             case TOMCAT:
@@ -347,7 +347,7 @@ public class RunMojo
                                 + "hosted webapp WEB-INF/classes folder for GWT Hosted browser to see your classes." );
             try
             {
-                FileUtils.copyDirectory( buildOutputDirectory, classes );
+                FileUtils.copyDirectoryStructure( buildOutputDirectory, classes );
             }
             catch ( IOException e )
             {
