@@ -27,6 +27,10 @@ Frequently Asked Questions
 
 * I get strange NoSuchMethodError running my application unit tests !
 
-  <<<gwt-dev>>> JAR includes many libraries, including some Apache commons-* that you may use in your project with more
-  recent version. Don't define <<<gwt-dev>>> as a dependency, the plugin will resolve it when necessary for you based on your
-  <<<gwt-user>>> version.
+  <<<gwt-dev>>> JAR includes many libraries, including some Apache commons-*. You may use such libs
+  in your project with other recent version. Don't define <<<gwt-dev>>> as a dependency, the plugin will resolve it when
+  necessary for you based on your <<<gwt-user>>> version.
+
+  Some user report same errors as <<<gwt-dev>>> also include and Eclipse JDT compiler. A way to detect this issue is to
+  run mvn dependency:tree and look for any org.eclipse.jdt artifacts listed (GWT's is in the gwt-dev jar added by the
+  <<<gwt:compile>>> task itself) - then exclude it from whichever artifact is bringing it in.
