@@ -46,6 +46,9 @@ public enum GwtVersion
         "com.google.gwt.dev.HostedMode", "com.google.gwt.dev.Compiler", JETTY, "-war" )
 
     , TWO_DOT_ZERO( ONE_DOT_SEVEN.capabilities + MULTI_MODULE_SHELL + SOYC + OOPHM,
+        "com.google.gwt.dev.DevMode", "com.google.gwt.dev.Compiler", JETTY, "-war" )
+
+    , TWO_DOT_ONE( TWO_DOT_ZERO.capabilities,
         "com.google.gwt.dev.DevMode", "com.google.gwt.dev.Compiler", JETTY, "-war" );
 
 
@@ -70,6 +73,10 @@ public enum GwtVersion
         if ( version.startsWith( "2.0" ) )
         {
             return TWO_DOT_ZERO;
+        }
+        if ( version.startsWith( "2.1" ) )
+        {
+            return TWO_DOT_ONE;
         }
         throw new IllegalStateException( "Unsupported GWT version " + version );
     }
