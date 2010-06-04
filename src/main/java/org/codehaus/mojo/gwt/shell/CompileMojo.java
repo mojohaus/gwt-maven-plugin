@@ -44,8 +44,8 @@ import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Invokes the GWTCompiler for the project source.
- *
- * @phase process-classes
+ * 
+ * @phase prepare-package
  * @goal compile
  * @requiresDependencyResolution compile
  * @version $Id$

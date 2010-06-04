@@ -26,7 +26,7 @@
   <url>http://mojo.codehaus.org/gwt-maven-plugin</url>
   <inceptionYear>2007</inceptionYear>
   <prerequisites>
-    <maven>2.0.9</maven>
+    <maven>2.1</maven>
   </prerequisites>
   <licenses>
     <license>
@@ -359,7 +359,7 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>2.0-beta-9</version>
       </plugin>
-	  
+
     </plugins>
   </build>
 
@@ -380,7 +380,7 @@
           <configLocation>http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven_checks.xml</configLocation>
           <headerLocation>http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven-header.txt</headerLocation>
         </configuration>
-      </plugin>	
+      </plugin>
     </plugins>
   </reporting>
 
