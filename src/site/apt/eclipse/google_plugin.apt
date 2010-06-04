@@ -18,7 +18,8 @@ Using the Google Eclipse Plugin
   resource directory.
   See Google Eclipse Plugin {{{http://code.google.com/p/googleappengine/issues/detail?id=1597}issue #1597}}
 
-  Another bigger restriction of this plugin, is that it <<requires>> the hosted mode webapp to use <<</war>>>
+  Prior to 2.0.3 release, another bigger restriction of this plugin, is that it <<requires>> the hosted mode
+  webapp to use <<</war>>>
   directory as web application root. We will have to change the maven-war-plugin setup to use this folder and
   not the default <<<src/main/webapp>>> path, but will keep the latest to host the <<<web.xml>>> deployment
   descriptor. We can then have a dedicated hosted mode one where we register stub RPC-servlets for testing
@@ -26,6 +27,8 @@ Using the Google Eclipse Plugin
   DataSource, and we can still run functionnal tests on it using the <<<noserver>>> option.
   See Google Eclipse Plugin {{{http://code.google.com/p/googleappengine/issues/detail?id=1515}issue #1515}}
 
+  If you are using GWT 2.0.3+ and the associated Google Eclipse plugin, you can configure it to use
+  <<<src/main/webapp>>> as webapp folder.
 
 * Project layout
 
@@ -61,7 +64,7 @@ Using the Google Eclipse Plugin
 +---
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
 		                     http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mycompany</groupId>
@@ -145,8 +148,8 @@ Using the Google Eclipse Plugin
 * Multiproject setup
 
   Big projects may want to split the client-side application in modules, typically using Maven support for
-  multiprojects. The project layout will the become something like this (maybe with some more classes) : 
-  
+  multiprojects. The project layout will the become something like this (maybe with some more classes) :
+
 +---
   pom.xml // reactor project
   |_domain // shared with other (GWT or Java) projects
@@ -154,7 +157,7 @@ Using the Google Eclipse Plugin
   |    |_main
   |      |_java
   |      |  |_ com/mycompany/domain
-  |      |  |  |_ User.java  
+  |      |  |  |_ User.java
   |      |_resources
   |      |  |_ com/mycompany/Domain.gwt.xml
   |_webapp
@@ -165,13 +168,13 @@ Using the Google Eclipse Plugin
      |    |  |_ com/mycompany/gwt/client
      |    |  |  |_ ModuleEntryPoint.java
 ...
-+---  
-  
++---
+
   When using Eclipse-Maven integration like the m2eclipse plugin, other maven projects open in the
   workspace will be automagically resolved as projects (instead of JARs). When the referenced project is well
   configured(*) as a GWT module project, changes to java sources will be available in the hosted browser with a simple
-  refresh with no requirement to repackage the modules.  
-  
+  refresh with no requirement to repackage the modules.
+
   [images/gwt-maven-logo.png] m2eclipse detecting the gwt module as project reference
 
   (*) A "<well configured GWT module project>" is expected to have Java sources copied as resources in the project
