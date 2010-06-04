@@ -68,6 +68,7 @@ under the License.
       <item name="Compile and Package" href="user-guide/compiler.html"/>
       <item name="Multi-project setup" href="user-guide/multiproject.html"/>
       <item name="Writing a GWT library" href="user-guide/library.html"/>
+      <item name="Comfortable debugging" href="user-guide/comfortable_debugging.html"/>
 	  <item name="Productivity Tips" href="user-guide/productivity.html"/>
     </menu>
     <menu name="Examples">
