@@ -269,7 +269,7 @@ public abstract class AbstractGwtShellMojo
 				{
 					commandLine.add( arg );
 				}
-                
+
             }
             return commandLine;
         }
@@ -417,11 +417,11 @@ public abstract class AbstractGwtShellMojo
                     getLog().warn( "Forked JVM has been killed on time-out after " + timeOut + " seconds" );
                     return;
                 }
-                throw new MojoExecutionException( "Time-out on command line execution :\n" + command );
+                throw new MojoExecutionException( "Time-out on command line execution :\n" + command, e );
             }
             catch ( CommandLineException e )
             {
-                throw new MojoExecutionException( "Failed to execute command line :\n" + command );
+                throw new MojoExecutionException( "Failed to execute command line :\n" + command, e );
             }
         }
 
