@@ -41,6 +41,7 @@ import com.thoughtworks.qdox.model.Annotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
+import com.thoughtworks.qdox.model.Type;
 
 /**
  * Goal which generate Asyn interface.
@@ -256,10 +257,14 @@ public class GenerateAsyncMojo
                 {
                     writer.print( ", " );
                 }
-                writer.print( param.getType().getGenericValue() );
-                for ( int dimensionIndex = 0; dimensionIndex  < param.getType().getDimensions(); dimensionIndex ++  )
+                
+                writer.print( method.getParameterTypes( true )[j].getGenericValue() );
+                if ( param.getType().getDimensions() != method.getParameterTypes( true )[j].getDimensions() ) 
                 {
-                    writer.print( "[]" );
+                    for ( int dimensions = 0 ; dimensions < param.getType().getDimensions(); dimensions++ )
+                    {
+                        writer.print( "[]" );
+                    }
                 }
                 writer.print( " " + param.getName() );
             }
@@ -281,10 +286,15 @@ public class GenerateAsyncMojo
                 }
                 else
                 {
-                    String type = method.getReturns().getGenericValue();
-                    for ( int dimensionIndex = 0; dimensionIndex  < method.getReturns().getDimensions(); dimensionIndex ++  )
+                    Type returnType = method.getReturnType( true );
+                    String type = returnType.getGenericValue();
+                    
+                    if ( method.getReturns().getDimensions() != method.getReturnType( true ).getDimensions() ) 
                     {
-                        type += "[]";
+                        for ( int dimensions = 0 ; dimensions < method.getReturns().getDimensions(); dimensions++ )
+                        {
+                            type += "[]";
+                        }
                     }
                     writer.println( "AsyncCallback<" + type + "> callback );" );
                 }
@@ -356,9 +366,9 @@ public class GenerateAsyncMojo
             JavaDocBuilder builder = new JavaDocBuilder();
 			builder.setEncoding( encoding );
             builder.getClassLibrary().addClassLoader( getProjectClassLoader() );
-            for ( String sourceRoot : (List<String>) getProject().getCompileSourceRoots() )
+            for ( String sourceRoot : ( List < String > ) getProject().getCompileSourceRoots() )
             {
-                builder.getClassLibrary().addSourceFolder( new File(sourceRoot) );
+                builder.getClassLibrary().addSourceFolder( new File( sourceRoot ) );
             }
             return builder;
         }
