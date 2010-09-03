@@ -28,15 +28,14 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.GwtVersion;
 import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Goal which run a GWT module in the GWT Hosted mode.
- *
+ * 
  * @goal run
- * @execute phase=compile
+ * @execute phase=compile goal:war:exploded
+ * @requiresDirectInvocation
  * @requiresDependencyResolution test
  * @description Runs the the project in the GWT Hosted mode for development.
  * @author ccollins
@@ -48,8 +47,8 @@ public class RunMojo
 {
     /**
      * Location of the hosted-mode web application structure.
-     *
-     * @parameter default-value="${basedir}/war"
+     * 
+     * @parameter default-value="${project.build.directory}/${project.build.finalName}"
      */
     // Parameter shared with EclipseMojo
     private File hostedWebapp;
@@ -126,14 +125,14 @@ public class RunMojo
 
     /**
      * Specifies a different embedded web server to run (must implement ServletContainerLauncher)
-     * 
+     *
      * @parameter expression="${gwt.server}"
      */
     private String server;
 
     /**
      * Specifies the mapping URL to be used with the shell servlet.
-     * 
+     *
      * @parameter default-value="/*"
      */
     private String shellServletMappingURL;
@@ -158,7 +157,7 @@ public class RunMojo
 
     /**
      * List of System properties to pass when running the hosted mode.
-     * 
+     *
      * @parameter
      * @since 1.2
      */
@@ -236,39 +235,30 @@ public class RunMojo
         return "run";
     }
 
-    public void doExecute( GwtRuntime runtime )
+    public void doExecute( )
         throws MojoExecutionException, MojoFailureException
     {
-        String clazz = runtime.getVersion().getShellFQCN();
-        JavaCommand cmd = new JavaCommand( clazz, runtime )
+        JavaCommand cmd = new JavaCommand( "com.google.gwt.dev.DevMode" )
             .withinScope( Artifact.SCOPE_RUNTIME )
-            .arg( runtime.getVersion().getWebOutputArgument() )
-            .arg( hostedWebapp.getAbsolutePath() )
-            .arg( "-gen" )
-            .arg( getGen().getAbsolutePath() )
-            .arg( "-logLevel" )
-            .arg( getLogLevel() );
-
-        if ( runtime.getVersion().compareTo( GwtVersion.TWO_DOT_ZERO ) < 0 )
-        {
-            cmd.arg( "-style" ).arg( getStyle() );
-        }
-        cmd.arg( "-port" )
-            .arg( Integer.toString( getPort() ) )
+            .arg( "-war", hostedWebapp.getAbsolutePath() )
+            .arg( "-gen", getGen().getAbsolutePath() )
+            .arg( "-logLevel", getLogLevel() )
+            .arg( "-port", Integer.toString( getPort() ) )
+            .arg( "-startupUrl", getStartupUrl() )
             .arg( noServer, "-noserver" );
 
         if ( server != null )
         {
-            cmd.arg( "-server" ).arg( server );
+            cmd.arg( "-server", server );
         }
 
         if ( whitelist != null && whitelist.length() > 0 )
         {
-            cmd.arg( "-whitelist" ).arg( whitelist );
+            cmd.arg( "-whitelist", whitelist );
         }
         if ( blacklist != null && blacklist.length() > 0 )
         {
-            cmd.arg( "-blacklist" ).arg( blacklist );
+            cmd.arg( "-blacklist", blacklist );
         }
 
         if ( systemProperties != null && !systemProperties.isEmpty() )
@@ -285,49 +275,21 @@ public class RunMojo
                 {
                     getLog().info( "skip sysProps " + key + " with empty value" );
                 }
-
             }
         }
 
-        switch ( runtime.getVersion().getEmbeddedServer() )
+        if ( !noServer )
         {
-            case TOMCAT:
-                try
-                {
-                    this.makeCatalinaBase();
-                }
-                catch ( Exception e )
-                {
-                    throw new MojoExecutionException( "Unable to build catalina.base", e );
-                }
-                cmd.systemProperty( "catalina.base", getTomcat().getAbsolutePath() )
-                    .arg( getRunTarget() );
-                break;
-            case JETTY:
-            default:
-                if ( !noServer )
-                {
-                    setupExplodedWar();
-                }
-                else
-                {
-                    getLog().info( "noServer is set! Skipping exploding war file..." );
-                }
-                cmd.arg( "-startupUrl" )
-                   .arg( getStartupUrl() );
+            setupExplodedWar();
+        }
+        else
+        {
+            getLog().info( "noServer is set! Skipping exploding war file..." );
+        }
 
-                if ( runtime.getVersion().supportMultiModuleShell() )
-                {
-                    for ( String module : getModules() )
-                    {
-                        cmd.arg( module );
-                    }
-                }
-                else
-                {
-                    cmd.arg( getRunModule() );
-                }
-                break;
+        for ( String module : getModules() )
+        {
+            cmd.arg( module );
         }
 
         cmd.execute();
@@ -355,7 +317,6 @@ public class RunMojo
             }
         }
 
-
         File lib = new File( hostedWebapp, "WEB-INF/lib" );
         lib.mkdirs();
 
@@ -375,40 +336,7 @@ public class RunMojo
                 throw new MojoExecutionException( "Failed to copy runtime dependency " + artifact, e );
             }
         }
-
     }
-
-    /**
-     * Create embedded GWT tomcat base dir based on properties.
-     *
-     * @throws Exception
-     */
-    private void makeCatalinaBase()
-        throws Exception
-    {
-        getLog().debug( "make catalina base for embedded Tomcat" );
-
-        if ( this.getWebXml() != null && this.getWebXml().exists() )
-        {
-            this.getLog().info( "source web.xml present - " + this.getWebXml() + " - using it with embedded Tomcat" );
-        }
-        else
-        {
-            this.getLog().info( "source web.xml NOT present, using default empty web.xml for shell" );
-        }
-
-        // note that MakeCatalinaBase will use emptyWeb.xml if webXml does not exist
-        new MakeCatalinaBase( this.getTomcat(), this.getWebXml(), shellServletMappingURL ).setup();
-
-        if ( ( this.getContextXml() != null ) && this.getContextXml().exists() )
-        {
-            this.getLog().info(
-                                "contextXml parameter present - " + this.getContextXml()
-                                    + " - using it for embedded Tomcat ROOT.xml" );
-            FileUtils.copyFile( this.getContextXml(), new File( this.getTomcat(), "conf/gwt/localhost/ROOT.xml" ) );
-        }
-    }
-
 
     public File getContextXml()
     {

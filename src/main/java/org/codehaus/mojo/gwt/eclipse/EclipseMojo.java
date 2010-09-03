@@ -19,8 +19,6 @@ package org.codehaus.mojo.gwt.eclipse;
  * under the License.
  */
 
-import static org.codehaus.mojo.gwt.EmbeddedServer.JETTY;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -37,8 +35,6 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
-import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.WriterFactory;
 
@@ -92,9 +88,9 @@ public class EclipseMojo
     private File buildOutputDirectory;
 
     /**
-     * Location of the hosted-mode web application structure. Default value matches the Google Eclipse plugin.
-     *
-     * @parameter default-value="${basedir}/war"
+     * Location of the hosted-mode web application structure.
+     * 
+     * @parameter default-value="${project.build.directory}/${project.build.finalName}"
      */
     private File hostedWebapp;
 
@@ -172,9 +168,7 @@ public class EclipseMojo
     public void execute()
         throws MojoExecutionException, MojoFailureException
     {
-        GwtRuntime runtime = getGwtRuntime();
-
-        if ( !noserver && runtime.getVersion().getEmbeddedServer() == JETTY )
+        if ( !noserver )
         {
             // Jetty requires an exploded webapp
             setupExplodedWar();
@@ -186,7 +180,7 @@ public class EclipseMojo
 
         for ( String module : getModules() )
         {
-            createLaunchConfigurationForHostedModeBrowser( runtime, module );
+            createLaunchConfigurationForHostedModeBrowser( module );
         }
     }
 
@@ -218,7 +212,6 @@ public class EclipseMojo
                     // TODO automatically add this one to GWT warnings exlusions
                 }
             }
-
         }
         catch ( IOException ioe )
         {
@@ -232,7 +225,7 @@ public class EclipseMojo
      * @param module the GWT module
      * @throws MojoExecutionException some error occured
      */
-    private void createLaunchConfigurationForHostedModeBrowser( GwtRuntime runtime, String module )
+    private void createLaunchConfigurationForHostedModeBrowser( String module )
         throws MojoExecutionException
     {
         File launchFile = new File( getProject().getBasedir(), readModule( module ).getPath() + ".launch" );
@@ -255,7 +248,6 @@ public class EclipseMojo
         }
         context.put( "sources", sources );
         context.put( "module", module );
-        context.put( "runtime", runtime );
         context.put( "localRepository", localRepository.getBasedir() );
         int idx = module.lastIndexOf( '.' );
         String page = module.substring( idx + 1 ) + ".html";
@@ -283,9 +275,9 @@ public class EclipseMojo
             args += " -bindAddress " + bindAddress;
         }
         context.put( "additionalArguments", args );
-        context.put( "extraJvmArgs", getExtraJvmArgs() );
+        context.put( "extraJvmArgs", extraJvmArgs );
         context.put( "project", eclipseUtil.getProjectName( getProject() ) );
-        context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath().replace( '\\', '/' ) );
+        context.put( "gwtDevJarPath", getGwtDevJar().getAbsolutePath().replace( '\\', '/' ) );
 
         try
         {
@@ -305,25 +297,6 @@ public class EclipseMojo
         {
             throw new MojoExecutionException( "Unable to merge freemarker template", te );
         }
-    }
-
-    /**
-     * @return
-     */
-    protected String getExtraJvmArgs()
-    {
-        String extra = extraJvmArgs;
-        try {
-            if ( Os.isFamily( Os.FAMILY_MAC ) && !extraJvmArgs.contains( "-XstartOnFirstThread" ) && !getGwtRuntime().getVersion().supportOOPHM())
-            {
-                getLog().debug("Adding -XstartOnFirstThread because of version: " + getGwtRuntime().getVersion() + " and os:" + Os.FAMILY_MAC );
-                extra += " -XstartOnFirstThread";
-            }
-        }
-        catch (MojoExecutionException ex){
-            throw new RuntimeException(ex);
-        }
-        return extra;
     }
 
 }

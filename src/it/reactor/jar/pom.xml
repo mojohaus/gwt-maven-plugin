@@ -60,7 +60,6 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <executions>
-          <!-- GWT version detected from dependencyManagement -->
           <execution>
             <goals>
               <goal>resources</goal>

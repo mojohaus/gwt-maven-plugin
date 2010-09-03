@@ -17,8 +17,6 @@
  * under the License.
  */
 assert new File(basedir, 'target/classes').exists();
-assert new File(basedir, 'target/hello/hello').exists();
-assert new File(basedir, 'target/hello/hello/hello.nocache.js').exists();
 assert ! new File(basedir, 'target/generated-sources/gwt/org/codehaus/mojo/gwt/test/client/GenericServiceAsync.java').exists();
 assert ! new File(basedir, 'target/generated-sources/gwt/org/codehaus/mojo/gwt/test/client/AccidentalImplementationService.java').exists();
 assert new File(basedir, 'target/classes/org/codehaus/mojo/gwt/test/client/HelloServiceAsync.class').exists();

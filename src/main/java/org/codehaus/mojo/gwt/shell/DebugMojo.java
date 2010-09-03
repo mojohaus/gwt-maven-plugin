@@ -21,7 +21,6 @@ package org.codehaus.mojo.gwt.shell;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.codehaus.mojo.gwt.GwtRuntime;
 
 /**
  * Extends the gwt goal and runs the project in the GWT Hosted mode with a debugger port hook (optionally suspended).
@@ -87,7 +86,7 @@ public class DebugMojo
 
 
     @Override
-    public void doExecute(GwtRuntime runtime)
+    public void doExecute()
         throws MojoExecutionException, MojoFailureException
     {
         if ( debugSuspend )
@@ -99,6 +98,6 @@ public class DebugMojo
             getLog().info( "starting debugger on port " + debugPort );
         }
 
-        super.doExecute( runtime );
+        super.doExecute( );
     }
 }

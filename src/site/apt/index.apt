@@ -3,34 +3,38 @@
  ------
  ------
 
-Google Web Toolkit Maven Plugin (gwt-maven-plugin)
+User's Guide
 
- The gwt-maven-plugin provides support for {{{http://code.google.com/webtoolkit/}GWT}} projects,
- including running the GWT developer tools (the compiler, shell and i18n generation) and performing
- support operations to help developers make GWT fit more closely in with their standard JEE web
- application development (debugging, managing the embedded server, running noserver, merging web.xml,
- generating I18N interfaces, generating Async GWT-RPC interfaces, and more) and environment (Eclipse IDE).
+ Welcome to the {{{http://code.google.com/intl/fr/webtoolkit/}Google Web Toolkit}} Maven Plugin
+ User Guide. This documentation will drive you to setup you GWT web application development
+ using Maven as build tool. This guide covers project organisation and setup, integration with
+ development environment, and running GWT SDK tools from maven command line.
 
-* Goals, Setup and Overview
+ If you're new to GWT or Maven, you miught want to first read the
+ {{{http://code.google.com/intl/fr/webtoolkit/overview.html}GWT documentation}} and get more
+ familiar with Maven by reading at least its
+ {{{http://maven.apache.org/guides/getting-started/index.html}getting started guide}}
+ or by reading the online
+ {{{http://www.sonatype.com/books/mvnref-book/reference/public-book.html}reference book}}.
 
- To provide you with better understanding of some usages of gwt-maven-plugin, you can take a look at the
- following goals, setup, and examples information:
+ * {{{whats_new.html}What's new in 2.1 ?}}
 
- * {{{plugin-info.html}Goals and Parameters}}
+ * {{{archetype.html}Using the archetype}}
 
- * {{{user-guide/setup.html}Setup}}
+ * {{{project.html}Organize project}}
 
-* More Details on Specific Goals and Features
+ * {{{compile.html}Compile and Debug}}
 
- * {{{user-guide/testing.html}Testing Support}}
+ * {{{i18n.html}Internationalization}}
 
- * {{{user-guide/hosted.html}Hosted server Configuration}}
+ * {{{testing.html}Testing Support}}
 
- * {{{user-guide/archetype.html}Using the Archetype}}
+ * {{{hosted.html}Hosted Mode}}
+
+  * {{{async.html}Generate Async interfaces for GWT-RPC}}
+
+ * {{{plugin-info.html}Goals and Parameters Reference}}
+
+ * {{{faq.html}Frequently Asked Questions}}
 
 
-* History
-
-  {{{http://code.google.com/p/gwt-maven/}GWT-maven plugin}} has merged with this plugin since version 1.1
-  
-  version 1.2 includes a preview of gwt 2.0 support

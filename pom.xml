@@ -17,7 +17,7 @@
     <version>24</version>
   </parent>
   <artifactId>gwt-maven-plugin</artifactId>
-  <version>1.3-SNAPSHOT</version>
+  <version>2.1-SNAPSHOT</version>
   <packaging>maven-plugin</packaging>
   <name>Maven GWT Plugin</name>
   <description>
@@ -103,7 +103,10 @@
   <properties>
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
+    <!-- set -Dgwt.version=XX to test another GWT release -->
+    <gwt.version>${project.version}</gwt.version>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -150,6 +153,26 @@
       <groupId>freemarker</groupId>
       <artifactId>freemarker</artifactId>
       <version>2.3.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
+      <version>${gwt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>${gwt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <version>${gwt.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-soyc-vis</artifactId>
+      <version>${gwt.version}</version>
     </dependency>
     <dependency>
       <!-- used to unpack gwt native libs -->
@@ -228,12 +251,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-user</artifactId>
-      <version>1.6.4</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <!-- used to check for up-to-date compilation output -->
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-compiler-javac</artifactId>
@@ -290,6 +307,10 @@
     <resources>
       <resource>
         <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/archetype</directory>
         <filtering>true</filtering>
       </resource>
     </resources>
@@ -363,16 +384,33 @@
     </plugins>
   </build>
 
+  <!-- Only for early-adopters testing of GWT 2.1 milestones -->
+  <distributionManagement>
+    <snapshotRepository>
+      <id>people.apache.org</id>
+      <url>scp://people.apache.org/home/nicolas/public_html/gwt-maven-plugin-2.1</url>
+    </snapshotRepository>
+    <repository>
+      <id>people.apache.org</id>
+      <url>scp://people.apache.org/home/nicolas/public_html/gwt-maven-plugin-2.1</url>
+    </repository>
+    <site>
+      <id>people.apache.org</id>
+      <url>scp://people.apache.org/home/nicolas/public_html/gwt-maven-plugin-2.1</url>
+    </site>
+  </distributionManagement>
+
   <reporting>
+    <excludeDefaults>false</excludeDefaults>
     <plugins>
-      <plugin>
+      <!--<plugin>
         <artifactId>maven-pmd-plugin</artifactId>
         <version>2.3</version>
         <configuration>
           <targetJdk>1.5</targetJdk>
         </configuration>
-      </plugin>
-      <plugin>
+      </plugin>-->
+      <!--<plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>2.4</version>
         <configuration>
@@ -380,9 +418,18 @@
           <configLocation>http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven_checks.xml</configLocation>
           <headerLocation>http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven-header.txt</headerLocation>
         </configuration>
-      </plugin>
+      </plugin>-->
     </plugins>
   </reporting>
+
+  <repositories>
+    <!--  until gwt 2.1.0 gets final -->
+    <repository>
+      <id>codehaus.org</id> <!-- hack to bypass enforcer -->
+      <url>http://google-web-toolkit.googlecode.com/svn/2.1.0.M3/gwt/maven</url>
+      <name>Google Web Toolkit Repository</name>
+    </repository>
+  </repositories>
 
   <pluginRepositories>
     <pluginRepository>

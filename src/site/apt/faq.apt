@@ -12,13 +12,8 @@ Frequently Asked Questions
 
 * How to set the version of GWT to compile my project ?
 
-  Simply define a <dependencies> on ''com.google.gwt:gwt-user'' with the expected version, the plugin will detect this
-  and download the required SDK artifacts.
-
-* How does this plugin compare to other maven / gwt plugins ?
-
-  This plugin, being part of the Mojo Project, can benefict for a large community of maven developers. Its async interface
-  generation feature is AFAIK not supported by other plugins.
+  gwt-maven-plugin is tied to a version of GWT SDK. gwt-maven-plugin must match the GWT DSK version.
+  To use Maven with GWT release prior to GWT 2.1, use gwt-maven-plugin 1.2 and read the documentation. 
 
 * Is there any official Google support for maven ?
 

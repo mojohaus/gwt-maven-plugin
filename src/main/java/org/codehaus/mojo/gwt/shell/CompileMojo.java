@@ -35,8 +35,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtModule;
-import org.codehaus.mojo.gwt.GwtRuntime;
-import org.codehaus.mojo.gwt.GwtVersion;
 import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SingleTargetSourceMapping;
@@ -44,7 +42,7 @@ import org.codehaus.plexus.util.StringUtils;
 
 /**
  * Invokes the GWTCompiler for the project source.
- * 
+ *
  * @phase prepare-package
  * @goal compile
  * @requiresDependencyResolution compile
@@ -163,7 +161,7 @@ public class CompileMojo
      */
     private File workDir;
 
-    public void doExecute( GwtRuntime runtime )
+    public void doExecute( )
         throws MojoExecutionException, MojoFailureException
     {
         if ( skip || "pom".equals( getProject().getPackaging() ) )
@@ -177,39 +175,28 @@ public class CompileMojo
             this.getOutputDirectory().mkdirs();
         }
 
-        String[] modules = getModules();
-        if ( runtime.getVersion().supportMultiModuleCompile() )
-        {
-            compile( runtime, modules );
-        }
-        else
-        {
-            for ( String module : modules )
-            {
-                compile( runtime, new String[] { module } );
-            }
-        }
-
+        compile( getModules() );
     }
 
-    private void compile( GwtRuntime runtime, String[] modules )
+    private void compile( String[] modules )
         throws MojoExecutionException
     {
         boolean upToDate = true;
-        GwtVersion gwtVersion = runtime.getVersion();
 
-        String clazz = gwtVersion.getCompilerFQCN();
-        JavaCommand cmd = new JavaCommand( clazz, runtime )
+        JavaCommand cmd = new JavaCommand( "com.google.gwt.dev.Compiler" )
             .withinScope( Artifact.SCOPE_COMPILE )
-            .arg( "-gen" )
-            .arg( getGen().getAbsolutePath() )
-            .arg( "-logLevel" )
-            .arg( getLogLevel() )
-            .arg( "-style" )
-            .arg( getStyle() )
+            .arg( "-gen", getGen().getAbsolutePath() )
+            .arg( "-logLevel", getLogLevel() )
+            .arg( "-style", getStyle() )
+            .arg( "-war", getOutputDirectory().getAbsolutePath() )
+            .arg( "-localWorkers", String.valueOf( getLocalWorkers() ) )
+            // optional advanced arguments
             .arg( enableAssertions, "-ea" )
-            .arg( gwtVersion.getWebOutputArgument() )
-            .arg( getOutputDirectory().getAbsolutePath() );
+            .arg( draftCompile, "-draftCompile" )
+            .arg( validateOnly, "-validateOnly" )
+            .arg( treeLogger, "-treeLogger" )
+            .arg( disableClassMetadata, "-XdisableClassMetadata" )
+            .arg( disableCastChecking, "-XdisableCastChecking" );
 
         addCompileSourceArtifacts( cmd );
 
@@ -219,15 +206,7 @@ public class CompileMojo
                .arg( String.valueOf( workDir ) );
         }
 
-        if ( gwtVersion.supportParallelCompile() )
-        {
-            cmd.arg( "-localWorkers" )
-               .arg( String.valueOf( getLocalWorkers() ) );
-        }
-
-        addSOYC( gwtVersion, cmd );
-
-        addAvancedOptions( gwtVersion, cmd );
+        addSOYC( cmd );
 
         for ( String target : modules )
         {
@@ -292,33 +271,18 @@ public class CompileMojo
         }
     }
 
-    private void addSOYC( GwtVersion gwtVersion, JavaCommand cmd )
+    private void addSOYC( JavaCommand cmd )
     {
-        if ( gwtVersion.supportSOYC() )
+        if ( soyc != null && Boolean.valueOf( soyc ).booleanValue() == false )
         {
-            if ( soyc != null && Boolean.valueOf( soyc ).booleanValue() == false )
-            {
-                getLog().debug( "SOYC has been disabled by user" );
-            }
-            else
-            {
-                cmd.arg( "-soyc" )
-                   .arg( "-extra")
-                   .arg( extra.getAbsolutePath() );
-                extra.mkdirs();
-            }
+            getLog().debug( "SOYC has been disabled by user" );
         }
-    }
-
-    private void addAvancedOptions( GwtVersion gwtVersion, JavaCommand cmd )
-    {
-        if ( gwtVersion.compareTo( GwtVersion.TWO_DOT_ZERO ) >= 0 )
+        else
         {
-            cmd.arg( draftCompile, "-draftCompile" )
-               .arg( validateOnly, "-validateOnly" )
-               .arg( treeLogger, "-treeLogger" )
-               .arg( disableClassMetadata, "-XdisableClassMetadata" )
-               .arg( disableCastChecking, "-XdisableCastChecking" );
+            cmd.arg( "-soyc" )
+               .arg( "-extra")
+               .arg( extra.getAbsolutePath() );
+            extra.mkdirs();
         }
     }
 

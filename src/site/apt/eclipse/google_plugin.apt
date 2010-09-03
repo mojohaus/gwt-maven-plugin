@@ -7,7 +7,7 @@ Using the Google Eclipse Plugin
 
 
   The {{{http://code.google.com/intl/en/eclipse/}Google Eclipse Plugin}} is a nice integration of GWT inside
-  eclipse to make development easier. It can be used to launch the hosted browser with a simple right clic
+  eclipse to make development easier. It can be used to launch the hosted browser with a simple right click
   and to manage the GWT sdk used inside Eclipse.
 
 * Limitations

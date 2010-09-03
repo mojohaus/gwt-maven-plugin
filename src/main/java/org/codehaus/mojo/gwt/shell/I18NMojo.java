@@ -25,7 +25,6 @@ import java.io.File;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.codehaus.mojo.gwt.GwtRuntime;
 
 /**
  * Creates I18N interfaces for constants and messages files.
@@ -85,7 +84,7 @@ public class I18NMojo
      */
     private String i18nConstantsWithLookupBundle;
 
-    public void doExecute( GwtRuntime runtime )
+    public void doExecute( )
         throws MojoExecutionException, MojoFailureException
     {
         setup();
@@ -98,10 +97,9 @@ public class I18NMojo
             {
                 ensureTargetPackageExists( getGenerateDirectory(), target );
 
-                new JavaCommand( "com.google.gwt.i18n.tools.I18NSync", runtime )
+                new JavaCommand( "com.google.gwt.i18n.tools.I18NSync" )
                     .withinScope( Artifact.SCOPE_COMPILE )
-                    .arg( "-out" )
-                    .arg( getGenerateDirectory().getAbsolutePath() )
+                    .arg( "-out", getGenerateDirectory().getAbsolutePath() )
                     .arg( "-createConstantsWithLookup" )
                     .arg( target )
                     .execute();
@@ -116,10 +114,9 @@ public class I18NMojo
             {
                 ensureTargetPackageExists( getGenerateDirectory(), target );
 
-                new JavaCommand( "com.google.gwt.i18n.tools.I18NSync", runtime )
+                new JavaCommand( "com.google.gwt.i18n.tools.I18NSync" )
                     .withinScope( Artifact.SCOPE_COMPILE )
-                    .arg( "-out" )
-                    .arg( getGenerateDirectory().getAbsolutePath() )
+                    .arg( "-out", getGenerateDirectory().getAbsolutePath() )
                     .arg( target )
                     .execute();
                 generated = true;
@@ -133,10 +130,9 @@ public class I18NMojo
             {
                 ensureTargetPackageExists( getGenerateDirectory(), target );
 
-                new JavaCommand( "com.google.gwt.i18n.tools.I18NSync", runtime )
+                new JavaCommand( "com.google.gwt.i18n.tools.I18NSync" )
                     .withinScope( Artifact.SCOPE_COMPILE )
-                    .arg( "-out" )
-                    .arg( getGenerateDirectory().getAbsolutePath() )
+                    .arg( "-out", getGenerateDirectory().getAbsolutePath() )
                     .arg( "-createMessages" )
                     .arg( target )
                     .execute();

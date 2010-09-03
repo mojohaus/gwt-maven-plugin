@@ -19,22 +19,21 @@ package org.codehaus.mojo.gwt.webxml;
  * under the License.
  */
 
+import static org.apache.maven.artifact.Artifact.SCOPE_COMPILE;
+
 import java.io.File;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.classworlds.ClassRealm;
 import org.codehaus.classworlds.ClassWorld;
 import org.codehaus.mojo.gwt.GwtModule;
-import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.AbstractGwtWebMojo;
 
 /**
@@ -51,8 +50,6 @@ public class MergeWebXmlMojo
     extends AbstractGwtWebMojo
 {
 
-    private Set<String> checkedModules = new HashSet<String>();
-
     /**
      * Location on filesystem where merged web.xml will be created. The maven-war-plugin must be configured to use this
      * path as <a href="http://maven.apache.org/plugins/maven-war-plugin/war-mojo.html#webXml"> webXml</a> parameter
@@ -67,7 +64,7 @@ public class MergeWebXmlMojo
         super();
     }
 
-    public void doExecute( GwtRuntime runtime )
+    public void doExecute( )
         throws MojoExecutionException, MojoFailureException
     {
 
@@ -108,7 +105,7 @@ public class MergeWebXmlMojo
      *
      * @return
      */
-    protected ClassLoader fixThreadClasspath( GwtRuntime runtime )
+    protected ClassLoader fixThreadClasspath()
     {
         try
         {
@@ -118,11 +115,10 @@ public class MergeWebXmlMojo
             ClassRealm root = world.newRealm( "gwt-plugin", Thread.currentThread().getContextClassLoader() );
             ClassRealm realm = root.createChildRealm( "gwt-project" );
 
-            Collection classpath = classpathBuilder.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE,
-                                                                          runtime, getProjectArtifacts() );
-            for ( Iterator it = classpath.iterator(); it.hasNext(); )
+            Collection<File> classpath = getClasspath( SCOPE_COMPILE );
+            for ( Iterator<File> it = classpath.iterator(); it.hasNext(); )
             {
-                realm.addConstituent( ( (File) it.next() ).toURI().toURL() );
+                realm.addConstituent( it.next().toURI().toURL() );
             }
 
             Thread.currentThread().setContextClassLoader( realm.getClassLoader() );

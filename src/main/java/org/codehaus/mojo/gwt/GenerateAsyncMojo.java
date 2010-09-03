@@ -106,7 +106,7 @@ public class GenerateAsyncMojo
      * @parameter default-value="false" expression="${generateAsync.force}"
      */
     private boolean force;
-	
+
 	/**
 	 * @parameter expression="${project.build.sourceEncoding}"
 	 */
@@ -120,14 +120,13 @@ public class GenerateAsyncMojo
         throws MojoExecutionException
     {
         getLog().debug( "GenerateAsyncMojo#execute()" );
-		
+
 		if (encoding == null)
 		{
 			getLog().warn( "Encoding is not set, your build will be platform dependent" );
 			encoding = Charset.defaultCharset().name();
 		}
-		
-        boolean supportJava5 = getGwtRuntime().getVersion().supportJava5();
+
         JavaDocBuilder builder = createJavaDocBuilder();
 
         List<String> sourceRoots = getProject().getCompileSourceRoots();
@@ -136,7 +135,7 @@ public class GenerateAsyncMojo
         {
             try
             {
-                generated |= scanAndGenerateAsync( new File( sourceRoot ), builder, supportJava5 );
+                generated |= scanAndGenerateAsync( new File( sourceRoot ), builder );
             }
             catch ( Throwable e )
             {
@@ -159,7 +158,7 @@ public class GenerateAsyncMojo
      * @return true if some file have been generated
      * @throws Exception generation failure
      */
-    private boolean scanAndGenerateAsync( File sourceRoot, JavaDocBuilder builder, boolean supportJava5 )
+    private boolean scanAndGenerateAsync( File sourceRoot, JavaDocBuilder builder )
         throws Exception
     {
         DirectoryScanner scanner = new DirectoryScanner();
@@ -189,7 +188,7 @@ public class GenerateAsyncMojo
             if ( isEligibleForGeneration( clazz ) )
             {
                 targetFile.getParentFile().mkdirs();
-                generateAsync( clazz, targetFile, supportJava5 );
+                generateAsync( clazz, targetFile );
                 fileGenerated = true;
             }
         }
@@ -211,10 +210,9 @@ public class GenerateAsyncMojo
     /**
      * @param clazz the RPC service java class
      * @param targetFile RemoteAsync file to generate
-     * @param supportJava5 true if Java5 or higher is supported (use of generics enabled)
      * @throws Exception generation failure
      */
-    private void generateAsync( JavaClass clazz, File targetFile, boolean supportJava5 )
+    private void generateAsync( JavaClass clazz, File targetFile )
         throws IOException
     {
         PrintWriter writer = new PrintWriter( targetFile, encoding );
@@ -257,9 +255,9 @@ public class GenerateAsyncMojo
                 {
                     writer.print( ", " );
                 }
-                
+
                 writer.print( method.getParameterTypes( true )[j].getGenericValue() );
-                if ( param.getType().getDimensions() != method.getParameterTypes( true )[j].getDimensions() ) 
+                if ( param.getType().getDimensions() != method.getParameterTypes( true )[j].getDimensions() )
                 {
                     for ( int dimensions = 0 ; dimensions < param.getType().getDimensions(); dimensions++ )
                     {
@@ -273,37 +271,29 @@ public class GenerateAsyncMojo
                 writer.print( ", " );
             }
 
-            if ( supportJava5 )
+            if ( method.getReturns().isVoid() )
             {
-                if ( method.getReturns().isVoid() )
-                {
-                    writer.println( "AsyncCallback<Void> callback );" );
-                }
-                else if ( method.getReturns().isPrimitive() )
-                {
-                    String primitive = method.getReturns().getGenericValue();
-                    writer.println( "AsyncCallback<" + WRAPPERS.get( primitive ) + "> callback );" );
-                }
-                else
-                {
-                    Type returnType = method.getReturnType( true );
-                    String type = returnType.getGenericValue();
-                    
-                    if ( method.getReturns().getDimensions() != method.getReturnType( true ).getDimensions() ) 
-                    {
-                        for ( int dimensions = 0 ; dimensions < method.getReturns().getDimensions(); dimensions++ )
-                        {
-                            type += "[]";
-                        }
-                    }
-                    writer.println( "AsyncCallback<" + type + "> callback );" );
-                }
+                writer.println( "AsyncCallback<Void> callback );" );
+            }
+            else if ( method.getReturns().isPrimitive() )
+            {
+                String primitive = method.getReturns().getGenericValue();
+                writer.println( "AsyncCallback<" + WRAPPERS.get( primitive ) + "> callback );" );
             }
             else
             {
-                writer.println( "AsyncCallback callback );" );
-            }
+                Type returnType = method.getReturnType( true );
+                String type = returnType.getGenericValue();
 
+                if ( method.getReturns().getDimensions() != method.getReturnType( true ).getDimensions() )
+                {
+                    for ( int dimensions = 0; dimensions < method.getReturns().getDimensions(); dimensions++ )
+                    {
+                        type += "[]";
+                    }
+                }
+                writer.println( "AsyncCallback<" + type + "> callback );" );
+            }
             writer.println();
         }
 

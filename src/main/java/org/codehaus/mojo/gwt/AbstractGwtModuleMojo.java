@@ -40,6 +40,10 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
 /**
+ * Add support for GWT Modules.
+ * <p>
+ * Search and read the gwt.xml module files to detect project structure.
+ * 
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
  * @version $Id$
  */
@@ -63,7 +67,7 @@ public abstract class AbstractGwtModuleMojo
      * @parameter expression="${gwt.module}"
      */
     private String module;
-	
+
     /**
      * Return the configured modules or scan the project source/resources folder to find them
      *
@@ -162,8 +166,7 @@ public abstract class AbstractGwtModuleMojo
 
         try
         {
-            Collection<File> classpath =
-                classpathBuilder.buildClasspathList( getProject(), Artifact.SCOPE_COMPILE, null, getProjectArtifacts() );
+            Collection<File> classpath = getClasspathWithoutGwtDev( Artifact.SCOPE_COMPILE );
             URL[] urls = new URL[classpath.size()];
             int i = 0;
             for ( File file : classpath )

@@ -9,7 +9,6 @@ import org.apache.maven.reporting.MavenReport;
 import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.surefire.booter.shade.org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.doxia.sink.Sink;
-import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo;
 
 /**
@@ -24,7 +23,7 @@ public class SoycReport
 
     /**
      * The output directory of the jsdoc report.
-     * 
+     *
      * @parameter expression="${project.reporting.outputDirectory}/soyc"
      * @required
      * @readonly
@@ -41,10 +40,10 @@ public class SoycReport
     /**
      * {@inheritDoc}
      *
-     * @see org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo#doExecute(org.codehaus.mojo.gwt.GwtRuntime)
+     * @see org.codehaus.mojo.gwt.shell.AbstractGwtShellMojo#doExecute()
      */
     @Override
-    protected void doExecute( GwtRuntime runtime )
+    public void doExecute()
         throws MojoExecutionException, MojoFailureException
     {
         DirectoryScanner scanner = new DirectoryScanner();
@@ -62,10 +61,11 @@ public class SoycReport
         {
             String module = path.substring( 0, path.indexOf( File.separatorChar ) );
             JavaCommand cmd =
-                new JavaCommand( "com.google.gwt.soyc.SoycDashboard", runtime )
-                   .withinClasspath( runtime.getGwtDevJar() )
-                   .withinClasspath( runtime.getSoycJar() )
-                   .arg( "-resources" ).arg( runtime.getSoycJar().getAbsolutePath() )
+                new JavaCommand( "com.google.gwt.soyc.SoycDashboard" )
+                   .withinClasspath( getGwtDevJar() )
+                   //  FIXME
+//                   .withinClasspath( runtime.getSoycJar() )
+//                   .arg( "-resources" ).arg( runtime.getSoycJar().getAbsolutePath() )
                    .arg( "-out" ).arg( reportingOutputDirectory.getAbsolutePath() + File.separatorChar + module );
 
             cmd.arg( new File( extra, path ).getAbsolutePath() );
@@ -96,7 +96,7 @@ public class SoycReport
     {
         try
         {
-            doExecute( getGwtRuntime() );
+            doExecute( );
         }
         catch ( MojoExecutionException e )
         {

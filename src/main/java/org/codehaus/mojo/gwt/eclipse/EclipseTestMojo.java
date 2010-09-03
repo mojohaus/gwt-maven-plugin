@@ -30,7 +30,6 @@ import java.util.Map;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.mojo.gwt.shell.TestMojo;
 import org.codehaus.mojo.gwt.test.TestTemplate;
 import org.codehaus.plexus.util.WriterFactory;
@@ -88,7 +87,7 @@ public class EclipseTestMojo
      * @see org.apache.maven.plugin.Mojo#execute()
      */
     @Override
-    protected void doExecute( final GwtRuntime runtime )
+    public void doExecute()
         throws MojoExecutionException, MojoFailureException
     {
 
@@ -97,7 +96,7 @@ public class EclipseTestMojo
             public void doWithTest( File sourceDir, String test )
                 throws MojoExecutionException
             {
-                createLaunchConfigurationForGwtTestCase( runtime, sourceDir, test );
+                createLaunchConfigurationForGwtTestCase( sourceDir, test );
             }
         } );
     }
@@ -108,7 +107,7 @@ public class EclipseTestMojo
      * @param testSrc the source directory where the test lives
      * @throws MojoExecutionException some error occured
      */
-    private void createLaunchConfigurationForGwtTestCase( GwtRuntime runtime, File testSrc, String test )
+    private void createLaunchConfigurationForGwtTestCase( File testSrc, String test )
         throws MojoExecutionException
     {
         File testFile = new File( testSrc, test );
@@ -133,7 +132,7 @@ public class EclipseTestMojo
         context.put( "out", testOutputDirectory.getAbsolutePath().substring( basedir + 1 ) );
         context.put( "extraJvmArgs", getExtraJvmArgs() );
         context.put( "project", eclipseUtil.getProjectName( getProject() ) );
-        context.put( "gwtDevJarPath", runtime.getGwtDevJar().getAbsolutePath() );
+        context.put( "gwtDevJarPath", getGwtDevJar().getAbsolutePath() );
 
         try
         {

@@ -30,7 +30,6 @@ import java.util.Properties;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.AbstractGwtModuleMojo;
-import org.codehaus.mojo.gwt.GwtRuntime;
 import org.codehaus.plexus.util.Os;
 import org.codehaus.plexus.util.StringUtils;
 import org.codehaus.plexus.util.cli.CommandLineException;
@@ -41,8 +40,9 @@ import org.codehaus.plexus.util.cli.StreamConsumer;
 import org.codehaus.plexus.util.cli.shell.Shell;
 
 /**
- * Abstract Mojo for GWT-Maven.
- *
+ * Support running GWT SDK Tools as forked JVM with classpath set according to project source/resource directories and
+ * dependencies.
+ * 
  * @author ccollins
  * @author cooper
  * @author willpugh
@@ -115,75 +115,36 @@ public abstract class AbstractGwtShellMojo
     public final void execute()
         throws MojoExecutionException, MojoFailureException
     {
-        GwtRuntime runtime = getGwtRuntime();
-        doExecute( runtime );
+        doExecute();
     }
 
-    protected abstract void doExecute( GwtRuntime runtime )
+    public abstract void doExecute()
         throws MojoExecutionException, MojoFailureException;
 
-    public String getExtraJvmArgs()
+    protected String getExtraJvmArgs()
     {
-        String extra = extraJvmArgs;
-        try {
-            if ( Os.isFamily( Os.FAMILY_MAC ) && !extraJvmArgs.contains( "-XstartOnFirstThread" ) && !getGwtRuntime().getVersion().supportOOPHM())
-            {
-                getLog().debug("Adding -XstartOnFirstThread because of version: " + getGwtRuntime().getVersion() + " and os:" + Os.FAMILY_MAC );
-                extra += " -XstartOnFirstThread";
-            }
-        }
-        catch (MojoExecutionException ex){
-            throw new RuntimeException(ex);
-        }
-        return extra;
+        return extraJvmArgs;
     }
 
-    public File getGen()
+    protected File getGen()
     {
         return this.gen;
     }
 
-    public String getLogLevel()
+    protected String getLogLevel()
     {
         return this.logLevel;
     }
 
-    public String getStyle()
+    protected String getStyle()
     {
         return this.style;
     }
 
 
-    /**
-     * A plexus-util StreamConsumer to redirect messages to plugin log
-     */
-    protected StreamConsumer out = new StreamConsumer()
-    {
-        public void consumeLine( String line )
-        {
-            getLog().info( line );
-        }
-    };
-
-    /**
-     * A plexus-util StreamConsumer to redirect errors to plugin log
-     */
-    protected StreamConsumer err = new StreamConsumer()
-    {
-        public void consumeLine( String line )
-        {
-            getLog().error( line );
-        }
-    };
-
-    public String getJvm()
+    protected String getJvm()
     {
         return jvm;
-    }
-
-    public void setJvm( String jvm )
-    {
-        this.jvm = jvm;
     }
 
     /**
@@ -204,16 +165,6 @@ public abstract class AbstractGwtShellMojo
             {
                 extra.add( extraArg );
             }
-        }
-        try {
-            if ( Os.isFamily( Os.FAMILY_MAC ) && !extraJvmArgs.contains( "-XstartOnFirstThread" ) && !getGwtRuntime().getVersion().supportOOPHM())
-            {
-                getLog().debug("Adding -XstartOnFirstThread because of version: " + getGwtRuntime().getVersion() + " and os:" + Os.FAMILY_MAC );
-                extra.add( "-XstartOnFirstThread" );
-            }
-        }
-        catch (MojoExecutionException ex){
-            throw new RuntimeException(ex);
         }
         return extra;
     }
@@ -284,6 +235,28 @@ public abstract class AbstractGwtShellMojo
     };
 
     /**
+     * A plexus-util StreamConsumer to redirect messages to plugin log
+     */
+    private StreamConsumer out = new StreamConsumer()
+    {
+        public void consumeLine( String line )
+        {
+            getLog().info( line );
+        }
+    };
+
+    /**
+     * A plexus-util StreamConsumer to redirect errors to plugin log
+     */
+    private StreamConsumer err = new StreamConsumer()
+    {
+        public void consumeLine( String line )
+        {
+            getLog().error( line );
+        }
+    };
+
+    /**
      * Create a command to execute using builder pattern
      *
      * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -291,8 +264,6 @@ public abstract class AbstractGwtShellMojo
     public class JavaCommand
     {
         private String className;
-
-        private GwtRuntime runtime;
 
         private List<File> classpath = new LinkedList<File>();
 
@@ -302,16 +273,15 @@ public abstract class AbstractGwtShellMojo
 
         private Properties env = new Properties();
 
-        public JavaCommand( String className, GwtRuntime runtime )
+        public JavaCommand( String className )
         {
             this.className = className;
-            this.runtime = runtime;
         }
 
         public JavaCommand withinScope( String scope )
             throws MojoExecutionException
         {
-            classpath.addAll( classpathBuilder.buildClasspathList( getProject(), scope, runtime, getProjectArtifacts() ) );
+            classpath.addAll( getClasspath( scope ) );
             postProcessClassPath( classpath );
             return this;
         }
@@ -328,6 +298,13 @@ public abstract class AbstractGwtShellMojo
         public JavaCommand arg( String arg )
         {
             args.add( arg );
+            return this;
+        }
+
+        public JavaCommand arg( String arg, String value )
+        {
+            args.add( arg );
+            args.add( value );
             return this;
         }
 

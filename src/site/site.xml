@@ -35,46 +35,25 @@ under the License.
   </bannerRight>
   <body>
     <links>
-      <item name="Mojo" href="http://mojo.codehaus.org"/>
       <item name="Maven" href="http://maven.apache.org/"/>
       <item name="Google Web Toolkit" href="http://code.google.com/webtoolkit/"/>
       <item name="Google Eclipse Plugin" href="http://code.google.com/intl/en/eclipse"/>
     </links>
-    <menu name="Mojo">
-      <item name="Back to Mojo" href="http://mojo.codehaus.org"/>
-	  <item name="Version 1.0" href="http://mojo.codehaus.org/gwt-maven-plugin-1.0"/>
-	  <item name="Version 1.1" href="http://mojo.codehaus.org/gwt-maven-plugin-1.1"/>
-	  <item name="Version 1.2 (last stable)" href="http://mojo.codehaus.org/gwt-maven-plugin-1.2"/>
-    </menu>
-    <menu name="Overview">
-      <item name="Index" href="index.html"/>
-      <item name="Goals" href="plugin-info.html"/>
-      <item name="Usage" href="usage.html"/>
-      <item name="FAQ" href="faq.html"/>
-    </menu>
-    <menu name="IDE integration">
-      <item name="Eclipse" href="eclipse/google_plugin.html"/>
-      <item name="NetBeans" href="netbeans/gwt4nb.html"/>
-    </menu>
     <menu name="User Guide">
-      <item name="Introduction" href="user-guide/introduction.html"/>
-      <item name="Setup" href="user-guide/setup.html"/>
-      <item name="the /war folder" href="user-guide/war-folder.html"/>
-      <item name="Using the archetype" href="user-guide/archetype.html"/>
-      <item name="Run Hosted Mode" href="user-guide/hosted.html"/>
-      <item name="Generate Async" href="user-guide/async.html"/>
-      <item name="Internationalization" href="user-guide/i18n.html"/>
-      <item name="Testing" href="user-guide/testing.html"/>
-      <item name="Compile and Package" href="user-guide/compiler.html"/>
-      <item name="Multi-project setup" href="user-guide/multiproject.html"/>
-      <item name="Writing a GWT library" href="user-guide/library.html"/>
+      <item name="Introduction" href="index.html"/>
+      <item name="Using the archetype" href="archetype.html"/>
+      <item name="Project organization" href="project.html"/>
+      <item name="Compile and Debug" href="compile.html"/>
+      <item name="Internationalization" href="i18n.html"/>
+      <item name="Testing" href="testing.html"/>
+      <item name="Run Hosted Mode" href="hosted.html"/>
+      <item name="Async interfaces" href="async.html"/>
       <item name="Comfortable debugging" href="user-guide/comfortable_debugging.html"/>
 	  <item name="Productivity Tips" href="user-guide/productivity.html"/>
     </menu>
-    <menu name="Examples">
-      <item name="compile a GWT module" href="examples/compile.html"/>
-      <item name="generate async interfaces" href="examples/asyn.html"/>
-      <item name="generate i18n bundles interfaces" href="examples/i18n.html"/>
+    <menu name="Reference">
+      <item name="Goals" href="plugin-info.html"/>
+      <item name="FAQ" href="faq.html"/>
     </menu>
     ${reports}
   </body>
