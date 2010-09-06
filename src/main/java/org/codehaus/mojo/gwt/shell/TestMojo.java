@@ -41,6 +41,7 @@ import org.codehaus.plexus.util.StringUtils;
  * @goal test
  * @phase integration-test
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
+ * @see http://code.google.com/intl/fr/webtoolkit/doc/latest/DevGuideTesting.html
  * @requiresDependencyResolution test
  * @version $Id: TestMojo.java 9466 2009-04-16 12:03:15Z ndeloof $
  */
@@ -95,7 +96,7 @@ public class TestMojo
     private boolean webMode;
 
     /**
-     * run tests using production mode rather than development (a.k.a. hosted) mode
+     * run tests using production mode rather than development (a.k.a. hosted) mode.
      * 
      * @see http://code.google.com/intl/fr-FR/webtoolkit/doc/latest/DevGuideCompilingAndDebugging.html#DevGuideProdMode
      * @parameter default-value=false expression="${gwt.test.prod}"
@@ -103,9 +104,35 @@ public class TestMojo
     private boolean productionMode;
 
     /**
-     * @parameter default-value=false expression="${gwt.test.manual}"
+	 * Configure test mode. Can be set to "manual", "htmlunit", "selenium" or "remoteweb".
+     * @parameter expression="${gwt.test.mode}" default-value="manual"
      */
-    private boolean manualMode;
+    private String mode;
+
+	/**
+	 * Configure options to run tests with HTMLUnit. The value must descrivbe the browser emulation to be used,
+	 * FF2, FF3, IE6, IE7, or IE8 (possible multiple values separated by comas).
+     * @see http://code.google.com/intl/fr/webtoolkit/doc/latest/DevGuideTestingHtmlUnit.html
+     * @parameter expression="${gwt.test.htmlunit}"
+	 */
+    private String htmlunit;
+
+    /**
+     * Configure options to run tests with Selenium. The value must describe the Selenium Remote Control target
+     * @see http://code.google.com/intl/fr/webtoolkit/doc/latest/DevGuideTestingRemoteTesting.html#Selenium
+     * @parameter expression="${gwt.test.selenium}"
+     */
+    private String selenium;
+
+    /**
+     * Configure options to run tests RemoteWebBrowser. The value must describe remote web URL, like "rmi://myhost/ie8"
+     * <p>
+     * You must start BrowserManagerServer before running tests with this option (gwt:browser).
+     * 
+     * @see http://code.google.com/intl/fr/webtoolkit/doc/latest/DevGuideTestingRemoteTesting.html#Remote_Web
+     * @parameter expression="${gwt.test.remoteweb}"
+     */
+    private String remoteweb;
 
     /**
      * Time out (in seconds) for test execution in dedicated JVM
@@ -126,14 +153,14 @@ public class TestMojo
      *
      * @parameter default-value="**\/GwtTest*.java,**\/Gwt*Suite.java"
      */
-    protected String includes;
+    private String includes;
 
     /**
      * Comma separated list of ant-style exclusion patterns for GWT integration tests
      *
      * @parameter
      */
-    protected String excludes;
+    private String excludes;
 
     /**
      * Directory for test reports, defaults to surefire one to match the surefire-report plugin
@@ -222,10 +249,23 @@ public class TestMojo
         {
             sb.append( "-prod " );
         }
-        if ( manualMode )
+        if ( mode.equalsIgnoreCase( "manual" ) )
         {
             sb.append( "-runStyle Manual:1 " );
         }
+		else if ( mode.equalsIgnoreCase( "htmlunit" ) )
+		{
+			sb.append( "-runStyle HtmlUnit:" + htmlunit );
+		}
+		else if ( mode.equalsIgnoreCase( "selenium" ) )
+		{
+            sb.append( "-runStyle Selenium:" + selenium );
+		}
+		else if ( mode.equalsIgnoreCase( "remoteweb" ) )
+		{
+			sb.append( "-runStyle RemoteWeb:" + remoteweb );
+		}
+
         return sb.toString();
     }
 

@@ -226,6 +226,11 @@ public abstract class AbstractGwtMojo
         return pluginArtifacts.get( "com.google.gwt:gwt-dev" ).getFile();
     }
 
+    protected File getGwtUserJar()
+    {
+        return pluginArtifacts.get( "com.google.gwt:gwt-user" ).getFile();
+    }
+
     /**
      * Check that gwt-dev is not define in dependencies : this can produce version conflicts with other dependencies, as
      * gwt-dev is a "uber-jar" with some commons-* and jetty libs inside.
