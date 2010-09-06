@@ -153,14 +153,14 @@ public class TestMojo
      *
      * @parameter default-value="**\/GwtTest*.java,**\/Gwt*Suite.java"
      */
-    private String includes;
+    protected String includes;
 
     /**
      * Comma separated list of ant-style exclusion patterns for GWT integration tests
      *
      * @parameter
      */
-    private String excludes;
+    protected String excludes;
 
     /**
      * Directory for test reports, defaults to surefire one to match the surefire-report plugin
