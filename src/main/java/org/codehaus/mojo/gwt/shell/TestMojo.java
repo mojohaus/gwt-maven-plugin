@@ -91,7 +91,7 @@ public class TestMojo
 
     /**
      * run tests using web mode rather than developer (a.k.a. hosted) mode
-     * @parameter default-value=false
+     * @parameter default-value=false expression="${gwt.test.web}"
      */
     private boolean webMode;
 
@@ -113,7 +113,7 @@ public class TestMojo
 	 * Configure options to run tests with HTMLUnit. The value must descrivbe the browser emulation to be used,
 	 * FF2, FF3, IE6, IE7, or IE8 (possible multiple values separated by comas).
      * @see http://code.google.com/intl/fr/webtoolkit/doc/latest/DevGuideTestingHtmlUnit.html
-     * @parameter expression="${gwt.test.htmlunit}"
+     * @parameter expression="${gwt.test.htmlunit}" default-value="FF3"
 	 */
     private String htmlunit;
 
