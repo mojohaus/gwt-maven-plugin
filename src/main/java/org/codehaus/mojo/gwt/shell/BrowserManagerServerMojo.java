@@ -43,7 +43,7 @@ public class BrowserManagerServerMojo
 
     /**
      * Name of the BrowserManagerServer to lauch (typically, "ie8")
-     * @parameter
+     * @parameter default-value="ie"
      */
     private String server;
 
