@@ -2,7 +2,6 @@
   <id>GWT</id>
   <sources>
     <source>src\main\java\client\GreetingService.java</source>
-    <source>src\main\java\client\GreetingServiceAsync.java</source>
     <source>src\main\java\client\__module__.java</source>
     <source>src\main\java\server\GreetingServiceImpl.java</source>
     <source>src\main\java\shared\FieldVerifier.java</source>
@@ -12,7 +11,9 @@
     <source>src\test\resources\__module__JUnit.gwt.xml</source>
   </testSources>
   <resources>
-    <resource>src\main\java\__module__.gwt.xml</resource>
+    <resource>src\main\resources\__module__.gwt.xml</resource>
+    <resource>src\main\resources\client\Messages.properties</resource>
+    <resource>src\main\resources\client\Messages_fr.properties</resource>
     <resource>src\main\webapp\WEB-INF\web.xml</resource>
     <resource>.classpath</resource>
     <resource>.project</resource>
