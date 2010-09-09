@@ -65,7 +65,7 @@ public abstract class AbstractGwtMojo
     private String version;
 
     /**
-     * @parameter default-value="${plugin.artifactMap}"
+     * @parameter expression="${plugin.artifactMap}"
      */
     private Map<String, Artifact> pluginArtifacts;
 
