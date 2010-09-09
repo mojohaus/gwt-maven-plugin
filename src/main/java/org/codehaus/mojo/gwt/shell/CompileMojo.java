@@ -83,9 +83,9 @@ public class CompileMojo
     private boolean enableAssertions;
 
     /**
-     * Ask GWT to create the Story of Your Compile (SOYC). Enabled by default if GWT >= 2.0 is detected
-     *
-     * @parameter expression="${gwt.compiler.soyc}"
+     * Ask GWT to create the Story of Your Compile (SOYC)
+     * 
+     * @parameter expression="${gwt.compiler.soyc}" default-value="true"
      */
     private String soyc;
 
