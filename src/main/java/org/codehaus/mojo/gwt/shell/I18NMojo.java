@@ -30,7 +30,7 @@ import org.apache.maven.plugin.MojoFailureException;
  * Creates I18N interfaces for constants and messages files.
  *
  * @goal i18n
- * @phase process-resources
+ * @phase generate-sources
  * @requiresDependencyResolution compile
  * @description Creates I18N interfaces for constants and messages files.
  * @author Sascha-Matthias Kulawik <sascha@kulawik.de>
