@@ -99,6 +99,8 @@ public class I18NMojo
 
                 new JavaCommand( "com.google.gwt.i18n.tools.I18NSync" )
                     .withinScope( Artifact.SCOPE_COMPILE )
+                    .withinClasspath( getGwtUserJar() )
+                    .withinClasspath( getGwtDevJar() )
                     .arg( "-out", getGenerateDirectory().getAbsolutePath() )
                     .arg( "-createConstantsWithLookup" )
                     .arg( target )
@@ -116,6 +118,8 @@ public class I18NMojo
 
                 new JavaCommand( "com.google.gwt.i18n.tools.I18NSync" )
                     .withinScope( Artifact.SCOPE_COMPILE )
+                    .withinClasspath( getGwtUserJar() )
+                    .withinClasspath( getGwtDevJar() )
                     .arg( "-out", getGenerateDirectory().getAbsolutePath() )
                     .arg( target )
                     .execute();
@@ -132,6 +136,8 @@ public class I18NMojo
 
                 new JavaCommand( "com.google.gwt.i18n.tools.I18NSync" )
                     .withinScope( Artifact.SCOPE_COMPILE )
+                    .withinClasspath( getGwtUserJar() )
+                    .withinClasspath( getGwtDevJar() )
                     .arg( "-out", getGenerateDirectory().getAbsolutePath() )
                     .arg( "-createMessages" )
                     .arg( target )

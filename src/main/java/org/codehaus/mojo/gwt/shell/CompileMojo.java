@@ -84,7 +84,7 @@ public class CompileMojo
 
     /**
      * Ask GWT to create the Story of Your Compile (SOYC)
-     * 
+     *
      * @parameter expression="${gwt.compiler.soyc}" default-value="true"
      */
     private String soyc;
@@ -185,6 +185,8 @@ public class CompileMojo
 
         JavaCommand cmd = new JavaCommand( "com.google.gwt.dev.Compiler" )
             .withinScope( Artifact.SCOPE_COMPILE )
+            .withinClasspath( getGwtUserJar() )
+            .withinClasspath( getGwtDevJar() )
             .arg( "-gen", getGen().getAbsolutePath() )
             .arg( "-logLevel", getLogLevel() )
             .arg( "-style", getStyle() )

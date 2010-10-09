@@ -32,7 +32,7 @@ import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Goal which run a GWT module in the GWT Hosted mode.
- * 
+ *
  * @goal run
  * @execute phase=compile goal:war:exploded
  * @requiresDirectInvocation
@@ -47,7 +47,7 @@ public class RunMojo
 {
     /**
      * Location of the hosted-mode web application structure.
-     * 
+     *
      * @parameter default-value="${project.build.directory}/${project.build.finalName}"
      */
     // Parameter shared with EclipseMojo
@@ -240,6 +240,8 @@ public class RunMojo
     {
         JavaCommand cmd = new JavaCommand( "com.google.gwt.dev.DevMode" )
             .withinScope( Artifact.SCOPE_RUNTIME )
+            .withinClasspath( getGwtUserJar() )
+            .withinClasspath( getGwtDevJar() )
             .arg( "-war", hostedWebapp.getAbsolutePath() )
             .arg( "-gen", getGen().getAbsolutePath() )
             .arg( "-logLevel", getLogLevel() )

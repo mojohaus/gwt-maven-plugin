@@ -189,12 +189,6 @@ public abstract class AbstractGwtMojo
         return startPosition;
     }
 
-    public Collection<File> getClasspathWithoutGwtDev( String scope )
-        throws MojoExecutionException
-    {
-        Collection<File> files = classpathBuilder.buildClasspathList( getProject(), scope, getProjectArtifacts() );
-        return files;
-    }
 
     /**
      * Build the GWT classpath for the specified scope
@@ -205,14 +199,15 @@ public abstract class AbstractGwtMojo
     public Collection<File> getClasspath( String scope )
         throws MojoExecutionException
     {
-        Collection<File> files = getClasspathWithoutGwtDev( scope );
+        Collection<File> files = classpathBuilder.buildClasspathList( getProject(), scope, getProjectArtifacts() );
 
-        files.add( getGwtDevJar() );
-
-        getLog().debug( "GWT SDK execution classpath :" );
-        for ( File f : files )
+        if (getLog().isDebugEnabled())
         {
-            getLog().debug( "   " + f.getAbsolutePath() );
+	        getLog().debug( "GWT SDK execution classpath :" );
+	        for ( File f : files )
+	        {
+	            getLog().debug( "   " + f.getAbsolutePath() );
+	        }
         }
         return files;
     }
@@ -222,12 +217,12 @@ public abstract class AbstractGwtMojo
     {
         checkGwtDevAsDependency();
         checkGwtUserVersion();
-
         return pluginArtifacts.get( "com.google.gwt:gwt-dev" ).getFile();
     }
 
     protected File getGwtUserJar()
     {
+    	checkGwtUserVersion();
         return pluginArtifacts.get( "com.google.gwt:gwt-user" ).getFile();
     }
 
