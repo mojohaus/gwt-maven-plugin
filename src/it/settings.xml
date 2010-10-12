@@ -48,6 +48,17 @@ under the License.
             <enabled>true</enabled>
           </snapshots>
         </repository>
+        <repository>
+          <id>codehaus.org</id>
+          <url>https://oss.sonatype.org/content/repositories/google-snapshots/</url>
+          <name>Google Web Toolkit Snapshots Repository</name>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+          </snapshots>
+    </repository>        
       </repositories>
       <pluginRepositories>
         <pluginRepository>
