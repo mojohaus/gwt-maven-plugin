@@ -113,6 +113,8 @@
     <maven.compiler.target>1.5</maven.compiler.target>
     <!-- set -Dgwt.version=XX to test another GWT release -->
     <gwt.version>${project.version}</gwt.version>
+    <codehausDistMgmtSnapshotsUrl>scp://people.apache.org/home/nicolas/public_html/gwt-maven-plugin-2.1</codehausDistMgmtSnapshotsUrl>
+    <codehausDistMgmtSnapshotsId>people.apache.org</codehausDistMgmtSnapshotsId>
   </properties>
 
   <dependencies>
@@ -395,8 +397,8 @@
   <!-- Only for early-adopters testing of GWT 2.1 milestones -->
   <distributionManagement>
     <snapshotRepository>
-      <id>people.apache.org</id>
-      <url>scp://people.apache.org/home/nicolas/public_html/gwt-maven-plugin-2.1</url>
+      <id>${codehausDistMgmtSnapshotsId]</id>
+      <url>${codehausDistMgmtSnapshotsUrl}</url>
     </snapshotRepository>
     <repository>
       <id>people.apache.org</id>
@@ -434,7 +436,7 @@
     <!--  until gwt 2.1.0 gets final -->
     <repository>
       <id>codehaus.org</id> <!-- hack to bypass enforcer -->
-      <url>http://google-web-toolkit.googlecode.com/svn/2.1.0.M3/gwt/maven</url>
+      <url>https://oss.sonatype.org/content/repositories/google-snapshots/</url>
       <name>Google Web Toolkit Repository</name>
     </repository>
   </repositories>
