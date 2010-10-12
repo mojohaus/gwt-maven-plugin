@@ -397,7 +397,7 @@
   <!-- Only for early-adopters testing of GWT 2.1 milestones -->
   <distributionManagement>
     <snapshotRepository>
-      <id>${codehausDistMgmtSnapshotsId]</id>
+      <id>${codehausDistMgmtSnapshotsId}</id>
       <url>${codehausDistMgmtSnapshotsUrl}</url>
     </snapshotRepository>
     <repository>
