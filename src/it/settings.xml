@@ -48,10 +48,11 @@ under the License.
             <enabled>true</enabled>
           </snapshots>
         </repository>
+        <!--  until gwt 2.1.0 gets final -->
         <repository>
-          <id>codehaus.org</id>
+          <id>google-snapshots</id>
           <url>https://oss.sonatype.org/content/repositories/google-snapshots/</url>
-          <name>Google Web Toolkit Snapshots Repository</name>
+          <name>Google Web Toolkit Repository Snapshots</name>
           <releases>
             <enabled>false</enabled>
           </releases>

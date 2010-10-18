@@ -388,6 +388,52 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>2.1</version>
       </plugin>
+      
+      <!--  until gwt 2.1.0 gets final google snapshot repo must be allowed -->
+      
+      <plugin>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>mojo-enforcer-rules</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <bannedDependencies>
+                  <excludes>
+                    <exclude>org.codehaus.plexus:plexus-component-api</exclude>
+                  </excludes>
+                  <message>The plexus-component-api conflicts with the plexus-container-default used by Maven. You probably added a dependency that is missing the exclusions.</message>
+                </bannedDependencies>
+                <requireNoRepositories>
+                  <message>Mojo is synchronized with repo1.maven.org.  The rules for repo1.maven.org are that pom.xml files should not include repository definitions.  If repository definitions are included, they must be limited to SNAPSHOT only repositories.</message>
+                  <banRepositories>true</banRepositories>
+                  <banPluginRepositories>true</banPluginRepositories>
+                  <!-- allow the codehaus and apache snapshot repos -->
+                  <allowedRepositories>
+                    <allowedRepository>codehaus.org</allowedRepository> 
+                    <allowedRepository>apache.snapshots</allowedRepository> 
+                    <allowedRepository>codehaus-snapshots</allowedRepository> 
+                    <allowedRepository>google-snapshots</allowedRepository>
+                  </allowedRepositories>
+                  <allowedPluginRepositories>
+                    <allowedPluginRepository>codehaus.org</allowedPluginRepository> 
+                    <allowedPluginRepository>apache.snapshots</allowedPluginRepository> 
+                  </allowedPluginRepositories>
+                </requireNoRepositories>
+                <requirePluginVersions>
+                   <message>Best Practice is to always define plugin versions!</message>
+                   <banLatest>true</banLatest>
+                   <banRelease>true</banRelease>
+                </requirePluginVersions>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>      
 
     </plugins>
   </build>
@@ -398,14 +444,6 @@
       <id>${codehausDistMgmtSnapshotsId}</id>
       <url>${codehausDistMgmtSnapshotsUrl}</url>
     </snapshotRepository>
-    <repository>
-      <id>people.apache.org</id>
-      <url>scp://people.apache.org/home/nicolas/public_html/gwt-maven-plugin-2.1</url>
-    </repository>
-    <site>
-      <id>people.apache.org</id>
-      <url>scp://people.apache.org/home/nicolas/public_html/gwt-maven-plugin-2.1</url>
-    </site>
   </distributionManagement>
 
   <reporting>
@@ -433,9 +471,15 @@
   <repositories>
     <!--  until gwt 2.1.0 gets final -->
     <repository>
-      <id>codehaus.org</id> <!-- hack to bypass enforcer -->
+      <id>google-snapshots</id>
       <url>https://oss.sonatype.org/content/repositories/google-snapshots/</url>
-      <name>Google Web Toolkit Repository</name>
+      <name>Google Web Toolkit Repository Snapshots</name>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
 
