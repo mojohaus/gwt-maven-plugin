@@ -113,8 +113,6 @@
     <maven.compiler.target>1.5</maven.compiler.target>
     <!-- set -Dgwt.version=XX to test another GWT release -->
     <gwt.version>${project.version}</gwt.version>
-    <codehausDistMgmtSnapshotsUrl>scp://people.apache.org/home/nicolas/public_html/gwt-maven-plugin-2.1</codehausDistMgmtSnapshotsUrl>
-    <codehausDistMgmtSnapshotsId>people.apache.org</codehausDistMgmtSnapshotsId>
   </properties>
 
   <dependencies>
@@ -437,14 +435,6 @@
 
     </plugins>
   </build>
-
-  <!-- Only for early-adopters testing of GWT 2.1 milestones -->
-  <distributionManagement>
-    <snapshotRepository>
-      <id>${codehausDistMgmtSnapshotsId}</id>
-      <url>${codehausDistMgmtSnapshotsUrl}</url>
-    </snapshotRepository>
-  </distributionManagement>
 
   <reporting>
     <excludeDefaults>false</excludeDefaults>
