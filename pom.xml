@@ -112,7 +112,7 @@
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
     <!-- set -Dgwt.version=XX to test another GWT release -->
-    <gwt.version>${project.version}</gwt.version>
+    <gwt.version>2.1.0</gwt.version>
   </properties>
 
   <dependencies>
@@ -415,7 +415,7 @@
                     <allowedRepository>codehaus.org</allowedRepository> 
                     <allowedRepository>apache.snapshots</allowedRepository> 
                     <allowedRepository>codehaus-snapshots</allowedRepository> 
-                    <allowedRepository>google-snapshots</allowedRepository>
+                    <allowedRepository>gwt-2.1.0</allowedRepository>
                   </allowedRepositories>
                   <allowedPluginRepositories>
                     <allowedPluginRepository>codehaus.org</allowedPluginRepository> 
@@ -459,16 +459,16 @@
   </reporting>
 
   <repositories>
-    <!--  until gwt 2.1.0 gets final -->
+    <!--  until all gwt 2.1.0 artifacts reach central  -->
     <repository>
-      <id>google-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/google-snapshots/</url>
-      <name>Google Web Toolkit Repository Snapshots</name>
+      <id>gwt-2.1.0</id>
+      <url>http://google-web-toolkit.googlecode.com/svn/2.1.0/gwt/maven/</url>
+      <name>Google Web Toolkit 2.1.0 Repository</name>
       <releases>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </releases>
       <snapshots>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </snapshots>
     </repository>
   </repositories>
