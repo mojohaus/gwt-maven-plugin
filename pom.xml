@@ -178,11 +178,6 @@
       <version>${gwt.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.google.gwt</groupId>
-      <artifactId>gwt-soyc-vis</artifactId>
-      <version>${gwt.version}</version>
-    </dependency>
-    <dependency>
       <!-- used to unpack gwt native libs -->
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-archiver</artifactId>
@@ -377,7 +372,7 @@
         <artifactId>maven-site-plugin</artifactId>
         <version>2.1.1</version>
           <configuration>
-		    <stagingRepositoryId>codehaus</stagingRepositoryId>
+            <stagingRepositoryId>codehaus</stagingRepositoryId>
             <stagingSiteURL>dav:https://dav.codehaus.org/mojo/${project.artifactId}-${project.version}</stagingSiteURL>
           </configuration>
       </plugin>
@@ -386,52 +381,6 @@
         <artifactId>maven-release-plugin</artifactId>
         <version>2.1</version>
       </plugin>
-      
-      <!--  until gwt 2.1.0 gets final google snapshot repo must be allowed -->
-      
-      <plugin>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>mojo-enforcer-rules</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <bannedDependencies>
-                  <excludes>
-                    <exclude>org.codehaus.plexus:plexus-component-api</exclude>
-                  </excludes>
-                  <message>The plexus-component-api conflicts with the plexus-container-default used by Maven. You probably added a dependency that is missing the exclusions.</message>
-                </bannedDependencies>
-                <requireNoRepositories>
-                  <message>Mojo is synchronized with repo1.maven.org.  The rules for repo1.maven.org are that pom.xml files should not include repository definitions.  If repository definitions are included, they must be limited to SNAPSHOT only repositories.</message>
-                  <banRepositories>true</banRepositories>
-                  <banPluginRepositories>true</banPluginRepositories>
-                  <!-- allow the codehaus and apache snapshot repos -->
-                  <allowedRepositories>
-                    <allowedRepository>codehaus.org</allowedRepository> 
-                    <allowedRepository>apache.snapshots</allowedRepository> 
-                    <allowedRepository>codehaus-snapshots</allowedRepository> 
-                    <allowedRepository>gwt-2.1.0</allowedRepository>
-                  </allowedRepositories>
-                  <allowedPluginRepositories>
-                    <allowedPluginRepository>codehaus.org</allowedPluginRepository> 
-                    <allowedPluginRepository>apache.snapshots</allowedPluginRepository> 
-                  </allowedPluginRepositories>
-                </requireNoRepositories>
-                <requirePluginVersions>
-                   <message>Best Practice is to always define plugin versions!</message>
-                   <banLatest>true</banLatest>
-                   <banRelease>true</banRelease>
-                </requirePluginVersions>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>      
 
     </plugins>
   </build>
@@ -457,21 +406,6 @@
       </plugin>-->
     </plugins>
   </reporting>
-
-  <repositories>
-    <!--  until all gwt 2.1.0 artifacts reach central  -->
-    <repository>
-      <id>gwt-2.1.0</id>
-      <url>http://google-web-toolkit.googlecode.com/svn/2.1.0/gwt/maven/</url>
-      <name>Google Web Toolkit 2.1.0 Repository</name>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <pluginRepositories>
     <pluginRepository>
