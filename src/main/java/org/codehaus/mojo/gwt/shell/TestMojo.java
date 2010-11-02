@@ -100,9 +100,7 @@ public class TestMojo
     /**
      * run tests using production mode rather than development (a.k.a. hosted) mode.
      * 
-     * @see http
-     *      ://code.google.com/intl/fr-FR/webtoolkit/doc/latest/DevGuideCompilingAndDebugging.html
-     *      #DevGuideProdMode
+     * @see http://code.google.com/intl/fr-FR/webtoolkit/doc/latest/DevGuideCompilingAndDebugging.html#DevGuideProdMode
      * @parameter default-value=false expression="${gwt.test.prod}"
      */
     private boolean productionMode;
@@ -127,8 +125,7 @@ public class TestMojo
      * Configure options to run tests with Selenium. The value must describe the Selenium Remote
      * Control target
      * 
-     * @see http
-     *      ://code.google.com/intl/fr/webtoolkit/doc/latest/DevGuideTestingRemoteTesting.html#Selenium
+     * @see http://code.google.com/intl/fr/webtoolkit/doc/latest/DevGuideTestingRemoteTesting.html#Selenium
      * @parameter expression="${gwt.test.selenium}"
      */
     private String selenium;
@@ -139,8 +136,7 @@ public class TestMojo
      * <p>
      * You must start BrowserManagerServer before running tests with this option (gwt:browser).
      * 
-     * @see http://code.google.com/intl/fr/webtoolkit/doc/latest/DevGuideTestingRemoteTesting.html#
-     *      Remote_Web
+     * @see http://code.google.com/intl/fr/webtoolkit/doc/latest/DevGuideTestingRemoteTesting.html#Remote_Web
      * @parameter expression="${gwt.test.remoteweb}"
      */
     private String remoteweb;
