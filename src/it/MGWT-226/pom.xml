@@ -39,12 +39,12 @@
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-servlet</artifactId>
-        <version>2.1.0</version>
+        <version>@gwt.version@</version>
       </dependency>
       <dependency>
         <groupId>com.google.gwt</groupId>
         <artifactId>gwt-user</artifactId>
-        <version>2.1.0</version>
+        <version>@gwt.version@</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
