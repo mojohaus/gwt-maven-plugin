@@ -44,20 +44,20 @@ import org.jdom.xpath.XPath;
  */
 public class GwtWebInfProcessor
 {
-    private final static String[] BEFORE_SERVLETS =
+    private static final String[] BEFORE_SERVLETS =
         { "icon", "display-name", "description", "distributable", "context-param", "filter", "filter-mapping",
             "listener", "servlet" };
 
-    private final static String[] AFTER_SERVLETS =
+    private static final String[] AFTER_SERVLETS =
         { "servlet-mapping", "session-config", "mime-mapping", "welcome-file-list", "error-page", "taglib",
             "resource-env-ref", "resource-ref", "security-constraint", "login-config", "security-role", "env-entry",
             "ejb-ref", "ejb-local-ref" };
 
-    private final static String[] BEFORE_MAPPINGS =
+    private static final String[] BEFORE_MAPPINGS =
         { "icon", "display-name", "description", "distributable", "context-param", "filter", "filter-mapping",
             "listener", "servlet", "servlet-mapping" };
 
-    private final static String[] AFTER_MAPPINGS =
+    private static final String[] AFTER_MAPPINGS =
         { "session-config", "mime-mapping", "welcome-file-list", "error-page", "taglib", "resource-env-ref",
             "resource-ref", "security-constraint", "login-config", "security-role", "env-entry", "ejb-ref",
             "ejb-local-ref" };
@@ -123,11 +123,11 @@ public class GwtWebInfProcessor
             servletName.setText( d.getName() );
             servletMapping.addContent( servletName );
             Element urlPattern = new Element( "url-pattern", ns );
-			String path = d.getPath();
-			if ( path.charAt( 0) !=  '/' ) 
-			{
-			    path = '/' + path;
-			}
+            String path = d.getPath();
+            if ( path.charAt( 0 ) != '/' )
+            {
+                path = '/' + path;
+            }
             urlPattern.setText( path );
             servletMapping.addContent( urlPattern );
             webapp.addContent( insertAfter, servletMapping );

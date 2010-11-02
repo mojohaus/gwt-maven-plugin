@@ -195,19 +195,20 @@ public abstract class AbstractGwtMojo
      *
      * @param scope Artifact.SCOPE_COMPILE or Artifact.SCOPE_TEST
      * @return a collection of dependencies as Files for the specified scope.
+     * @throws MojoExecutionException if classPath building failed
      */
     public Collection<File> getClasspath( String scope )
         throws MojoExecutionException
     {
         Collection<File> files = classpathBuilder.buildClasspathList( getProject(), scope, getProjectArtifacts() );
 
-        if (getLog().isDebugEnabled())
+        if ( getLog().isDebugEnabled() )
         {
-	        getLog().debug( "GWT SDK execution classpath :" );
-	        for ( File f : files )
-	        {
-	            getLog().debug( "   " + f.getAbsolutePath() );
-	        }
+            getLog().debug( "GWT SDK execution classpath :" );
+            for ( File f : files )
+            {
+                getLog().debug( "   " + f.getAbsolutePath() );
+            }
         }
         return files;
     }
@@ -222,7 +223,7 @@ public abstract class AbstractGwtMojo
 
     protected File getGwtUserJar()
     {
-    	checkGwtUserVersion();
+        checkGwtUserVersion();
         return pluginArtifacts.get( "com.google.gwt:gwt-user" ).getFile();
     }
 
@@ -315,7 +316,7 @@ public abstract class AbstractGwtMojo
 
     public File getGenerateDirectory()
     {
-        if (!generateDirectory.exists())
+        if ( !generateDirectory.exists() )
         {
             getLog().debug( "Creating target directory " + generateDirectory.getAbsolutePath() );
             generateDirectory.mkdirs();

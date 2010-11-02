@@ -114,6 +114,7 @@
     <!-- set -Dgwt.version=XX to test another GWT release -->
     <gwt.version>2.1.0</gwt.version>
     <mavenVersion>2.0.9</mavenVersion>
+    <mojo.java.target>1.5</mojo.java.target>
   </properties>
 
   <dependencies>
@@ -137,6 +138,7 @@
       <artifactId>maven-plugin-api</artifactId>
       <version>${mavenVersion}</version>
     </dependency>
+    <!--  take care of this when upgrading to maven 3.x -->
     <dependency>
       <groupId>org.apache.maven.reporting</groupId>
       <artifactId>maven-reporting-api</artifactId>
@@ -304,6 +306,19 @@
         </plugins>
       </build>
     </profile>
+    
+    <profile>
+      <id>linkcheck</id>
+      <reporting>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-linkcheck-plugin</artifactId>
+            <version>1.0.1</version>
+          </plugin>
+        </plugins>
+      </reporting>    
+    </profile>
 
   </profiles>
 
@@ -388,24 +403,6 @@
 
   <reporting>
     <excludeDefaults>false</excludeDefaults>
-    <plugins>
-      <!--<plugin>
-        <artifactId>maven-pmd-plugin</artifactId>
-        <version>2.3</version>
-        <configuration>
-          <targetJdk>1.5</targetJdk>
-        </configuration>
-      </plugin>-->
-      <!--<plugin>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.4</version>
-        <configuration>
-          <enableRulesSummary>false</enableRulesSummary>
-          <configLocation>http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven_checks.xml</configLocation>
-          <headerLocation>http://svn.apache.org/repos/asf/maven/plugins/trunk/maven-checkstyle-plugin/src/main/resources/config/maven-header.txt</headerLocation>
-        </configuration>
-      </plugin>-->
-    </plugins>
   </reporting>
 
   <pluginRepositories>

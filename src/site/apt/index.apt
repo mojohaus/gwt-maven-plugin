@@ -17,24 +17,24 @@ User's Guide
  or by reading the online
  {{{http://www.sonatype.com/books/mvnref-book/reference/public-book.html}reference book}}.
 
- * {{{whats_new.html}What's new in 2.1 ?}}
+ * {{{./whats_new.html}What's new in 2.1 ?}}
 
- * {{{archetype.html}Using the archetype}}
+ * {{{./archetype.html}Using the archetype}}
 
- * {{{project.html}Organize project}}
+ * {{{./project.html}Organize project}}
 
- * {{{compile.html}Compile and Debug}}
+ * {{{./compile.html}Compile and Debug}}
 
- * {{{i18n.html}Internationalization}}
+ * {{{./i18n.html}Internationalization}}
 
- * {{{testing.html}Testing Support}}
+ * {{{./testing.html}Testing Support}}
 
- * {{{hosted.html}Hosted Mode}}
+ * {{{./hosted.html}Hosted Mode}}
 
-  * {{{async.html}Generate Async interfaces for GWT-RPC}}
+  * {{{user-guide/async.html}Generate Async interfaces for GWT-RPC}}
 
- * {{{plugin-info.html}Goals and Parameters Reference}}
+ * {{{./plugin-info.html}Goals and Parameters Reference}}
 
- * {{{faq.html}Frequently Asked Questions}}
+ * {{{./faq.html}Frequently Asked Questions}}
 
 

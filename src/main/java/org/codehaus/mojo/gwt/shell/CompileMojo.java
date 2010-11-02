@@ -1,3 +1,5 @@
+package org.codehaus.mojo.gwt.shell;
+
 /*
  * CompileMojo.java
  *
@@ -20,7 +22,6 @@
  * and open the template in the editor.
  *
  */
-package org.codehaus.mojo.gwt.shell;
 
 import static org.apache.maven.artifact.Artifact.SCOPE_COMPILE;
 
