@@ -20,14 +20,12 @@ package org.codehaus.mojo.gwt;
  */
 
 import java.io.File;
-import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.installer.ArtifactInstallationException;
 import org.apache.maven.artifact.installer.ArtifactInstaller;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -40,13 +38,6 @@ import org.apache.maven.plugin.MojoFailureException;
 public class SdkInstallMojo
     extends AbstractGwtModuleMojo
 {
-
-    /**
-     * Map that contains the repository layouts.
-     * 
-     * @component role="org.apache.maven.artifact.repository.layout.ArtifactRepositoryLayout"
-     */
-    private Map<String, ArtifactRepositoryLayout> repositoryLayouts;
 
     /**
      * @component

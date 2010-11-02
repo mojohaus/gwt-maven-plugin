@@ -131,13 +131,6 @@ public class RunMojo
     private String server;
 
     /**
-     * Specifies the mapping URL to be used with the shell servlet.
-     *
-     * @parameter default-value="/*"
-     */
-    private String shellServletMappingURL;
-
-    /**
      * Set GWT shell protocol/host whitelist.
      * <p>
      * Can be set from command line using '-Dgwt.whitelist=...'

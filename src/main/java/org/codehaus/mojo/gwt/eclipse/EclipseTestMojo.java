@@ -56,17 +56,6 @@ public class EclipseTestMojo
     private EclipseUtil eclipseUtil;
 
     /**
-     * Extra JVM arguments that are passed to the GWT-Maven generated scripts (for compiler, shell, etc - typically use
-     * -Xmx512m here, or -XstartOnFirstThread, etc).
-     * <p>
-     * Can be set from command line using '-Dgwt.extraJvmArgs=...', defaults to setting max Heap size to be large enough
-     * for most GWT use cases.
-     *
-     * @parameter expression="${gwt.extraJvmArgs}" default-value="-Xmx512m"
-     */
-    private String extraJvmArgs;
-
-    /**
      * The currently executed project (phase=generate-resources).
      *
      * @parameter expression="${executedProject}"
