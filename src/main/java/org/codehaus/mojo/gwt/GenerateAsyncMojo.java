@@ -107,10 +107,10 @@ public class GenerateAsyncMojo
      */
     private boolean force;
 
-	/**
-	 * @parameter expression="${project.build.sourceEncoding}"
-	 */
-	private String encoding;
+    /**
+     * @parameter expression="${project.build.sourceEncoding}"
+     */
+    private String encoding;
 
     /**
      * {@inheritDoc}
@@ -121,11 +121,11 @@ public class GenerateAsyncMojo
     {
         getLog().debug( "GenerateAsyncMojo#execute()" );
 
-		if (encoding == null)
-		{
-			getLog().warn( "Encoding is not set, your build will be platform dependent" );
-			encoding = Charset.defaultCharset().name();
-		}
+        if ( encoding == null )
+        {
+            getLog().warn( "Encoding is not set, your build will be platform dependent" );
+            encoding = Charset.defaultCharset().name();
+        }
 
         JavaDocBuilder builder = createJavaDocBuilder();
 
@@ -348,13 +348,14 @@ public class GenerateAsyncMojo
         return javaClass.isInterface() && javaClass.isPublic() && javaClass.isA( REMOTE_SERVICE_INTERFACE );
     }
 
+    @SuppressWarnings("unchecked")
     private JavaDocBuilder createJavaDocBuilder()
         throws MojoExecutionException
     {
         try
         {
             JavaDocBuilder builder = new JavaDocBuilder();
-			builder.setEncoding( encoding );
+            builder.setEncoding( encoding );
             builder.getClassLibrary().addClassLoader( getProjectClassLoader() );
             for ( String sourceRoot : ( List < String > ) getProject().getCompileSourceRoots() )
             {

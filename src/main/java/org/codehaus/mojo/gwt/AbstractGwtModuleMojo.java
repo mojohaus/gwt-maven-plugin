@@ -49,7 +49,7 @@ import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
  */
 public abstract class AbstractGwtModuleMojo
     extends AbstractGwtMojo
-	implements GwtModuleReader
+    implements GwtModuleReader
 {
     public static final String GWT_MODULE_EXTENSION = ".gwt.xml";
 
@@ -83,12 +83,12 @@ public abstract class AbstractGwtModuleMojo
         }
         if ( modules == null )
         {
-			// Use a Set to avoid duplicate when user set src/main/java as <resource>
-			Set<String> mods = new HashSet<String>();
+            //Use a Set to avoid duplicate when user set src/main/java as <resource>
+            Set<String> mods = new HashSet<String>();
 
             Collection<String> sourcePaths = (Collection<String>) getProject().getCompileSourceRoots();
             for ( String sourcePath : sourcePaths )
-			{
+            {
                 File sourceDirectory = new File( sourcePath );
                 if ( sourceDirectory.exists() )
                 {

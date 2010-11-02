@@ -210,17 +210,18 @@ public abstract class AbstractGwtShellMojo
             }
             for ( String arg : arguments )
             {
-				if ( isQuotedArgumentsEnabled() )
-				{
-					char[] escapeChars = getEscapeChars( isSingleQuotedExecutableEscaped(), isDoubleQuotedExecutableEscaped() );
+                if ( isQuotedArgumentsEnabled() )
+                {
+                    char[] escapeChars = getEscapeChars( isSingleQuotedExecutableEscaped(),
+                                                         isDoubleQuotedExecutableEscaped() );
 
-					commandLine.add( StringUtils.quoteAndEscape( arg, getArgumentQuoteDelimiter(), escapeChars, getQuotingTriggerChars(), '\\', false ) );
-				}
-				else
-				{
-					commandLine.add( arg );
-				}
-
+                    commandLine.add( StringUtils.quoteAndEscape( arg, getArgumentQuoteDelimiter(), escapeChars,
+                                                                 getQuotingTriggerChars(), '\\', false ) );
+                }
+                else
+                {
+                    commandLine.add( arg );
+                }
             }
             return commandLine;
         }

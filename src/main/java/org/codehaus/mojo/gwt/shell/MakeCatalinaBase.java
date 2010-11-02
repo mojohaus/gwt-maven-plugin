@@ -27,6 +27,7 @@ import java.util.Collections;
 import org.apache.commons.io.IOUtils;
 import org.codehaus.mojo.gwt.webxml.GwtWebInfProcessor;
 import org.codehaus.mojo.gwt.webxml.ServletDescriptor;
+
 /**
  * @author cooper
  * @version $Id$
@@ -80,7 +81,7 @@ public class MakeCatalinaBase
 
         FileOutputStream fos = new FileOutputStream( new File( conf, "web.xml" ) );
         InputStream baseWebXml = getClass().getResourceAsStream( "baseWeb.xml" );
-        if (baseWebXml != null)
+        if ( baseWebXml != null )
         {
             IOUtils.copy( baseWebXml, fos );
         }

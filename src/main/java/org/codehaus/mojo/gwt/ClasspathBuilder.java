@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
@@ -59,10 +58,11 @@ public class ClasspathBuilder
      *
      * @param project The maven project the Mojo is running for
      * @param artifacts the project artifacts (all scopes)
+     * @param scope artifact scope to use
      * @return file collection for classpath
-     * @throws DependencyResolutionRequiredException
+     * @throws MojoExecutionException 
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked" )
     public Collection<File> buildClasspathList( final MavenProject project, final String scope,
                                                 Set<Artifact> artifacts )
         throws MojoExecutionException
@@ -125,7 +125,7 @@ public class ClasspathBuilder
         }
         else
         {
-            throw new IllegalArgumentException( "unsupported scope " + scope );
+            throw new MojoExecutionException( "unsupported scope " + scope );
         }
         return items;
     }

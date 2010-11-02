@@ -1,16 +1,5 @@
 package org.codehaus.mojo.gwt;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.maven.plugin.MojoExecutionException;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -30,6 +19,19 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
  * under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.maven.plugin.MojoExecutionException;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
+
+
+
 
 /**
  * @author <a href="mailto:nicolas@apache.org">Nicolas De Loof</a>
@@ -39,16 +41,16 @@ public class GwtModule
     private Xpp3Dom xml;
 
     private String name;
-	
+
     private Set<GwtModule> inherits;
-	
-	private GwtModuleReader reader;
+
+    private GwtModuleReader reader;
 
     public GwtModule( String name, Xpp3Dom xml, GwtModuleReader reader )
     {
         this.name = name;
         this.xml = xml;
-		this.reader = reader;
+        this.reader = reader;
     }
 
     private String getRenameTo()
@@ -58,8 +60,8 @@ public class GwtModule
 
     public String getPublic()
     {
-         Xpp3Dom node = xml.getChild( "public" );
-         return ( node == null ? "public" : node.getAttribute( "path" ) );
+        Xpp3Dom node = xml.getChild( "public" );
+        return ( node == null ? "public" : node.getAttribute( "path" ) );
     }
 
     public String[] getSuperSources()
@@ -133,14 +135,23 @@ public class GwtModule
     public Set<GwtModule> getInherits()
 		throws MojoExecutionException
     {
-	    if ( inherits != null ) return inherits;
-		
+        if ( inherits != null )
+        {
+            return inherits;
+        }
+
         inherits = new HashSet<GwtModule>();
         addInheritedModules( inherits, getLocalInherits() );
 
         return inherits;
     }
 
+    /**
+     * 
+     * @param set
+     * @param modules
+     * @throws MojoExecutionException
+     */
     private void addInheritedModules( Set<GwtModule> set, Set<GwtModule> modules )
         throws MojoExecutionException
     {
@@ -183,13 +194,13 @@ public class GwtModule
     }
 
     public Map<String, String> getServlets( String path )
-		throws MojoExecutionException
+        throws MojoExecutionException
     {
         Map<String, String> servlets = getLocalServlets( path );
-		for( GwtModule module : getInherits() )
-		{		
+        for ( GwtModule module : getInherits() )
+        {
             servlets.putAll( module.getLocalServlets( path ) );
-	    }
+        }
         return servlets;
     }
 
@@ -199,11 +210,11 @@ public class GwtModule
         Xpp3Dom nodes[] = xml.getChildren( "servlet" );
         if ( nodes != null )
         {
-			for ( Xpp3Dom node : nodes )
-			{
+            for ( Xpp3Dom node : nodes )
+            {
                 servlets.put( path + node.getAttribute( "path" ), node.getAttribute( "class" ) );
-			}
-	    }
+            }
+        }
         return servlets;
     }
 
