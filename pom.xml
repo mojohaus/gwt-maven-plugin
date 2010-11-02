@@ -114,6 +114,7 @@
     <!-- set -Dgwt.version=XX to test another GWT release -->
     <gwt.version>2.1.0</gwt.version>
     <mavenVersion>2.0.9</mavenVersion>
+    <mojo.java.target>1.5</mojo.java.target>
   </properties>
 
   <dependencies>
