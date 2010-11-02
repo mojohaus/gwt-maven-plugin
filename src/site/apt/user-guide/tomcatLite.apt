@@ -49,10 +49,10 @@ Configuring Tomcat Lite (GWT 1.5)
  with the embedded Tomcat for the GWT shell. If this file is present in your SOURCE tree, it is used to configure the shell.
  (Also note that you can change the default location by setting the webXml parameter to gwt-maven-plugin, if needed.)
 
- It <<does not matter>> whether or not you use the gwt-maven-plugin {{{mergewebxml-mojo.html}mergewebxml}}} goal
+ It <<does not matter>> whether or not you use the gwt-maven-plugin {{{../mergewebxml-mojo.html}mergewebxml}}} goal
  or not (more on that in a moment), if you have
  a source <<<web.xml>>> file, it will be picked up and used for the embedded <<<webapps/ROOT/WEB-INF/web.xml>>>
- by the {{{run-mojo.html}run}}} goal.
+ by the {{{../../run-mojo.html}run}}} goal.
  gwt-maven-plugin will make one addition to that file before it is used - it will add the <<<GWTShellServlet>>> to it:
 
 +--
@@ -81,7 +81,7 @@ Configuring Tomcat Lite (GWT 1.5)
 
 * web.xml for your WAR artifact
 
- This is where the gwt-maven-plugin {{{mergewebxml-mojo.html}mergewebxml}}} goal comes in handy. This goal goal can inspect your module chain
+ This is where the gwt-maven-plugin {{{../mergewebxml-mojo.html}mergewebxml}}} goal comes in handy. This goal goal can inspect your module chain
  (the GWT module you are currently using, and anything in the inherits hierarchy) and "merge" any GWT-RPC
  servlet entries from your modules, with your <deploy> time <<<web.xml>>> file.
 
@@ -92,16 +92,16 @@ Configuring Tomcat Lite (GWT 1.5)
  have a source web.xml file for other stuff (see the previous section). Then at build time, the merge step makes
  individual servlet web.xml entries for every GWT-RPC servlet it encounters (from your GWT module).
 
- To enable this you need to have the {{{mergewebxml-mojo.html}mergewebxml}}} goal present in the <<<executions>>> section of the plugin configuration.
+ To enable this you need to have the {{../{mergewebxml-mojo.html}mergewebxml}}} goal present in the <<<executions>>> section of the plugin configuration.
 
- You can also not use this, if you do not prefer, by simply <<not>> including the {{{mergewebxml-mojo.html}mergewebxml}}} goal.
+ You can also not use this, if you do not prefer, by simply <<not>> including the {{{../mergewebxml-mojo.html}mergewebxml}}} goal.
 
  Note that the default mapping URL (or <<<url-pattern>>>) for a merged servlet entry is <<</modulename/servletpath>>>, where the module name
  is prepended to the servlet path from your GWT module - this is fine for most cases.
  Nevertheless, if you do wish to change this, you can set the <<<webXmlPathAsIs>>> configuration parameter to true, and then the exact path
  in your GWT module will be used (nothing will be prepended).
 
- If you do you use {{{mergewebxml-mojo.html}mergewebxml}}}, the output file will be <<<${project.build.dir}/web.xml>>> (usually that means <<<target/web.xml>>>).
+ If you do you use {{{../mergewebxml-mojo.html}mergewebxml}}}, the output file will be <<<${project.build.dir}/web.xml>>> (usually that means <<<target/web.xml>>>).
 
  The last thing you need to do in order to USE this file with your WAR, is to configure the war plugin to use it.
  This can be done as follows:

@@ -44,7 +44,7 @@ public interface HelloWorldServiceAsync
 
 * Generate Async interface for GWT-RPC services
 
-  The {{{generateAsync-mojo.html}generateAsync}} goal will create a generate-sources folder and Async interface for all
+  The {{{../generateAsync-mojo.html}generateAsync}} goal will create a generate-sources folder and Async interface for all
   RemoteInterface found in the project. To avoid a full scan, only Java source files that matches a
   pattern are checked. Defaults is to only check <<<**/*Service.java>>>, but you can override this convention using
   the <<<servicePattern>>> parameter.
