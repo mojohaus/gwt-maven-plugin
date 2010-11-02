@@ -47,7 +47,7 @@ under the License.
       <item name="Internationalization" href="i18n.html"/>
       <item name="Testing" href="testing.html"/>
       <item name="Run Hosted Mode" href="hosted.html"/>
-      <item name="Async interfaces" href="async.html"/>
+      <item name="Async interfaces" href="user-guide/async.html"/>
       <item name="Comfortable debugging" href="user-guide/comfortable_debugging.html"/>
 	  <item name="Productivity Tips" href="user-guide/productivity.html"/>
     </menu>
@@ -55,6 +55,6 @@ under the License.
       <item name="Goals" href="plugin-info.html"/>
       <item name="FAQ" href="faq.html"/>
     </menu>
-    ${reports}
+    <menu ref="reports"/>
   </body>
 </project>
