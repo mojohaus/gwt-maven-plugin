@@ -60,5 +60,14 @@
         <include>*.launch</include>
       </includes>
     </fileSet>
+<<<<<<< HEAD
+=======
+    <fileSet packaged="true" encoding="UTF-8">
+      <directory>target/generated-sources/gwt</directory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+    </fileSet>
+>>>>>>> gm
   </fileSets>
 </archetype-descriptor>

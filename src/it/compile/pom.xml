@@ -48,6 +48,11 @@
           <extraParam>true</extraParam>
           <soyc>false</soyc>
           <strict>true</strict>
+<<<<<<< HEAD
+=======
+          <workDir>${project.build.directory}/workDir</workDir>
+          <deploy>${project.build.directory}/deploy</deploy>
+>>>>>>> gm
         </configuration>
         <executions>
           <execution>
