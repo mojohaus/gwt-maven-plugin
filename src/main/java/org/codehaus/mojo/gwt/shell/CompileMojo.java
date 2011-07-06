@@ -151,6 +151,14 @@ public class CompileMojo
     private File extra;
 
     /**
+     * The directory into which deployable but not servable output files will be written (defaults to 'WEB-INF/deploy' under the webappDirectory directory/jar, and may be the same as the extra directory/jar)
+     *
+     * @parameter
+     * @since 2.3.0
+     */
+    private File deploy;
+
+    /**
      * The temp directory is used for temporary compiled files (defaults is system temp directory).
      *
      * @parameter
@@ -285,6 +293,11 @@ public class CompileMojo
 
         addCompileSourceArtifacts( cmd );
         addArgumentDeploy(cmd);
+
+        if ( deploy != null )
+        {
+            cmd.arg( "-deploy" ).arg( String.valueOf( deploy ) );
+        }
 
         if ( workDir != null )
         {
