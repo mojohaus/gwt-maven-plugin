@@ -1,16 +1,7 @@
 target/
-<<<<<<< HEAD
-=======
 /.idea
->>>>>>> gm
 *.iml
 *.ipr
 *.iws
 *.swp
 *.swo
-<<<<<<< HEAD
-=======
-/.classpath
-/.project
-/.settings
->>>>>>> gm
