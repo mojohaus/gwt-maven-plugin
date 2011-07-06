@@ -269,10 +269,7 @@ public class TestMojo
         {
             sb.append( "-runStyle RemoteWeb:" + remoteweb );
         }
-<<<<<<< HEAD
-=======
         // TODO Is addArgumentDeploy(cmd) also needed to get readable test stacktraces with an alternative deploy dir?
->>>>>>> gm
 
         return sb.toString();
     }

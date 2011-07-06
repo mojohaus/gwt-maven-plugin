@@ -18,10 +18,7 @@
     <resource>.classpath</resource>
     <resource>.project</resource>
     <resource>.settings\.jsdtscope</resource>
-<<<<<<< HEAD
-=======
     <resource>.settings\com.google.appengine.eclipse.core.prefs</resource>
->>>>>>> gm
     <resource>.settings\com.google.gdt.eclipse.core.prefs</resource>
     <resource>.settings\com.google.gwt.eclipse.core.prefs</resource>
     <resource>.settings\org.eclipse.jdt.core.prefs</resource>

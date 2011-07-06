@@ -80,8 +80,6 @@ public abstract class AbstractGwtShellMojo
     private String style;
 
     /**
-<<<<<<< HEAD
-=======
      * The directory into which deployable but not servable output files will be written (defaults to 'WEB-INF/deploy' under the webappDirectory directory/jar, and may be the same as the extra directory/jar)
      *
      * @parameter
@@ -90,7 +88,6 @@ public abstract class AbstractGwtShellMojo
     private File deploy;
 
     /**
->>>>>>> gm
      * Extra JVM arguments that are passed to the GWT-Maven generated scripts (for compiler, shell, etc - typically use
      * -Xmx512m here, or -XstartOnFirstThread, etc).
      * <p>
@@ -279,8 +276,6 @@ public abstract class AbstractGwtShellMojo
         }
     }
 
-<<<<<<< HEAD
-=======
     protected void addArgumentDeploy(JavaCommand cmd) {
         if ( deploy != null )
         {
@@ -288,7 +283,6 @@ public abstract class AbstractGwtShellMojo
         }
     }
 
->>>>>>> gm
     /**
      * A plexus-util StreamConsumer to redirect messages to plugin log
      */

@@ -28,28 +28,19 @@ import static org.apache.maven.artifact.Artifact.SCOPE_COMPILE;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
-<<<<<<< HEAD
-=======
 import java.util.Iterator;
->>>>>>> gm
 
 import org.apache.commons.lang.SystemUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.codehaus.mojo.gwt.GwtModule;
-<<<<<<< HEAD
-=======
 import org.codehaus.mojo.gwt.utils.DefaultGwtModuleReader;
->>>>>>> gm
 import org.codehaus.mojo.gwt.utils.GwtModuleReaderException;
 import org.codehaus.plexus.compiler.util.scan.InclusionScanException;
 import org.codehaus.plexus.compiler.util.scan.StaleSourceScanner;
 import org.codehaus.plexus.compiler.util.scan.mapping.SingleTargetSourceMapping;
-<<<<<<< HEAD
-=======
 import org.codehaus.plexus.util.StringUtils;
->>>>>>> gm
 
 /**
  * Invokes the GWTCompiler for the project source.
@@ -293,10 +284,7 @@ public class CompileMojo
         }
 
         addCompileSourceArtifacts( cmd );
-<<<<<<< HEAD
-=======
         addArgumentDeploy(cmd);
->>>>>>> gm
 
         if ( workDir != null )
         {
@@ -326,17 +314,11 @@ public class CompileMojo
         }
         // workaround to GWT issue 4031 whith IBM JDK
         // @see http://code.google.com/p/google-web-toolkit/issues/detail?id=4031
-<<<<<<< HEAD
-        if ( System.getProperty( "java.vendor" ).startsWith( "IBM" ) )
-        {
-            StringBuilder sb = new StringBuilder( "Build is using IBM JDK, localWorkers set to 1 as a workaround" );
-=======
         if ( System.getProperty( "java.vendor" ).startsWith( "IBM" ) && StringUtils.isEmpty(getJvm()))
         {
             StringBuilder sb = new StringBuilder( "Build is using IBM JDK, and no explicit JVM property has been set." );
             sb.append( SystemUtils.LINE_SEPARATOR );
             sb.append("localWorkers set to 1 as a workaround");
->>>>>>> gm
             sb.append( SystemUtils.LINE_SEPARATOR );
             sb.append( "see http://code.google.com/p/google-web-toolkit/issues/detail?id=4031" );
             getLog().info( sb.toString() );
@@ -359,14 +341,6 @@ public class CompileMojo
     private boolean compilationRequired( String module, File output )
         throws MojoExecutionException
     {
-<<<<<<< HEAD
-        try
-        {
-            GwtModule gwtModule = readModule( module );
-            if ( gwtModule.getEntryPoints().size() == 0 )
-            {
-                getLog().debug( gwtModule.getName() + " has no EntryPoint - compilation skipped" );
-=======
         getLog().debug( "**Checking if compilation is required for " + module );
         try
         {
@@ -375,33 +349,16 @@ public class CompileMojo
             if ( gwtModule.getEntryPoints().size() == 0 )
             {
                 getLog().info( gwtModule.getName() + " has no EntryPoint - compilation skipped" );
->>>>>>> gm
                 // No entry-point, this is an utility module : compiling this one will fail
                 // with '[ERROR] Module has no entry points defined'
                 return false;
             }
-<<<<<<< HEAD
-=======
             getLog().debug( "Module has an entrypoint" );
->>>>>>> gm
 
             if ( force )
             {
                 return true;
             }
-<<<<<<< HEAD
-
-            String modulePath = gwtModule.getPath();
-            String outputTarget = modulePath + "/" + modulePath + ".nocache.js";
-
-            // Require compilation if no js file present in target.
-            if ( !new File( output, outputTarget ).exists() )
-            {
-                return true;
-            }
-
-            // js file allreay exists, but may not be up-to-date with project source files
-=======
             getLog().debug( "Compilation not forced");
             
             String modulePath = gwtModule.getPath();
@@ -430,25 +387,14 @@ public class CompileMojo
             getLog().debug( "The module XML hasn't been updated");
 
             // js file already exists, but may not be up-to-date with project source files
->>>>>>> gm
             SingleTargetSourceMapping singleTargetMapping = new SingleTargetSourceMapping( ".java", outputTarget );
             StaleSourceScanner scanner = new StaleSourceScanner();
             scanner.addSourceMapping( singleTargetMapping );
 
-<<<<<<< HEAD
-            SingleTargetSourceMapping gwtModuleMapping = new SingleTargetSourceMapping( ".gwt.xml", outputTarget );
-            scanner.addSourceMapping( gwtModuleMapping );
-
-=======
->>>>>>> gm
             SingleTargetSourceMapping uiBinderMapping = new SingleTargetSourceMapping( ".ui.xml", outputTarget );
             scanner.addSourceMapping( uiBinderMapping );
 
             Collection<File> compileSourceRoots = new HashSet<File>();
-<<<<<<< HEAD
-            classpathBuilder.addSourcesWithActiveProjects( getProject(), compileSourceRoots, SCOPE_COMPILE );
-            classpathBuilder.addResourcesWithActiveProjects( getProject(), compileSourceRoots, SCOPE_COMPILE );
-=======
            	for (Iterator iterator = getProject().getCompileSourceRoots().iterator(); iterator.hasNext();) {	
 				String sourceRoot = (String) iterator.next();
            		for (String sourcePackage : gwtModule.getSources()) {
@@ -461,7 +407,6 @@ public class CompileMojo
 				}
 			}
 
->>>>>>> gm
             for ( File sourceRoot : compileSourceRoots )
             {
                 if ( !sourceRoot.isDirectory() )

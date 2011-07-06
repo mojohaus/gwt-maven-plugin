@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< HEAD
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-=======
 <project
   xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
->>>>>>> gm
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <!-- POM file generated with GWT webAppCreator -->
@@ -18,51 +14,31 @@
 
   <properties>
     <!-- Convenience property to set the GWT version -->
-<<<<<<< HEAD
-    <gwtVersion>2.1.0</gwtVersion>
-    <!-- GWT needs at least java 1.5 -->
-    <maven.compiler.source>1.5</maven.compiler.source>
-    <maven.compiler.target>1.5</maven.compiler.target>
-    <webappDirectory>\${project.build.directory}/\${project.build.finalName}</webappDirectory>
-=======
     <gwtVersion>${gwtVersion}</gwtVersion>
     <!-- GWT needs at least java 1.5 -->
     <webappDirectory>\${project.build.directory}/\${project.build.finalName}</webappDirectory>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
->>>>>>> gm
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-servlet</artifactId>
-<<<<<<< HEAD
-      <version>${gwtVersion}</version>
-=======
       <version>\${gwtVersion}</version>
->>>>>>> gm
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
-<<<<<<< HEAD
-      <version>${gwtVersion}</version>
-      <scope>provided</scope>
-    </dependency>  
-=======
       <version>\${gwtVersion}</version>
       <scope>provided</scope>
     </dependency>
->>>>>>> gm
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.7</version>
       <scope>test</scope>
     </dependency>
-<<<<<<< HEAD
-=======
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
@@ -76,7 +52,6 @@
       <classifier>sources</classifier>
       <scope>test</scope>
     </dependency>
->>>>>>> gm
   </dependencies>
 
   <build>
@@ -100,13 +75,8 @@
             </goals>
           </execution>
         </executions>
-<<<<<<< HEAD
-        <!-- Plugin configuration. There are many available options, see gwt-maven-plugin 
-          documentation at codehaus.org -->
-=======
         <!-- Plugin configuration. There are many available options, see 
           gwt-maven-plugin documentation at codehaus.org -->
->>>>>>> gm
         <configuration>
           <runTarget>\${module}.html</runTarget>
           <hostedWebapp>\${webappDirectory}</hostedWebapp>
@@ -131,9 +101,6 @@
           <webappDirectory>\${webappDirectory}</webappDirectory>
         </configuration>
       </plugin>
-<<<<<<< HEAD
-
-=======
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -143,7 +110,6 @@
           <target>1.5</target>
         </configuration>
       </plugin>
->>>>>>> gm
     </plugins>
   </build>
 

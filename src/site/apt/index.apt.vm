@@ -72,8 +72,6 @@ TIPS
   * {{{./faq.html}Frequently Asked Questions}} 
 
 
-<<<<<<< HEAD
-=======
 WANT TO CONTRIBUTE ?
 
   We are big fans of {{{http://jenkins-ci.org/}Jenkins}} community model, and want to apply it to lower the contribution barrier.
@@ -82,7 +80,6 @@ WANT TO CONTRIBUTE ?
   you commits. If you feel confortable with the code, just ask for commit permission to apply changes by yourself.
 
 
->>>>>>> gm
   <<<>>>
 
   Development builds are tested on next GWT SDK milestones on 
