@@ -81,7 +81,7 @@
       <subscribe>user-subscribe@mojo.codehaus.org</subscribe>
       <unsubscribe>user-unsubscribe@mojo.codehaus.org</unsubscribe>
       <post>user@mojo.codehaus.org</post>
-      <archive>http://archive.hausfoundation.org/lists/org.codehaus.mojo.user</archive>
+      <archive>http://archive.codehaus.org/lists/org.codehaus.mojo.user</archive>
       <otherArchives>
         <otherArchive>http://old.nabble.com/mojo---dev-f11981.html</otherArchive>
         <otherArchive>http://markmail.org/list/org.codehaus.mojo.user</otherArchive>
@@ -92,7 +92,7 @@
       <subscribe>dev-subscribe@mojo.codehaus.org</subscribe>
       <unsubscribe>dev-unsubscribe@mojo.codehaus.org</unsubscribe>
       <post>dev@mojo.codehaus.org</post>
-      <archive>http://archive.hausfoundation.org/lists/org.codehaus.mojo.dev</archive>
+      <archive>http://archive.codehaus.org/lists/org.codehaus.mojo.dev</archive>
       <otherArchives>
         <otherArchive>http://www.nabble.com/mojo---dev-f11981.html</otherArchive>
         <otherArchive>http://markmail.org/list/org.codehaus.mojo.dev</otherArchive>
@@ -167,7 +167,7 @@
     <dependency>
       <groupId>org.apache.maven.doxia</groupId>
       <artifactId>doxia-sink-api</artifactId>
-      <version>1.0</version>
+      <version>1.1.4</version>
     </dependency>
     
     <!-- Doxia-sitetools -->
@@ -274,6 +274,11 @@
       <groupId>org.apache.maven.surefire</groupId>
       <artifactId>surefire-api</artifactId>
       <version>2.4.3</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.0.1</version>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
