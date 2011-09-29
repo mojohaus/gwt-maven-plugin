@@ -85,7 +85,7 @@ public abstract class AbstractGwtShellMojo
      * @parameter
      * @since 2.3.0-1
      */
-    private File deploy;
+    protected File deploy;
 
     /**
      * Extra JVM arguments that are passed to the GWT-Maven generated scripts (for compiler, shell, etc - typically use
