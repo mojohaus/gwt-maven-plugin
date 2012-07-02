@@ -53,13 +53,23 @@ public abstract class AbstractGwtShellMojo
     extends AbstractGwtModuleMojo
 {
     /**
-     * Location on filesystem where GWT will write generated content for review (-gen option to GWTCompiler).
+     * Location on filesystem where GWT will write generated content for review (-gen option to GWT Compiler).
      * <p>
      * Can be set from command line using '-Dgwt.gen=...'
      * </p>
      * @parameter default-value="${project.build.directory}/.generated" expression="${gwt.gen}"
      */
     private File gen;
+
+    /**
+     * Whether to add -gen parameter to the compiler command line
+     * <p>
+     * Can be set from command line using '-Dgwt.genParam=false'. Defaults to 'true' for backwards compatibility.
+     * </p>
+     * @parameter default-value="true" expression="${gwt.genParam}"
+     * @since 2.5.0
+     */
+    private boolean genParam;
 
     /**
      * GWT logging level (-logLevel ERROR, WARN, INFO, TRACE, DEBUG, SPAM, or ALL).
@@ -85,7 +95,7 @@ public abstract class AbstractGwtShellMojo
      * @parameter
      * @since 2.3.0-1
      */
-    protected File deploy;
+    private File deploy;
 
     /**
      * Extra JVM arguments that are passed to the GWT-Maven generated scripts (for compiler, shell, etc - typically use
@@ -129,6 +139,26 @@ public abstract class AbstractGwtShellMojo
      */
     private String[] compileSourcesArtifacts;
 
+    /**
+     * Whether to use the persistent unit cache or not.
+     * <p>
+     * Can be set from command line using '-Dgwt.persistentunitcache=...'
+     *
+     * @parameter expression="${gwt.persistentunitcache}"
+     * @since 2.5.0
+     */
+    private Boolean persistentunitcache;
+
+    /**
+     * The directory where the persistent unit cache will be created if enabled.
+     * <p>
+     * Can be set from command line using '-Dgwt.persistentunitcachedir=...'
+     *
+     * @parameter expression="${gwt.persistentunitcachedir}"
+     * @since 2.5.0
+     */
+    private File persistentunitcachedir;
+
     // methods
 
     /**
@@ -148,11 +178,6 @@ public abstract class AbstractGwtShellMojo
     protected String getExtraJvmArgs()
     {
         return extraJvmArgs;
-    }
-
-    protected File getGen()
-    {
-        return this.gen;
     }
 
     protected String getLogLevel()
@@ -280,6 +305,29 @@ public abstract class AbstractGwtShellMojo
         if ( deploy != null )
         {
             cmd.arg( "-deploy" ).arg( String.valueOf( deploy ) );
+        }
+    }
+
+    protected void addArgumentGen( JavaCommand cmd )
+    {
+        if ( this.genParam )
+        {
+            if ( !this.gen.exists() )
+            {
+                this.gen.mkdirs();
+            }
+            cmd.arg( "-gen", this.gen.getAbsolutePath() );
+        }
+    }
+
+    protected void addPersistentUnitCache(JavaCommand cmd) {
+        if ( persistentunitcache != null )
+        {
+            cmd.systemProperty( "gwt.persistentunitcache", String.valueOf( persistentunitcache.booleanValue() ) );
+        }
+        if ( persistentunitcachedir != null )
+        {
+            cmd.systemProperty( "gwt.persistentunitcachedir", persistentunitcachedir.getAbsolutePath() );
         }
     }
 

@@ -40,6 +40,7 @@
         <artifactId>gwt-maven-plugin</artifactId>
         <version>@pom.version@</version>
         <configuration>
+          <genParam>false</genParam>
           <inplace>true</inplace>
           <logLevel>INFO</logLevel>
           <style>OBF</style>
@@ -50,6 +51,12 @@
           <strict>true</strict>
           <workDir>${project.build.directory}/workDir</workDir>
           <deploy>${project.build.directory}/deploy</deploy>
+          <persistentunitcache>true</persistentunitcache>
+          <persistentunitcachedir>${project.build.directory}/persistentunitcache</persistentunitcachedir>
+          <enableClosureCompiler>true</enableClosureCompiler>
+          <disableAggressiveOptimization>true</disableAggressiveOptimization>
+          <compilerMetrics>true</compilerMetrics>
+          <fragmentCount>2</fragmentCount>
         </configuration>
         <executions>
           <execution>

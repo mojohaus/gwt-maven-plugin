@@ -40,7 +40,7 @@ import org.codehaus.plexus.archiver.UnArchiver;
 import org.codehaus.plexus.archiver.manager.ArchiverManager;
 import org.codehaus.plexus.archiver.manager.NoSuchArchiverException;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.StringUtils;
+import org.codehaus.plexus.util.DirectoryScanner;
 
 /**
  * Goal which run a GWT module in the GWT Hosted mode.
@@ -336,14 +336,16 @@ public class RunMojo
         cmd.withinScope( Artifact.SCOPE_RUNTIME );
         addCompileSourceArtifacts( cmd );
         addArgumentDeploy(cmd);
+        addArgumentGen( cmd );
+        addPersistentUnitCache(cmd);
 
         if ( !gwtSdkFirstInClasspath )
         {
             cmd.withinClasspath( getGwtUserJar() ).withinClasspath( getGwtDevJar() );
         }
 
-        cmd.arg( "-war", hostedWebapp.getAbsolutePath() )
-            .arg( "-gen", getGen().getAbsolutePath() )
+        cmd.arg( "-XdisableUpdateCheck" )
+            .arg( "-war", hostedWebapp.getAbsolutePath() )
             .arg( "-logLevel", getLogLevel() )
             .arg( "-port", Integer.toString( getPort() ) )
             .arg( "-startupUrl", getStartupUrl() )
@@ -406,10 +408,6 @@ public class RunMojo
     protected void postProcessClassPath( Collection<File> classPath )
     {
         boolean isAppEngine = "com.google.appengine.tools.development.gwt.AppEngineLauncher".equals( server );
-        if ( !isAppEngine )
-        {
-            return;
-        }
         List<Pattern> patternsToExclude = new ArrayList<Pattern>();
         if ( runClasspathExcludes != null && !runClasspathExcludes.isEmpty() )
         {
@@ -515,6 +513,39 @@ public class RunMojo
         }
     }  
 
+    /**
+     * Copied a directory structure with deafault exclusions (.svn, CVS, etc)
+     *
+     * @param sourceDir The source directory to copy, must not be <code>null</code>.
+     * @param destDir The target directory to copy to, must not be <code>null</code>.
+     * @throws java.io.IOException If the directory structure could not be copied.
+     */
+    private void copyDirectoryStructureIfModified(File sourceDir, File destDir)
+            throws IOException {
+        
+        DirectoryScanner scanner = new DirectoryScanner();
+        scanner.setBasedir( sourceDir );
+        scanner.addDefaultExcludes();
+        scanner.scan();
+
+        /*
+         * NOTE: Make sure the destination directory is always there (even if empty) to support POM-less ITs.
+         */
+        destDir.mkdirs();
+        String[] includedDirs = scanner.getIncludedDirectories();
+        for ( int i = 0; i < includedDirs.length; ++i ) {
+            File clonedDir = new File( destDir, includedDirs[i] );
+            clonedDir.mkdirs();
+        }
+
+        String[] includedFiles = scanner.getIncludedFiles();
+        for ( int i = 0; i < includedFiles.length; ++i ) {
+            File sourceFile = new File(sourceDir, includedFiles[i]);
+            File destFile = new File(destDir, includedFiles[i]);
+            FileUtils.copyFileIfModified(sourceFile, destFile);
+        }
+    }
+    
     private void setupExplodedWar()
         throws MojoExecutionException
     {
@@ -524,8 +555,9 @@ public class RunMojo
         {
             try
             {
-                String excludes = StringUtils.join( DEFAULTEXCLUDES, "," );
-                FileUtils.copyDirectory( warSourceDirectory, hostedWebapp, "**", excludes );
+                // can't use FileUtils.copyDirectoryStructureIfModified because it does not 
+                // excludes the DEFAULTEXCLUDES
+                copyDirectoryStructureIfModified(warSourceDirectory, hostedWebapp);
             }
             catch ( IOException e )
             {
