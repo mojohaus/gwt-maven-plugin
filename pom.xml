@@ -294,7 +294,7 @@
     <dependency>
       <groupId>org.apache.bcel</groupId>
       <artifactId>bcel</artifactId>
-      <version>5.2</version>
+      <version>6.6.0</version>
     </dependency>
     <dependency>
       <!-- required when running GWT 1.6 Hosted server to fix JAXP parser mismatches -->
